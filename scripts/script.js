@@ -136,29 +136,38 @@ const ballHitbox = document.querySelector(".planet-hitbox");
 const ballWidth = ball.clientWidth;
 const ballHeight = ball.clientHeight;
 
-let ballX = ball.offsetLeft;
-let ballY = ball.offsetTop;
+let ballX = ball.offsetLeft;  // Horizontal position
+let ballY = ball.offsetTop;   // Vertical position
 
-let ballDX = 2;
-let ballDY = 0;
-const gravity = 0.05;
+let balldX = 2;  // Horizontal velocity
+let balldY = 0;  // Vertical velocity
+const gravity = 0.05;  // Gravity constant
+
+const bounceHeight = 200;  // Bounce height of balls in pixels
+
 function bounceBall() {
     // Ball Drop
-    ballDY += gravity;
-    ballY += ballDY;
-    ballX += ballDX
+    balldY += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i
+    ballY += balldY;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i
+    ballX += balldX
 
     // Bounce
-    if (ballY > boardHeight - ballHeight) {
-        ballDY *= -1;
+    if (ballY > (boardHeight - ballHeight)) {
+        /*  To bring a ball back to a specified height, we must calculate the velocity required to
+            bounce the ball back to the height. Assuming elastic collision with no losses, the velocity 
+            down = velocity up. Thus, the final velocity of a ball as its dropped from a specified height 
+            is equal to the inital velocity of a ball as it collides with the floor and bounces back up.
+
+            vf^2 = vi^2 + 2ad    // Assume that the ball is dropped with an initial velocity of 0
+            vf^2 = 2ad
+            vf = sqrt(2ad)
+        */
+
+        balldY = -Math.sqrt(2 * gravity * bounceHeight);  // Negative sign because in this context, down is positive and up is negative
     }
 
-    if (ballX > boardWidth - ballWidth) {
-        ballDX *= -1;
-    }
-
-    if (ballX < 0) {
-        ballDX *= -1;
+    if (ballX > (boardWidth - ballWidth) || ballX < 0) {
+        balldX *= -1;
     }
 
     ball.style.top = `${ballY}px`;

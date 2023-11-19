@@ -44,7 +44,7 @@ header h1 {
     height: 600px;
     width: 1000px;
 
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .character-container {
@@ -89,4 +89,12 @@ header h1 {
     transform: translate(-50%, -55%);
 
     /* background-color: rgba(0, 0, 0, 0.5); */
+}
+
+.height-bar {
+    background-color: black;
+    position: absolute;
+    bottom: 200px;
+    width: 1000px;
+    height: 1px;
 }
