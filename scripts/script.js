@@ -49,7 +49,6 @@ class Robot {
         this.width = characterWidth;
         this.height = characterHeight;
 
-        this.previousTimestamp = null;
         this._runAnimation = this._runAnimation.bind(this);
     }
 
@@ -63,11 +62,16 @@ class Robot {
         
         let xPosition = parseInt(character.style.left);   // Current xPosition
         const step = 2;
-        // let step = 1.5;
 
         // Update the xPosition depending on if moving left or right
         (this.direction === "left") ? xPosition = xPosition - step :
                                       xPosition = xPosition + step;
+
+        if ((xPosition + this.width) >= boardWidth) {
+            xPosition = boardWidth - this.width;
+        } else if (xPosition <= 0) {
+            xPosition = 0;
+        }
 
         character.style.left = `${xPosition}px`;
 
@@ -87,7 +91,6 @@ class Robot {
             (this.direction === "left") ? character.classList.add("flip-character") : 
                                           character.classList.remove("flip-character");
 
-            this.xPosition = parseInt(character.style.left);    
 
             // this.runInterval = setInterval(() => this._runAnimation(), 100);
             this.runInterval = requestAnimationFrame(() => this._runAnimation());
