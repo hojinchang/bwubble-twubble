@@ -43,6 +43,8 @@ header h1 {
     position: relative;
     height: 600px;
     width: 1000px;
+
+    overflow: hidden;
 }
 
 .character-container {
@@ -51,7 +53,7 @@ header h1 {
 
 .character-icon {
     display: block;
-    width: 100px;
+    width: 60px;
 }
 
 .character-hitbox {
@@ -61,11 +63,30 @@ header h1 {
     width: 50px;
     height: 90%;
 
-    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgba(0, 0, 0, 0.5); */
     transform: translateX(-55%);
 }
 
-
 .flip-character {
     transform: scaleX(-1);
+}
+
+.planet-container {
+    position: absolute;
+    left: 40px;
+}
+
+.planet-icon {
+    width: 50px;
+}
+
+.planet-hitbox {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+
+    /* background-color: rgba(0, 0, 0, 0.5); */
 }

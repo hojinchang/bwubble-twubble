@@ -1,5 +1,8 @@
 "use-strict"
 
+/* ********************************************
+              Character Movement 
+*********************************************** */
 const character = document.querySelector(".character-container");
 const characterIcon = document.querySelector(".character-icon");
 const characterHitbox = document.querySelector(".character-hitbox");
@@ -36,10 +39,6 @@ function initGame() {
 
 
 
-let runIdx = 0;
-let isRunning = false;
-let runInterval;
-
 class Robot {
     constructor(idleImgPath, characterWidth, characterHeight) {
         this.idleState = idleImgPath;
@@ -54,10 +53,9 @@ class Robot {
         this._runAnimation = this._runAnimation.bind(this);
     }
 
-
     /* 
         Cycle through runImages array to animate running.
-        Move the character with a step of 15px when running
+        Move the character with a step of 2px when running
     */
     _runAnimation() {
         characterIcon.src = runImages[this.runIdx].src;
@@ -69,6 +67,7 @@ class Robot {
         (this.direction === "left") ? xPosition = xPosition - step :
                                       xPosition = xPosition + step;
 
+        // Set xPosition limits to be the edges of the game board
         if ((xPosition + this.width) >= boardWidth) {
             xPosition = boardWidth - this.width;
         } else if (xPosition <= 0) {
@@ -84,7 +83,7 @@ class Robot {
         this.runInterval = requestAnimationFrame(() => this._runAnimation());
     }
 
-
+    // Run method
     run(direction) {
         if (!this.isRunning) {
             this.isRunning = true;
@@ -93,16 +92,15 @@ class Robot {
             (this.direction === "left") ? character.classList.add("flip-character") : 
                                           character.classList.remove("flip-character");
 
-
-            // this.runInterval = setInterval(() => this._runAnimation(), 100);
             this.runInterval = requestAnimationFrame(() => this._runAnimation());
         }
     }
 
+    // Stop running method
     stopRunning() {
-        // clearInterval(this.runInterval);
         cancelAnimationFrame(this.runInterval);
         this.isRunning = false;
+        characterIcon.src = this.idleState;
     }
 }
 
@@ -120,9 +118,80 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         robot.stopRunning();
-        character.src = robot.idleState;
     }
 })
+
+/* ********************************************
+              Character Movement 
+*********************************************** */
+
+
+/* ********************************************
+                Ball Movement 
+*********************************************** */
+const ball = document.querySelector(".planet-container");
+const ballIcon = document.querySelector(".planet-icon");
+const ballHitbox = document.querySelector(".planet-hitbox");
+
+const ballWidth = ball.clientWidth;
+const ballHeight = ball.clientHeight;
+
+let ballX = ball.offsetLeft;
+let ballY = ball.offsetTop;
+
+let ballDX = 2;
+let ballDY = 0;
+const gravity = 0.1;
+function bounceBall() {
+    // Ball Drop
+    ballDY += gravity;
+    ballY += ballDY;
+    ballX += ballDX
+
+    // Bounce
+    if (ballY > boardHeight - ballHeight) {
+        ballDY *= -1;
+    }
+
+    if (ballX > boardWidth - ballWidth) {
+        ballDX *= -1;
+    }
+
+    if (ballX < 0) {
+        ballDX *= -1;
+    }
+
+    ball.style.top = `${ballY}px`;
+    ball.style.left = `${ballX}px`;
+
+    requestAnimationFrame(bounceBall);
+
+}
+
+bounceBall();
+// setInterval(bounceBall, 20);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 initGame();
