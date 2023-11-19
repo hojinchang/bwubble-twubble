@@ -1,0 +1,57 @@
+*, *::before, *:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --header-text-color: #F7F7AD;
+    --background-colour: #282A35;
+}
+
+body {
+    background-color: var(--background-colour);
+    font-family: 'Sometype Mono', monospace;
+    padding: 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--header-text-color);
+}
+
+
+header {
+    text-align: center;
+    background-color: #282A35;
+}
+
+header h1 {
+    margin: 0 0 2rem;
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+}
+
+.game-board {
+    background-image: url(../assets/background/background-resized.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+    position: relative;
+    height: 600px;
+    width: 1000px;
+}
+
+.character-icon {
+    display: block;
+    position: absolute;
+    width: 100px;
+}
+
+
+.flip-character {
+    transform: scaleX(-1);
+}
