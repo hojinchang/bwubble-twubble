@@ -1,6 +1,8 @@
 "use-strict"
 
-const character = document.querySelector(".character-icon");
+const character = document.querySelector(".character-container");
+const characterIcon = document.querySelector(".character-icon");
+const characterHitbox = document.querySelector(".character-hitbox");
 const gameBoard = document.querySelector(".game-board");
 
 
@@ -58,7 +60,7 @@ class Robot {
         Move the character with a step of 15px when running
     */
     _runAnimation() {
-        character.src = runImages[this.runIdx].src;
+        characterIcon.src = runImages[this.runIdx].src;
         
         let xPosition = parseInt(character.style.left);   // Current xPosition
         const step = 2;
