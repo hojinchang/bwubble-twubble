@@ -141,7 +141,7 @@ let ballY = ball.offsetTop;
 
 let ballDX = 2;
 let ballDY = 0;
-const gravity = 0.1;
+const gravity = 0.05;
 function bounceBall() {
     // Ball Drop
     ballDY += gravity;
