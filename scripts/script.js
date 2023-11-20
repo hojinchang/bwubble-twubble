@@ -139,7 +139,7 @@ const ballHeight = ball.clientHeight;
 let ballX = ball.offsetLeft;  // Horizontal position
 let ballY = ball.offsetTop;   // Vertical position
 
-let balldX = 2;  // Horizontal velocity
+let balldX = 1;  // Horizontal velocity
 let balldY = 0;  // Vertical velocity
 const gravity = 0.05;  // Gravity constant
 
@@ -147,8 +147,8 @@ const bounceHeight = 200;  // Bounce height of balls in pixels
 
 function bounceBall() {
     // Ball Drop
-    balldY += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i
-    ballY += balldY;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i
+    balldY += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
+    ballY += balldY;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i  =>  where dt = each animation frame
     ballX += balldX
 
     // Bounce
@@ -165,7 +165,8 @@ function bounceBall() {
 
         balldY = -Math.sqrt(2 * gravity * bounceHeight);  // Negative sign because in this context, down is positive and up is negative
     }
-
+    
+    // Switch bounce direction if it hits the side walls
     if (ballX > (boardWidth - ballWidth) || ballX < 0) {
         balldX *= -1;
     }
@@ -174,11 +175,11 @@ function bounceBall() {
     ball.style.left = `${ballX}px`;
 
     requestAnimationFrame(bounceBall);
-
 }
 
 bounceBall();
 // setInterval(bounceBall, 20);
+
 
 
 
