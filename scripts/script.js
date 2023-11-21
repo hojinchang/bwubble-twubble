@@ -43,7 +43,7 @@ class Robot {
     constructor(idleImgPath, characterWidth, characterHeight) {
         this.idleState = idleImgPath;
         this.isRunning = false;
-        this.runInterval;
+        this.animationFrame;
         this.runIdx = 0;
         this.direction;
 
@@ -80,7 +80,7 @@ class Robot {
         this.runIdx = (this.runIdx + 1) % runImages.length;
 
         // Rerun the animation frame because it only runs once
-        this.runInterval = requestAnimationFrame(() => this._runAnimation());
+        this.animationFrame = requestAnimationFrame(() => this._runAnimation());
     }
 
     // Run method
@@ -92,13 +92,13 @@ class Robot {
             (this.direction === "left") ? character.classList.add("flip-character") : 
                                           character.classList.remove("flip-character");
 
-            this.runInterval = requestAnimationFrame(() => this._runAnimation());
+            this.animationFrame = requestAnimationFrame(() => this._runAnimation());
         }
     }
 
     // Stop running method
     stopRunning() {
-        cancelAnimationFrame(this.runInterval);
+        cancelAnimationFrame(this.animationFrame);
         this.isRunning = false;
         characterIcon.src = this.idleState;
     }
@@ -129,79 +129,69 @@ document.addEventListener("keyup", (e) => {
 /* ********************************************
                 Ball Movement 
 *********************************************** */
-const ball = document.querySelector(".planet-container");
-const ballIcon = document.querySelector(".planet-icon");
-const ballHitbox = document.querySelector(".planet-hitbox");
-
-const ballWidth = ball.clientWidth;
-const ballHeight = ball.clientHeight;
-
-let ballX = ball.offsetLeft;  // Horizontal position
-let ballY = ball.offsetTop;   // Vertical position
-
-let balldX = 1;  // Horizontal velocity
-let balldY = 0;  // Vertical velocity
 const gravity = 0.05;  // Gravity constant
+class Ball {
+    constructor(src, width, height) {
+        this.src = src;
+        this.width = width;
+        this.height = height;
+        this.xPosition = 0;  // Horizontal position
+        this.yPosition = 100;   // Vertical position
+        this.xVelocity = 1;  // Horizontal velocity
+        this.yVelocity = 0;  // Vertical velocity
+        this.bounceHeight = 350;  // Bounce height of balls in pixels
 
-const bounceHeight = 200;  // Bounce height of balls in pixels
-
-function bounceBall() {
-    // Ball Drop
-    balldY += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
-    ballY += balldY;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i  =>  where dt = each animation frame
-    ballX += balldX
-
-    // Bounce
-    if (ballY > (boardHeight - ballHeight)) {
-        /*  To bring a ball back to a specified height, we must calculate the velocity required to
-            bounce the ball back to the height. Assuming elastic collision with no losses, the velocity 
-            down = velocity up. Thus, the final velocity of a ball as its dropped from a specified height 
-            is equal to the inital velocity of a ball as it collides with the floor and bounces back up.
-
-            vf^2 = vi^2 + 2ad    // Assume that the ball is dropped with an initial velocity of 0
-            vf^2 = 2ad
-            vf = sqrt(2ad)
-        */
-
-        balldY = -Math.sqrt(2 * gravity * bounceHeight);  // Negative sign because in this context, down is positive and up is negative
+        this.ball = this.createBall();
+        this.bounce = this.bounce.bind(this);
     }
+
+    createBall() {
+        const ball = document.createElement("div");
+        ball.classList.add("planet-container");
+        const ballIcon = document.createElement("img");
+
+        ballIcon.src = this.src;
+        ballIcon.style.width = `${this.width}px`;
+        ballIcon.style.height = `${this.height}px`;
+        ball.appendChild(ballIcon);
+
+        gameBoard.appendChild(ball);
+        return ball;
+    }
+
+    bounce() {
+        // Ball Drop
+        this.yVelocity += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
+        this.yPosition += this.yVelocity;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i  =>  where dt = each animation frame
+        this.xPosition += this.xVelocity;
+        
+        // Bounce
+        if (this.yPosition > (boardHeight - this.height)) {
+            /*  To bring a ball back to a specified height, we must calculate the velocity required to
+                bounce the ball back to the height. Assuming elastic collision with no losses, the velocity 
+                down = velocity up. Thus, the final velocity of a ball as its dropped from a specified height 
+                is equal to the inital velocity of a ball as it collides with the floor and bounces back up.
     
-    // Switch bounce direction if it hits the side walls
-    if (ballX > (boardWidth - ballWidth) || ballX < 0) {
-        balldX *= -1;
+                vf^2 = vi^2 + 2ad    // Assume that the ball is dropped with an initial velocity of 0
+                vf^2 = 2ad
+                vf = sqrt(2ad)
+            */
+            this.yVelocity = -Math.sqrt(2 * gravity * this.bounceHeight);  // Negative sign because in this context, down is positive and up is negative
+        }
+        
+        // Switch bounce direction if it hits the side walls
+        if (this.xPosition > (boardWidth - this.width) || this.xPosition < 0) {
+            this.xVelocity *= -1;
+        }
+    
+        this.ball.style.top = `${this.yPosition}px`;
+        this.ball.style.left = `${this.xPosition}px`;
+    
+        requestAnimationFrame(this.bounce);
     }
-
-    ball.style.top = `${ballY}px`;
-    ball.style.left = `${ballX}px`;
-
-    requestAnimationFrame(bounceBall);
 }
 
-bounceBall();
-// setInterval(bounceBall, 20);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+let source = "../assets/planets/planet04.png";
+const newBallObject = new Ball(source, 75, 75);
+newBallObject.bounce();
 initGame();
