@@ -7,11 +7,12 @@
 :root {
     --header-text-color: #F7F7AD;
     --background-colour: #282A35;
+    --font-family: 'Sometype Mono', monospace;
 }
 
 body {
     background-color: var(--background-colour);
-    font-family: 'Sometype Mono', monospace;
+    font-family: var(--font-family);
     padding: 2rem;
 }
 
@@ -29,22 +30,84 @@ header h1 {
     margin: 0 0 2rem;
 }
 
-.game-container {
+
+main {
     display: flex;
     justify-content: center;
 }
 
+.game-container {
+    position: relative;
+}
+
+.intro-screen,
 .game-board {
+    height: 600px;
+    width: 1000px;
+}
+
+.intro-screen {
+    background-color: gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: opacity 1s ease-in-out;
+}
+
+.intro-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.intro-screen h2 {
+    font-size: 36px;
+}
+
+.intro-screen .start-game-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+
+    transition: transform 0.1s ease;
+}
+
+.intro-screen .start-game-btn:active {
+    transform: translateY(2px);
+}
+
+.intro-screen .start-game-btn span {
+    font-size: 32px;
+}
+
+.game-board {
+    /* display: none; */
+    opacity: 0;
     background-image: url(../assets/background/background-resized.jpg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
 
     position: relative;
-    height: 600px;
-    width: 1000px;
+    overflow: hidden;
 
-    /* overflow: hidden; */
+    transition: opacity 1s ease-in-out;
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+.fade-in {
+    opacity: 1;
+}
+
+.hide {
+    display: none;
 }
 
 .character-container {
@@ -87,8 +150,6 @@ header h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -55%);
-
-    /* background-color: rgba(0, 0, 0, 0.5); */
 }
 
 .height-bar {
