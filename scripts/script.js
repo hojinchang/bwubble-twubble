@@ -4,17 +4,19 @@
                      Robot
 *********************************************** */
 class Robot {
-    constructor(characterWidth, 
-                characterHeight, 
+    constructor(
                 character, 
                 characterIcon, 
+                characterWidth, 
+                characterHeight, 
                 boardWidth, 
-                boardHeight) {
+                boardHeight,
+        ) {
 
-        this.width = characterWidth;
-        this.height = characterHeight;
         this.character = character;
         this.characterIcon = characterIcon;
+        this.width = characterWidth;
+        this.height = characterHeight;
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
 
@@ -23,18 +25,20 @@ class Robot {
         this.animationFrame;
         this.runIdx = 0;
         this.direction;
+        this.xPosition;
 
-        this.runImages = [];
-        this._getRunImages();
+        this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);
     }
 
     _getRunImages() {
+        const runImages = [];
         for (let i = 0; i < 8; i++) {
             const image = new Image();
             image.src = `../assets/character/Run-${i+1}.png`;
-            this.runImages.push(image);
+            runImages.push(image);
         }
+        return runImages;
     }
 
 
@@ -59,11 +63,13 @@ class Robot {
             xPosition = 0;
         }
 
+        this.xPosition = xPosition;
         this.character.style.left = `${xPosition}px`;
 
         // Update the run image index and reset back to 0
         this.runIdx = (this.runIdx + 1) % this.runImages.length;
 
+        // this._trackPosition();
         // Rerun the animation frame because it only runs once
         this.animationFrame = requestAnimationFrame(() => this._runAnimation());
     }
@@ -169,19 +175,16 @@ class GameController {
         this.elements = {};
         this._getElements();
 
-        this.ballImages = [];
-        this._getBallImages();
+        this.ballImages = this._getBallImages();
 
         this.characterWidth = this.elements.character.clientWidth;
         this.characterHeight = this.elements.character.clientHeight;
         this.boardWidth = this.elements.gameBoard.clientWidth;
         this.boardHeight = this.elements.gameBoard.clientHeight;
-        this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
     
-        this.robotObject = new Robot(this.characterWidth, this.characterHeight, this.elements.character, this.elements.characterIcon, this.boardWidth, this.boardHeight);
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.characterWidth, this.characterHeight, this.boardWidth, this.boardHeight);
 
         this._setUpEventListeners();
-
 
         if (this.devmode) this._devmode();
 
@@ -235,21 +238,21 @@ class GameController {
             }
         })
 
-        
         if (!this.devmode) {
             this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
             this.elements.introScreen.addEventListener("transitionend", () => {this._startGame(true)});
         }
-        
     }
 
     _getBallImages() {
+        const ballImages = [];
         for (let i = 0; i < 10; i++) {
             const image = new Image();
             image.src = `../assets/planets/planet0${i}.png`;
 
-            this.ballImages.push(image);
+            ballImages.push(image);
         }
+        return ballImages;
     }
 
     _createBallElement(planet, ballWidth, ballHeight, xPosition, yPosition) {
@@ -287,6 +290,13 @@ class GameController {
         this.elements.character.style.top = `${yPosition}px`;
     }
 
+    // _trackCharacter() {
+    //     setInterval(() => {
+    //         const xPosition = parseInt(this.elements.character.style.left);
+    //         console.log("Robot xPosition: ", xPosition);
+    //     }, 1);
+    // }
+
     _initLevel(level) {
         const { 
             ballSrc, 
@@ -299,9 +309,12 @@ class GameController {
             bounceHeight 
         } = this.levels[level];
 
+        this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
+
         this.ballElem = this._createBallElement(ballSrc, ballWidth, ballHeight, xPosition, yPosition);
         this.ballObject = new Ball(this.ballElem, ballWidth, ballHeight, xPosition, yPosition, xVelocity, yVelocity, bounceHeight, this.boardWidth, this.boardHeight);
         this.ballObject.bounce();
+        // this._trackCharacter();
     }
 
 
