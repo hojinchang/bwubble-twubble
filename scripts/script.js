@@ -1,44 +1,8 @@
 "use-strict"
 
 /* ********************************************
-              Character Movement 
+                     Robot
 *********************************************** */
-// const character = document.querySelector(".character-container");
-// const characterIcon = document.querySelector(".character-icon");
-// const characterHitbox = document.querySelector(".character-hitbox");
-// const gameBoard = document.querySelector(".game-board");
-
-
-// const characterWidth = character.clientWidth;
-// const characterHeight = character.clientHeight;
-// const boardWidth = gameBoard.clientWidth;
-// const boardHeight = gameBoard.clientHeight;
-
-
-// const runImages = [];
-// function initGame() {
-//     function _placeCharacter() {
-//         const xPosition = (boardWidth / 2) - (characterWidth / 2);
-//         const yPosition = boardHeight - characterHeight;
-
-//         character.style.left = `${xPosition}px`;
-//         character.style.top = `${yPosition}px`;
-//     }
-
-//     function _getRunImages() {
-//         for (let i = 0; i < 8; i++) {
-//             const image = new Image();
-//             image.src = `../assets/character/Run-${i+1}.png`;
-//             runImages.push(image);
-//         }
-//     }
-
-//     _placeCharacter();
-//     _getRunImages();
-// }
-
-
-
 class Robot {
     constructor(characterWidth, 
                 characterHeight, 
@@ -124,60 +88,41 @@ class Robot {
         this.characterIcon.src = this.idleState;
     }
 }
-
-// const idleImagePath = "../assets/character/Idle-1.png";
-// const robot = new Robot(idleImagePath, characterWidth, characterHeight);
-
-// document.addEventListener("keydown", (e) => {
-//     if (e.key === "ArrowRight") {
-//         robot.run("right");
-//     } else if (e.key === "ArrowLeft") {
-//         robot.run("left");
-//     }
-// })
-
-// document.addEventListener("keyup", (e) => {
-//     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-//         robot.stopRunning();
-//     }
-// })
-
 /* ********************************************
-              Character Movement 
+                     Robot
 *********************************************** */
 
 
 /* ********************************************
-                Ball Movement 
+                    Ball 
 *********************************************** */
 const gravity = 0.05;  // Gravity constant
 class Ball {
-    constructor(src, width, height) {
-        this.src = src;
-        this.width = width;
-        this.height = height;
-        this.xPosition = 0;  // Horizontal position
-        this.yPosition = 100;   // Vertical position
-        this.xVelocity = 1;  // Horizontal velocity
-        this.yVelocity = 0;  // Vertical velocity
-        this.bounceHeight = 350;  // Bounce height of balls in pixels
+    constructor(
+        ball, 
+        width, 
+        height, 
+        xPosition, 
+        yPosition, 
+        xVelocity, 
+        yVelocity, 
+        bounceHeight,
+        boardWidth,
+        boardHeight,
+    ) {
 
-        this.ball = this._createBall();
+        this.ball = ball;  // ball DOM element
+        this.width = width;   // ball width
+        this.height = height;  // ball height
+        this.xPosition = xPosition;  // Horizontal position
+        this.yPosition = yPosition;   // Vertical position
+        this.xVelocity = xVelocity;  // Horizontal velocity
+        this.yVelocity = yVelocity;  // Vertical velocity
+        this.bounceHeight = bounceHeight;  // Bounce height of balls in pixels
+        this.boardWidth = boardWidth;
+        this.boardHeight = boardHeight;
+
         this.bounce = this.bounce.bind(this);
-    }
-
-    _createBall() {
-        const ball = document.createElement("div");
-        ball.classList.add("planet-container");
-        const ballIcon = document.createElement("img");
-
-        ballIcon.src = this.src;
-        ballIcon.style.width = `${this.width}px`;
-        ballIcon.style.height = `${this.height}px`;
-        ball.appendChild(ballIcon);
-
-        gameBoard.appendChild(ball);
-        return ball;
     }
 
     bounce() {
@@ -187,7 +132,7 @@ class Ball {
         this.xPosition += this.xVelocity;
         
         // Bounce
-        if (this.yPosition > (boardHeight - this.height)) {
+        if (this.yPosition > (this.boardHeight - this.height)) {
             /*  To bring a ball back to a specified height, we must calculate the velocity required to
                 bounce the ball back to the height. Assuming elastic collision with no losses, the velocity 
                 down = velocity up. Thus, the final velocity of a ball as its dropped from a specified height 
@@ -201,7 +146,7 @@ class Ball {
         }
         
         // Switch bounce direction if it hits the side walls
-        if (this.xPosition > (boardWidth - this.width) || this.xPosition < 0) {
+        if (this.xPosition > (this.boardWidth - this.width) || this.xPosition < 0) {
             this.xVelocity *= -1;
         }
     
@@ -210,12 +155,10 @@ class Ball {
     
         requestAnimationFrame(this.bounce);
     }
-
-    delete() {
-        gameBoard.removeChild(this.ball);
-    }
 }
-
+/* ********************************************
+                    Ball 
+*********************************************** */
 
 
 
@@ -235,12 +178,38 @@ class GameController {
         this.boardHeight = this.elements.gameBoard.clientHeight;
         this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
     
-        this.robot = new Robot(this.characterWidth, this.characterHeight, this.elements.character, this.elements.characterIcon, this.boardWidth, this.boardHeight);
+        this.robotObject = new Robot(this.characterWidth, this.characterHeight, this.elements.character, this.elements.characterIcon, this.boardWidth, this.boardHeight);
 
         this._setUpEventListeners();
 
 
         if (this.devmode) this._devmode();
+
+        this.currentLevel = 0;
+        this.levels = [
+            {
+                ballSrc: this.ballImages[0],
+                ballWidth: 75,
+                ballHeight: 75,
+                xPosition: 500,
+                yPosition: 100,
+                xVelocity: 1,
+                yVelocity: 0,
+                bounceHeight: 350,
+            },
+            {
+                ballSrc: this.ballImages[1],
+                ballWidth: 100,
+                ballHeight: 100,
+                xPosition: 650,
+                yPosition: 150,
+                xVelocity: 1,
+                yVelocity: 0,
+                bounceHeight: 450,
+            }
+        ];
+
+        this._initLevel(this.currentLevel);
     }
 
     _getElements() {
@@ -254,15 +223,15 @@ class GameController {
     _setUpEventListeners() {
         document.addEventListener("keydown", (e) => {
             if (e.key === "ArrowRight") {
-                this.robot.run("right");
+                this.robotObject.run("right");
             } else if (e.key === "ArrowLeft") {
-                this.robot.run("left");
+                this.robotObject.run("left");
             }
         })
 
         document.addEventListener("keyup", (e) => {
             if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-                this.robot.stopRunning();
+                this.robotObject.stopRunning();
             }
         })
 
@@ -283,11 +252,28 @@ class GameController {
         }
     }
 
+    _createBallElement(planet, ballWidth, ballHeight, xPosition, yPosition) {
+        const ball = document.createElement("div");
+        ball.classList.add("planet-container");
+        const ballIcon = document.createElement("img");
+
+        ballIcon.src = planet.src;
+        ballIcon.style.width = `${ballWidth}px`;
+        ballIcon.style.height = `${ballHeight}px`;
+        ball.appendChild(ballIcon);
+
+        ball.style.left = `${xPosition}px`;
+        ball.style.top = `${yPosition}px`;
+
+        this.elements.gameBoard.appendChild(ball);
+
+        return ball;
+    }
+
     _startGame(displayGameBoard = false) {
         if (!displayGameBoard) {
             this.elements.introScreen.classList.add("fade-out");
         } else {
-            console.log("YESSIR")
             this.elements.introScreen.classList.add("hide");
             this.elements.gameBoard.classList.add("fade-in");
         }
@@ -301,6 +287,23 @@ class GameController {
         this.elements.character.style.top = `${yPosition}px`;
     }
 
+    _initLevel(level) {
+        const { 
+            ballSrc, 
+            ballWidth, 
+            ballHeight, 
+            xPosition, 
+            yPosition, 
+            xVelocity, 
+            yVelocity, 
+            bounceHeight 
+        } = this.levels[level];
+
+        this.ballElem = this._createBallElement(ballSrc, ballWidth, ballHeight, xPosition, yPosition);
+        this.ballObject = new Ball(this.ballElem, ballWidth, ballHeight, xPosition, yPosition, xVelocity, yVelocity, bounceHeight, this.boardWidth, this.boardHeight);
+        this.ballObject.bounce();
+    }
+
 
     _devmode() {
         console.log("Dev Mode")
@@ -311,24 +314,6 @@ class GameController {
 
     
 }
-
-
-// const idleImagePath = "../assets/character/Idle-1.png";
-// const robot = new Robot(idleImagePath, characterWidth, characterHeight);
-
-// document.addEventListener("keydown", (e) => {
-//     if (e.key === "ArrowRight") {
-//         robot.run("right");
-//     } else if (e.key === "ArrowLeft") {
-//         robot.run("left");
-//     }
-// })
-
-// document.addEventListener("keyup", (e) => {
-//     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-//         robot.stopRunning();
-//     }
-// })
 
 const game = new GameController(true);
 // const game = new GameController(false);
