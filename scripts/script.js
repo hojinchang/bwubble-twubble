@@ -25,7 +25,7 @@ class Robot {
         this.animationFrame;
         this.runIdx = 0;
         this.direction;
-        this.xPosition;
+        this.xPosition = parseInt(this.character.style.left);
 
         this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);
@@ -49,27 +49,28 @@ class Robot {
     _runAnimation() {
         this.characterIcon.src = this.runImages[this.runIdx].src;
         
-        let xPosition = parseInt(this.character.style.left);   // Current xPosition
+        this.xPosition = parseInt(this.character.style.left);   // Current xPosition
         const step = 2;
 
         // Update the xPosition depending on if moving left or right
-        (this.direction === "left") ? xPosition = xPosition - step :
-                                      xPosition = xPosition + step;
+        (this.direction === "left") 
+            ? this.xPosition = this.xPosition - step 
+            : this.xPosition = this.xPosition + step;
 
         // Set xPosition limits to be the edges of the game board
-        if ((xPosition + this.width) >= this.boardWidth) {
-            xPosition = this.boardWidth - this.width;
-        } else if (xPosition <= 0) {
-            xPosition = 0;
+        if ((this.xPosition + this.width) >= this.boardWidth) {
+            this.xPosition = this.boardWidth - this.width;
+        } else if (this.xPosition <= 0) {
+            this.xPosition = 0;
         }
 
-        this.xPosition = xPosition;
-        this.character.style.left = `${xPosition}px`;
+        console.log(this.xPosition)
+        // this.xPosition = xPosition;
+        this.character.style.left = `${this.xPosition}px`;
 
         // Update the run image index and reset back to 0
         this.runIdx = (this.runIdx + 1) % this.runImages.length;
 
-        // this._trackPosition();
         // Rerun the animation frame because it only runs once
         this.animationFrame = requestAnimationFrame(() => this._runAnimation());
     }
@@ -181,10 +182,6 @@ class GameController {
         this.characterHeight = this.elements.character.clientHeight;
         this.boardWidth = this.elements.gameBoard.clientWidth;
         this.boardHeight = this.elements.gameBoard.clientHeight;
-    
-        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.characterWidth, this.characterHeight, this.boardWidth, this.boardHeight);
-
-        this._setUpEventListeners();
 
         if (this.devmode) this._devmode();
 
@@ -206,13 +203,14 @@ class GameController {
                 ballHeight: 100,
                 xPosition: 650,
                 yPosition: 150,
-                xVelocity: 1,
+                xVelocity: -1,
                 yVelocity: 0,
                 bounceHeight: 450,
             }
         ];
 
         this._initLevel(this.currentLevel);
+        // this._initLevel(1);
     }
 
     _getElements() {
@@ -290,13 +288,6 @@ class GameController {
         this.elements.character.style.top = `${yPosition}px`;
     }
 
-    // _trackCharacter() {
-    //     setInterval(() => {
-    //         const xPosition = parseInt(this.elements.character.style.left);
-    //         console.log("Robot xPosition: ", xPosition);
-    //     }, 1);
-    // }
-
     _initLevel(level) {
         const { 
             ballSrc, 
@@ -311,10 +302,12 @@ class GameController {
 
         this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
 
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.characterWidth, this.characterHeight, this.boardWidth, this.boardHeight);
+        this._setUpEventListeners();
+
         this.ballElem = this._createBallElement(ballSrc, ballWidth, ballHeight, xPosition, yPosition);
         this.ballObject = new Ball(this.ballElem, ballWidth, ballHeight, xPosition, yPosition, xVelocity, yVelocity, bounceHeight, this.boardWidth, this.boardHeight);
         this.ballObject.bounce();
-        // this._trackCharacter();
     }
 
 
