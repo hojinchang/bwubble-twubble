@@ -93,7 +93,7 @@ class Robot {
     }
 
     _laserAnimation() {
-        const step = 2;
+        const step = 4;
         this.laserObject.height += step;
         this.laserObject.laserElement.style.height = `${this.laserObject.height}px`;
 
