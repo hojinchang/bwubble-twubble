@@ -93,10 +93,16 @@ class Robot {
     }
 
     _laserAnimation() {
+        // Increase the height of the laser object's property and laser DOM element
         const step = 4;
         this.laserObject.height += step;
         this.laserObject.laserElement.style.height = `${this.laserObject.height}px`;
 
+        /*
+            Since the origin is the top left corner of the board, with positive y direction downwards, 
+            increasing the height increases the lasers height in the downward direction. The top offset
+            is changed to counteract the laser's growth downward.
+        */
         const laserOffset = this.boardHeight - this.laserObject.height;
         this.laserObject.laserElement.style.top = `${laserOffset}px`
         
@@ -114,7 +120,9 @@ class Robot {
         }
     }
 
+    // Shoot method
     shoot(laser) {
+        // Only shoot if there is no lasers active
         if (!this.isLaserActive) {
             this.isLaserActive = true;
             this.laserObject = laser;
