@@ -28,8 +28,6 @@ class Robot {
 
         this.laserObject;
         this.isLaserActive;
-        this.laserHeight;
-        this.laserTiles = [];
 
         this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);
@@ -92,7 +90,7 @@ class Robot {
         }
     }
 
-    _laserAnimation() {
+    _laserAnimation(yLaserStart) {
         // this.isLaserActive is set false in the GameController when a collision between the laser and ball is detected
         // Break out of the laser animation when collision occurs
         if (!this.isLaserActive) {
@@ -109,7 +107,7 @@ class Robot {
             increasing the height increases the lasers height in the downward direction. The top offset
             is changed to counteract the laser's growth downward.
         */
-        const laserOffset = this.boardHeight - this.laserObject.height;
+        const laserOffset = yLaserStart - this.laserObject.height;
         this.laserObject.laserElement.style.top = `${laserOffset}px`
         
         /*
@@ -117,14 +115,14 @@ class Robot {
             from the DOM and its instance.
             Else, continue the laser animation.
         */
-        if (this.laserObject.height === this.boardHeight) {
+        if ((this.laserObject.height + this.height/2) >= this.boardHeight) {    // Since the laser starts from the center of the robot, half of the character height must be added to the laser height to "reach" the top of the gameboard
             this.laserAnimationFrame = cancelAnimationFrame(this.laserAnimationFrame);
             this.isLaserActive = false;
 
             this.laserObject.delete();   // Delete the laser object and DOM element
             this.laserObject = null;   // Remove laserObject from robot class
         } else {
-            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation());
+            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation(yLaserStart));
         }
     }
 
@@ -134,7 +132,9 @@ class Robot {
         if (!this.isLaserActive) {
             this.isLaserActive = true;
             this.laserObject = laser;
-            this._laserAnimation();
+ 
+            const yLaserStart = this.boardHeight - this.height/2;
+            this._laserAnimation(yLaserStart);
         }
     }
     
@@ -425,7 +425,8 @@ class GameController {
         laser.style.width = "8px"  // Laser's width
         
         const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2 - parseInt(laser.style.width)/2;  // Center laser on robot
-        const yLaserPosition = this.boardHeight; // Place laser starting at bottom of gameboard
+        const yLaserPosition = this.boardHeight - this.robotObject.height/2; // Place laser starting from the middle of character
+        
         laser.style.left = `${xLaserPosition}px`;
         laser.style.top = `${yLaserPosition}px`;
 
