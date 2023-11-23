@@ -244,7 +244,7 @@ class Ball {
         this.ballElement.style.left = `${this.xPosition}px`;
 
         if (this._onPositionChange) {
-            this._onPositionChange({ xPosition: this.xPosition, yPosition: 600 - this.yPosition });
+            this._onPositionChange();
         }
         
         this.bounceAnimationFrame = requestAnimationFrame(() => this.bounce());
@@ -499,12 +499,9 @@ class GameController {
 
             ballID++;
             
-            let currentXPosition, currentYPosition;
             // Ball position tracking code from chatGPT. 
             // set up a callback function to track the x/y position of the ball in the GameController class
-            ballObject.onPositionChangeCallback = (position) => {
-                currentXPosition = position.xPosition;
-                currentYPosition = position.yPosition;
+            ballObject.onPositionChangeCallback = () => {
 
                 if (this.robotObject.isLaserActive) {
                     const collision = this._checkLaserBallCollision(ballObject);
@@ -514,11 +511,6 @@ class GameController {
                         this.laserObject.delete();
                     }
                 }
-
-
-                // if (currentXPosition === this.boardWidth / 2) {
-                //     ballObject.delete();
-                // }
             }
         }
     }
