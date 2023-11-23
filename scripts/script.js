@@ -171,7 +171,12 @@ class Ball {
         }
     
         requestAnimationFrame(this.bounce);
-        
+    }
+
+    delete() {
+        this.ball.remove();
+        delete this;
+
     }
 }
 
@@ -271,10 +276,11 @@ class GameController {
             }
         ];
 
-        this._playLevel(this.currentLevel);
-        // this._playLevel(1);
+        this.playLevel(this.currentLevel);
+        // this.playLevel(1);
     }
 
+    // Collect the required DOM elements
     _getElements() {
         this.elements.introScreen = document.querySelector(".intro-screen");
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
@@ -283,7 +289,9 @@ class GameController {
         this.elements.characterIcon = document.querySelector(".character-icon");
     }
 
+    // Set up event listeners
     _setUpEventListeners() {
+        // Robot arrow key controls pt.1
         document.addEventListener("keydown", (e) => {
             if (e.key === "ArrowRight") {
                 this.robotObject.run("right");
@@ -292,11 +300,13 @@ class GameController {
             }
         })
 
+        // Robot arrow key controls pt.2
         document.addEventListener("keyup", (e) => {
             if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
                 this.robotObject.stopRunning();
             }
         })
+
 
         if (!this.devmode) {
             this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
@@ -304,6 +314,7 @@ class GameController {
         }
     }
 
+    // Load ball images into image object
     _getBallImages() {
         const ballImages = [];
         for (let i = 0; i < 10; i++) {
@@ -315,6 +326,7 @@ class GameController {
         return ballImages;
     }
 
+    // Dynamically create ball elements
     _createBallElement(planet, ballWidth, ballHeight, xPosition, yPosition) {
         const ball = document.createElement("div");
         ball.classList.add("planet-container");
@@ -333,6 +345,7 @@ class GameController {
         return ball;
     }
 
+    // Game start transition
     _startGame(displayGameBoard = false) {
         if (!displayGameBoard) {
             this.elements.introScreen.classList.add("fade-out");
@@ -342,6 +355,7 @@ class GameController {
         }
     }
 
+    // Place robot character on the bottom and center of the screen
     _placeCharacter(boardWidth, boardHeight, characterWidth, characterHeight) {
         const xInitPosition = (boardWidth / 2) - (characterWidth / 2);
         const yInitPosition = boardHeight - characterHeight;
@@ -350,18 +364,23 @@ class GameController {
         this.elements.character.style.top = `${yInitPosition}px`;
     }
 
-    _playLevel(level) {
+    // Level method
+    playLevel(level) {
+        // Collect balls src and array from levels array
         const { 
             ballSrc, 
             balls,
         } = this.levels[level];
 
+        // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.characterWidth, this.characterHeight, this.boardWidth, this.boardHeight);
         this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
         this._setUpEventListeners();
 
         for (let ball of balls) {
+            // Create ball DOM element
             const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
+            // Create new ball object and make it bounce >:^)
             let ballObject = new Ball(ballElem, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.boardWidth, this.boardHeight);
             ballObject.bounce();
 
@@ -374,8 +393,8 @@ class GameController {
 
                 if (currentXPosition === this.boardWidth / 2) {
                     
-                    ballObject = null;  // delete ball object
-                    ballElem.remove();
+                    ballObject.delete();
+
                 }
             }
         }
