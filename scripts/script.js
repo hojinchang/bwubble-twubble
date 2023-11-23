@@ -5,15 +5,14 @@
 *********************************************** */
 class Robot {
     constructor(
-                character, 
-                characterIcon, 
-                characterWidth, 
-                characterHeight, 
-                boardWidth, 
-                boardHeight,
-        ) {
-
-        this.character = character;
+        characterElement, 
+        characterIcon, 
+        characterWidth, 
+        characterHeight, 
+        boardWidth, 
+        boardHeight,
+    ) {
+        this.characterElement = characterElement;
         this.characterIcon = characterIcon;
         this.width = characterWidth;
         this.height = characterHeight;
@@ -26,6 +25,7 @@ class Robot {
         this.runIdx = 0;
         this.direction;
         this.xPosition;
+        this.laserTiles = [];
 
         this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);
@@ -49,7 +49,7 @@ class Robot {
     _runAnimation() {
         this.characterIcon.src = this.runImages[this.runIdx].src;
         
-        this.xPosition = parseInt(this.character.style.left);   // Current xPosition
+        this.xPosition = parseInt(this.characterElement.style.left);   // Current xPosition
         const step = 2;
 
         // Update the xPosition depending on if moving left or right
@@ -64,7 +64,7 @@ class Robot {
             this.xPosition = 0;
         }
 
-        this.character.style.left = `${this.xPosition}px`;
+        this.characterElement.style.left = `${this.xPosition}px`;
 
         // Update the run image index and reset back to 0
         this.runIdx = (this.runIdx + 1) % this.runImages.length;
@@ -79,8 +79,9 @@ class Robot {
             this.isRunning = true;
             this.direction = direction;
 
-            (this.direction === "left") ? this.character.classList.add("flip-character") : 
-                                          this.character.classList.remove("flip-character");
+            (this.direction === "left") 
+                ? this.characterElement.classList.add("flip-character") 
+                : this.characterElement.classList.remove("flip-character");
 
             this.animationFrame = requestAnimationFrame(() => this._runAnimation());
         }
@@ -93,6 +94,8 @@ class Robot {
         this.characterIcon.src = this.idleState;
     }
 }
+
+
 /* ********************************************
                      Robot
 *********************************************** */
@@ -115,7 +118,6 @@ class Ball {
         boardWidth,
         boardHeight,
     ) {
-
         this.ball = ball;  // ball DOM element
         this.width = width;   // ball width
         this.height = height;  // ball height
@@ -180,15 +182,6 @@ class Ball {
     }
 }
 
-// this.width = width;   // ball width
-// this.height = height;  // ball height
-// this.xPosition = xPosition;  // Horizontal position
-// this.yPosition = yPosition;   // Vertical position
-// this.xVelocity = xVelocity;  // Horizontal velocity
-// this.yVelocity = yVelocity;  // Vertical velocity
-// this.bounceHeight = bounceHeight;  // Bounce height of balls in pixels
-
-
 const ballSizes = {
     ball1: {
         width: 20,
@@ -236,6 +229,8 @@ class GameController {
 
         this.ballImages = this._getBallImages();
 
+        this.robotObject;
+        this.xRobotPosition;
         this.characterWidth = this.elements.character.clientWidth;
         this.characterHeight = this.elements.character.clientHeight;
         this.boardWidth = this.elements.gameBoard.clientWidth;
@@ -297,6 +292,8 @@ class GameController {
                 this.robotObject.run("right");
             } else if (e.key === "ArrowLeft") {
                 this.robotObject.run("left");
+            } else if (e.key === " ") {
+                this._createLaserElement();
             }
         })
 
@@ -345,6 +342,21 @@ class GameController {
         return ball;
     }
 
+    _createLaserElement() {
+        const laser = document.createElement("div");
+        laser.classList.add("laser");
+
+        const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2;
+        const yLaserPosition = this.elements.gameBoard.clientHeight - 100;
+
+        laser.style.left = `${xLaserPosition}px`;
+        laser.style.top = `${yLaserPosition}px`;
+
+        this.elements.gameBoard.appendChild(laser);
+
+        // return laser;
+    }
+
     // Game start transition
     _startGame(displayGameBoard = false) {
         if (!displayGameBoard) {
@@ -362,6 +374,7 @@ class GameController {
 
         this.elements.character.style.left = `${xInitPosition}px`;
         this.elements.character.style.top = `${yInitPosition}px`;
+        this.robotObject.xPosition = xInitPosition;
     }
 
     // Level method

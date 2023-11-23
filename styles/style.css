@@ -112,22 +112,12 @@ main {
 
 .character-container {
     position: absolute;
+    z-index: 2;
 }
 
 .character-icon {
     display: block;
     width: 60px;
-}
-
-.character-hitbox {
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    width: 50px;
-    height: 90%;
-
-    /* background-color: rgba(0, 0, 0, 0.5); */
-    transform: translateX(-55%);
 }
 
 .flip-character {
@@ -143,19 +133,9 @@ main {
     width: 50px;
 }
 
-.planet-hitbox {
+.laser {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-}
-
-.height-bar {
-    background-color: black;
-    position: absolute;
-    bottom: 350px;
-    width: 1000px;
-    height: 1px;
+    background-color: yellow;
+    width: 5px;
+    height: 100px;
 }
