@@ -155,7 +155,7 @@ main {
 .height-bar {
     background-color: black;
     position: absolute;
-    bottom: 200px;
+    bottom: 350px;
     width: 1000px;
     height: 1px;
 }

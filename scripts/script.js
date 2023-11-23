@@ -25,7 +25,7 @@ class Robot {
         this.animationFrame;
         this.runIdx = 0;
         this.direction;
-        this.xPosition = parseInt(this.character.style.left);
+        this.xPosition;
 
         this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);
@@ -64,8 +64,6 @@ class Robot {
             this.xPosition = 0;
         }
 
-        console.log(this.xPosition)
-        // this.xPosition = xPosition;
         this.character.style.left = `${this.xPosition}px`;
 
         // Update the run image index and reset back to 0
@@ -129,7 +127,15 @@ class Ball {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
 
+        this._onPositionChange;
+
         this.bounce = this.bounce.bind(this);
+    }
+
+    // Ball position tracking code from chatGPT. 
+    // set up a callback function to track the x/y position of the ball in the GameController class
+    set onPositionChangeCallback(callbackFunction) {
+        this._onPositionChange = callbackFunction;
     }
 
     bounce() {
@@ -159,8 +165,55 @@ class Ball {
     
         this.ball.style.top = `${this.yPosition}px`;
         this.ball.style.left = `${this.xPosition}px`;
+
+        if (this._onPositionChange) {
+            this._onPositionChange({ xPosition: this.xPosition, yPosition: 600 - this.yPosition });
+        }
     
         requestAnimationFrame(this.bounce);
+        
+    }
+}
+
+// this.width = width;   // ball width
+// this.height = height;  // ball height
+// this.xPosition = xPosition;  // Horizontal position
+// this.yPosition = yPosition;   // Vertical position
+// this.xVelocity = xVelocity;  // Horizontal velocity
+// this.yVelocity = yVelocity;  // Vertical velocity
+// this.bounceHeight = bounceHeight;  // Bounce height of balls in pixels
+
+
+const ballSizes = {
+    ball1: {
+        width: 20,
+        height: 20,
+        bounceHeight: 115,
+        num: 1,
+    },
+    ball2: {
+        width: 32,
+        height: 32,
+        bounceHeight: 175,
+        num: 2,
+    },
+    ball3: {
+        width: 60,
+        height: 60,
+        bounceHeight: 250,
+        num: 3,
+    },
+    ball4: {
+        width: 90,
+        height: 90,
+        bounceHeight: 300,
+        num: 4,
+    },
+    ball5: {
+        width: 115,
+        height: 115,
+        bounceHeight: 350,
+        num: 5,
     }
 }
 /* ********************************************
@@ -187,15 +240,24 @@ class GameController {
 
         this.currentLevel = 0;
         this.levels = [
-            {
+            {   
                 ballSrc: this.ballImages[0],
-                ballWidth: 75,
-                ballHeight: 75,
-                xPosition: 500,
-                yPosition: 100,
-                xVelocity: 1,
-                yVelocity: 0,
-                bounceHeight: 350,
+                balls: [
+                    {
+                        ballSize: ballSizes.ball3,
+                        xPosition: 500,
+                        yPosition: 200,
+                        xVelocity: 1,
+                        yVelocity: 0,
+                    },
+                    {
+                        ballSize: ballSizes.ball3,
+                        xPosition: 100,
+                        yPosition: 100,
+                        xVelocity: -1,
+                        yVelocity: 0,
+                    },
+                ],
             },
             {
                 ballSrc: this.ballImages[1],
@@ -205,12 +267,12 @@ class GameController {
                 yPosition: 150,
                 xVelocity: -1,
                 yVelocity: 0,
-                bounceHeight: 450,
+                bounceHeight: 350,
             }
         ];
 
-        this._initLevel(this.currentLevel);
-        // this._initLevel(1);
+        this._playLevel(this.currentLevel);
+        // this._playLevel(1);
     }
 
     _getElements() {
@@ -281,33 +343,44 @@ class GameController {
     }
 
     _placeCharacter(boardWidth, boardHeight, characterWidth, characterHeight) {
-        const xPosition = (boardWidth / 2) - (characterWidth / 2);
-        const yPosition = boardHeight - characterHeight;
+        const xInitPosition = (boardWidth / 2) - (characterWidth / 2);
+        const yInitPosition = boardHeight - characterHeight;
 
-        this.elements.character.style.left = `${xPosition}px`;
-        this.elements.character.style.top = `${yPosition}px`;
+        this.elements.character.style.left = `${xInitPosition}px`;
+        this.elements.character.style.top = `${yInitPosition}px`;
     }
 
-    _initLevel(level) {
+    _playLevel(level) {
         const { 
             ballSrc, 
-            ballWidth, 
-            ballHeight, 
-            xPosition, 
-            yPosition, 
-            xVelocity, 
-            yVelocity, 
-            bounceHeight 
+            balls,
         } = this.levels[level];
 
-        this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
-
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.characterWidth, this.characterHeight, this.boardWidth, this.boardHeight);
+        this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
         this._setUpEventListeners();
 
-        this.ballElem = this._createBallElement(ballSrc, ballWidth, ballHeight, xPosition, yPosition);
-        this.ballObject = new Ball(this.ballElem, ballWidth, ballHeight, xPosition, yPosition, xVelocity, yVelocity, bounceHeight, this.boardWidth, this.boardHeight);
-        this.ballObject.bounce();
+        for (let ball of balls) {
+            const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
+            let ballObject = new Ball(ballElem, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.boardWidth, this.boardHeight);
+            ballObject.bounce();
+
+            let currentXPosition, currentYPosition;
+            // Ball position tracking code from chatGPT. 
+            // set up a callback function to track the x/y position of the ball in the GameController class
+            ballObject.onPositionChangeCallback = (position) => {
+                currentXPosition = position.xPosition;
+                currentYPosition = position.yPosition;
+
+                if (currentXPosition === this.boardWidth / 2) {
+                    
+                    ballObject = null;  // delete ball object
+                    ballElem.remove();
+                }
+            }
+        }
+
+        
     }
 
 
