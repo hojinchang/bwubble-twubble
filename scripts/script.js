@@ -7,17 +7,15 @@ class Robot {
     constructor(
         characterElement, 
         characterIcon, 
-        characterWidth, 
-        characterHeight, 
-        boardWidth, 
-        boardHeight,
+        gameBoardElement,
     ) {
         this.characterElement = characterElement;
         this.characterIcon = characterIcon;
-        this.width = characterWidth;
-        this.height = characterHeight;
-        this.boardWidth = boardWidth;
-        this.boardHeight = boardHeight;
+        this.gameBoardElement = gameBoardElement;
+        this.width = this.characterElement.clientWidth;
+        this.height = this.characterElement.clientHeight;
+        this.boardWidth = this.gameBoardElement.clientWidth;
+        this.boardHeight = this.gameBoardElement.clientHeight;
 
         this.idleState = "../assets/character/Idle-1.png";
         this.isRunning = false;
@@ -145,8 +143,14 @@ class Robot {
         this.characterIcon.src = this.idleState;
     }
 }
+/* ********************************************
+                     Robot
+*********************************************** */
 
 
+/* ********************************************
+                     Laser
+*********************************************** */
 class Laser {
     constructor(
         laserElement
@@ -160,9 +164,8 @@ class Laser {
         this.laserElement.remove();
     }
 }
-
 /* ********************************************
-                     Robot
+                     Laser
 *********************************************** */
 
 
@@ -180,10 +183,10 @@ class Ball {
         xVelocity, 
         yVelocity, 
         bounceHeight,
-        boardWidth,
-        boardHeight,
+        gameBoardElement,
     ) {
         this.ballElement = ballElement;  // ball DOM element
+        this.gameBoardElement = gameBoardElement;   // gameboard DOM element
         this.width = width;   // ball width
         this.height = height;  // ball height
         this.xPosition = xPosition;  // Horizontal position
@@ -191,13 +194,13 @@ class Ball {
         this.xVelocity = xVelocity;  // Horizontal velocity
         this.yVelocity = yVelocity;  // Vertical velocity
         this.bounceHeight = bounceHeight;  // Bounce height of balls in pixels
-        this.boardWidth = boardWidth;
-        this.boardHeight = boardHeight;
+        this.boardWidth = this.gameBoardElement.clientWidth;
+        this.boardHeight = this.gameBoardElement.clientHeight;
+
         this.bounceAnimationFrame;
         this.isDeleted = false;
 
         this._onPositionChange;
-
         this.bounce = this.bounce.bind(this);
         this.delete = this.delete.bind(this);
     }
@@ -305,10 +308,11 @@ class GameController {
 
         this.robotObject;
         this.laserObject;
-        this.characterWidth = this.elements.character.clientWidth;
-        this.characterHeight = this.elements.character.clientHeight;
-        this.boardWidth = this.elements.gameBoard.clientWidth;
-        this.boardHeight = this.elements.gameBoard.clientHeight;
+        this.gameBoard = this.elements.gameBoard;
+        // this.characterWidth = this.elements.character.clientWidth;
+        // this.characterHeight = this.elements.character.clientHeight;
+        // this.boardWidth = this.elements.gameBoard.clientWidth;
+        // this.boardHeight = this.elements.gameBoard.clientHeight;
 
         if (this.devmode) this._devmode();
 
@@ -462,9 +466,9 @@ class GameController {
     }
 
     // Place robot character on the bottom and center of the screen
-    _placeCharacter(boardWidth, boardHeight, characterWidth, characterHeight) {
-        const xInitPosition = (boardWidth / 2) - (characterWidth / 2);
-        const yInitPosition = boardHeight - characterHeight;
+    _placeCharacter(gameBoardElement, characterElement) {
+        const xInitPosition = (gameBoardElement.clientWidth / 2) - (characterElement.clientWidth / 2);
+        const yInitPosition = gameBoardElement.clientHeight - characterElement.clientHeight;
 
         this.elements.character.style.left = `${xInitPosition}px`;
         this.elements.character.style.top = `${yInitPosition}px`;
@@ -480,8 +484,8 @@ class GameController {
         } = this.levels[level];
 
         // Create new robot instance
-        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.characterWidth, this.characterHeight, this.boardWidth, this.boardHeight);
-        this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
+        this._placeCharacter(this.elements.gameBoard, this.elements.character);
         this._setUpEventListeners();
 
         let ballID = 0;
@@ -489,7 +493,7 @@ class GameController {
             // Create ball DOM element
             const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
             // Create new ball object and make it bounce >:^)
-            let ballObject = new Ball(ballElem, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.boardWidth, this.boardHeight);
+            let ballObject = new Ball(ballElem, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
             ballObject.bounce();
 
 
