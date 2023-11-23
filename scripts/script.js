@@ -21,14 +21,19 @@ class Robot {
 
         this.idleState = "../assets/character/Idle-1.png";
         this.isRunning = false;
-        this.animationFrame;
+        this.runAnimationFrame;
         this.runIdx = 0;
         this.direction;
         this.xPosition;
+
+        this.laserObject;
+        this.isLaserActive;
+        this.laserHeight;
         this.laserTiles = [];
 
         this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);
+        this._laserAnimation = this._laserAnimation.bind(this);
     }
 
     _getRunImages() {
@@ -70,7 +75,7 @@ class Robot {
         this.runIdx = (this.runIdx + 1) % this.runImages.length;
 
         // Rerun the animation frame because it only runs once
-        this.animationFrame = requestAnimationFrame(() => this._runAnimation());
+        this.runAnimationFrame = requestAnimationFrame(() => this._runAnimation());
     }
 
     // Run method
@@ -83,15 +88,51 @@ class Robot {
                 ? this.characterElement.classList.add("flip-character") 
                 : this.characterElement.classList.remove("flip-character");
 
-            this.animationFrame = requestAnimationFrame(() => this._runAnimation());
+            this.runAnimationFrame = requestAnimationFrame(() => this._runAnimation());
         }
     }
 
+    _laserAnimation() {
+        // let laserHeight = this.laserElement.height;
+        const step = 2;
+        this.laserObject.height += step;
+        this.laserObject.laserElement.style.height = `${this.laserObject.height}px`;
+
+        const laserOffset = this.boardHeight - this.laserObject.height;
+        this.laserObject.laserElement.style.top = `${laserOffset}px`
+        
+        if (this.laserObject.height === this.boardHeight) {
+            cancelAnimationFrame(this.laserAnimationFrame);
+            this.isLaserActive = false;
+        } else {
+            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation());
+        }
+    }
+
+    shoot(laser) {
+        if (!this.isLaserActive) {
+            this.isLaserActive = true;
+            this.laserObject = laser;
+            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation());
+        }
+    }
+    
+
     // Stop running method
     stopRunning() {
-        cancelAnimationFrame(this.animationFrame);
+        cancelAnimationFrame(this.runAnimationFrame);
         this.isRunning = false;
         this.characterIcon.src = this.idleState;
+    }
+}
+
+
+class Laser {
+    constructor(
+        laserElement
+    ) {
+        this.laserElement = laserElement;
+        this.height = 0;
     }
 }
 
@@ -107,7 +148,7 @@ class Robot {
 const gravity = 0.05;  // Gravity constant
 class Ball {
     constructor(
-        ball, 
+        ballElement, 
         width, 
         height, 
         xPosition, 
@@ -118,7 +159,7 @@ class Ball {
         boardWidth,
         boardHeight,
     ) {
-        this.ball = ball;  // ball DOM element
+        this.ballElement = ballElement;  // ball DOM element
         this.width = width;   // ball width
         this.height = height;  // ball height
         this.xPosition = xPosition;  // Horizontal position
@@ -165,8 +206,8 @@ class Ball {
             this.xVelocity *= -1;
         }
     
-        this.ball.style.top = `${this.yPosition}px`;
-        this.ball.style.left = `${this.xPosition}px`;
+        this.ballElement.style.top = `${this.yPosition}px`;
+        this.ballElement.style.left = `${this.xPosition}px`;
 
         if (this._onPositionChange) {
             this._onPositionChange({ xPosition: this.xPosition, yPosition: 600 - this.yPosition });
@@ -176,7 +217,7 @@ class Ball {
     }
 
     delete() {
-        this.ball.remove();
+        this.ballElement.remove();
         delete this;
 
     }
@@ -231,6 +272,7 @@ class GameController {
 
         this.robotObject;
         this.xRobotPosition;
+        this.laserObject;
         this.characterWidth = this.elements.character.clientWidth;
         this.characterHeight = this.elements.character.clientHeight;
         this.boardWidth = this.elements.gameBoard.clientWidth;
@@ -292,8 +334,10 @@ class GameController {
                 this.robotObject.run("right");
             } else if (e.key === "ArrowLeft") {
                 this.robotObject.run("left");
-            } else if (e.key === " ") {
-                this._createLaserElement();
+            } else if (e.key === " " && !this.robotObject.isLaserActive) {
+                const laserElement = this._createLaserElement();
+                const laserObject = new Laser(laserElement);
+                this.robotObject.shoot(laserObject);
             }
         })
 
@@ -347,14 +391,15 @@ class GameController {
         laser.classList.add("laser");
 
         const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2;
-        const yLaserPosition = this.elements.gameBoard.clientHeight - 100;
+        const yLaserPosition = this.boardHeight - 100;
 
         laser.style.left = `${xLaserPosition}px`;
         laser.style.top = `${yLaserPosition}px`;
+        laser.style.height = "0px";
 
         this.elements.gameBoard.appendChild(laser);
 
-        // return laser;
+        return laser;
     }
 
     // Game start transition
