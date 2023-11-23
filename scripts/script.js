@@ -309,10 +309,6 @@ class GameController {
         this.robotObject;
         this.laserObject;
         this.gameBoard = this.elements.gameBoard;
-        // this.characterWidth = this.elements.character.clientWidth;
-        // this.characterHeight = this.elements.character.clientHeight;
-        // this.boardWidth = this.elements.gameBoard.clientWidth;
-        // this.boardHeight = this.elements.gameBoard.clientHeight;
 
         if (this.devmode) this._devmode();
 
@@ -439,15 +435,36 @@ class GameController {
         return laser;
     }
 
-    _checkLaserBallCollision(ball) {
+    // _checkLaserBallCollision(ball) {
+    //     const ballRect = ball.ballElement.getBoundingClientRect();
+    //     const laserRect = this.laserObject.laserElement.getBoundingClientRect();
+
+    //     if (
+    //         ballRect.right >= laserRect.left &&
+    //         ballRect.left <= laserRect.right &&
+    //         ballRect.top <= laserRect.bottom &&
+    //         ballRect.bottom >= laserRect.top
+    //     ) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    _checkCollision(ball, objectType) {
         const ballRect = ball.ballElement.getBoundingClientRect();
-        const laserRect = this.laserObject.laserElement.getBoundingClientRect();
+        let collisionElementRect;
+        if (objectType === "laser") {
+            collisionElementRect = this.laserObject.laserElement.getBoundingClientRect();
+        } else if (objectType === "character") {
+            collisionElementRect = this.robotObject.characterElement.getBoundingClientRect();
+        }
 
         if (
-            ballRect.right >= laserRect.left &&
-            ballRect.left <= laserRect.right &&
-            ballRect.top <= laserRect.bottom &&
-            ballRect.bottom >= laserRect.top
+            ballRect.right >= collisionElementRect.left &&
+            ballRect.left <= collisionElementRect.right &&
+            ballRect.top <= collisionElementRect.bottom &&
+            ballRect.bottom >= collisionElementRect.top
         ) {
             return true;
         } else {
@@ -477,6 +494,27 @@ class GameController {
 
     // Level method
     playLevel(level) {
+        // Ball to character collision logic helper function
+        const _ballCharacterCollision = (ballObject) => {
+            const collision = this._checkCollision(ballObject, "character");
+            if (collision) {
+                ballObject.delete();
+            }
+        }
+
+        // Ball to laser collision logic helper function
+        const _ballLaserCollision = (ballObject, robotObject, laserObject) => {
+            if (robotObject.isLaserActive) {
+                const ballLaserCollision = this._checkCollision(ballObject, "laser")
+                if (ballLaserCollision) {
+                    ballObject.delete();
+                    robotObject.isLaserActive = false;
+                    laserObject.delete();
+                }
+            }
+        }
+
+
         // Collect balls src and array from levels array
         const { 
             ballSrc, 
@@ -502,15 +540,8 @@ class GameController {
             // Ball position tracking code from chatGPT. 
             // set up a callback function to track the x/y position of the ball in the GameController class
             ballObject.onPositionChangeCallback = () => {
-
-                if (this.robotObject.isLaserActive) {
-                    const collision = this._checkLaserBallCollision(ballObject);
-                    if (collision) {
-                        ballObject.delete();
-                        this.robotObject.isLaserActive = false;
-                        this.laserObject.delete();
-                    }
-                }
+                _ballCharacterCollision(ballObject);
+                _ballLaserCollision(ballObject, this.robotObject, this.laserObject);
             }
         }
     }
