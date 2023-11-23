@@ -43,7 +43,7 @@ main {
 .intro-screen,
 .game-board {
     height: 600px;
-    width: 1000px;
+    width: 900px;
 }
 
 .intro-screen {
@@ -138,6 +138,4 @@ main {
     background-color: yellow;
     border: 2px solid red;
     border-radius: 10px;
-    width: 8px;
-    height: 0;
 }

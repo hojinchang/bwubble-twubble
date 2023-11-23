@@ -88,7 +88,7 @@ class Robot {
                 ? this.characterElement.classList.add("flip-character") 
                 : this.characterElement.classList.remove("flip-character");
 
-            this.runAnimationFrame = requestAnimationFrame(() => this._runAnimation());
+            this._runAnimation();
         }
     }
 
@@ -106,15 +106,17 @@ class Robot {
         const laserOffset = this.boardHeight - this.laserObject.height;
         this.laserObject.laserElement.style.top = `${laserOffset}px`
         
+        /*
+            If the laser's height reaches the top of the screen, stop the laser animation and delete the laser
+            from the DOM and its instance.
+            Else, continue the laser animation.
+        */
         if (this.laserObject.height === this.boardHeight) {
             this.laserAnimationFrame = cancelAnimationFrame(this.laserAnimationFrame);
             this.isLaserActive = false;
 
-            // Remove laser element from DOM
-            this.laserObject.laserElement.remove();
-            // Delete laserObject property
-            delete this.laserObject;
-            this.laserObject = null;
+            this.laserObject.delete();   // Delete the laser object and DOM element
+            this.laserObject = null;   // Remove laserObject from robot class
         } else {
             this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation());
         }
@@ -126,7 +128,7 @@ class Robot {
         if (!this.isLaserActive) {
             this.isLaserActive = true;
             this.laserObject = laser;
-            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation());
+            this._laserAnimation();
         }
     }
     
@@ -145,6 +147,11 @@ class Laser {
     ) {
         this.laserElement = laserElement;
         this.height = 0;
+        this.width = parseInt(this.laserElement.style.width);
+    }
+
+    delete() {
+        this.laserElement.remove();
     }
 }
 
@@ -180,10 +187,13 @@ class Ball {
         this.bounceHeight = bounceHeight;  // Bounce height of balls in pixels
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
+        this.bounceAnimationFrame;
+        this.isDeleted = false;
 
         this._onPositionChange;
 
         this.bounce = this.bounce.bind(this);
+        this.delete = this.delete.bind(this);
     }
 
     // Ball position tracking code from chatGPT. 
@@ -193,6 +203,10 @@ class Ball {
     }
 
     bounce() {
+        if (this.isDeleted) {
+            return;
+        }
+
         // Ball Drop
         this.yVelocity += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
         this.yPosition += this.yVelocity;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i  =>  where dt = each animation frame
@@ -223,14 +237,16 @@ class Ball {
         if (this._onPositionChange) {
             this._onPositionChange({ xPosition: this.xPosition, yPosition: 600 - this.yPosition });
         }
-    
-        requestAnimationFrame(this.bounce);
+        
+        this.bounceAnimationFrame = requestAnimationFrame(() => this.bounce());
     }
 
     delete() {
+        this.isDeleted = true;
+        cancelAnimationFrame(this.bounceAnimationFrame);
+        this.bounceAnimationFrame = null;
+        this._onPositionChange = null;  // Stop callback function
         this.ballElement.remove();  // Remove ball element from DOM
-        delete this;  // Delete instance of ball class
-
     }
 }
 
@@ -282,7 +298,6 @@ class GameController {
         this.ballImages = this._getBallImages();
 
         this.robotObject;
-        this.xRobotPosition;
         this.laserObject;
         this.characterWidth = this.elements.character.clientWidth;
         this.characterHeight = this.elements.character.clientHeight;
@@ -347,9 +362,8 @@ class GameController {
                 this.robotObject.run("left");
             } else if (e.key === " " && !this.robotObject.isLaserActive) {
                 const laserElement = this._createLaserElement();
-                const laserObject = new Laser(laserElement);
-                this.robotObject.shoot(laserObject);
-                // laserObject = null;
+                this.laserObject = new Laser(laserElement);
+                this.robotObject.shoot(this.laserObject);
             }
         })
 
@@ -401,17 +415,33 @@ class GameController {
     _createLaserElement() {
         const laser = document.createElement("div");
         laser.classList.add("laser");
-
-        const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2;
-        const yLaserPosition = this.boardHeight - 100;
-
+        laser.style.height = "0px";  // Laser's initial height
+        laser.style.width = "8px"  // Laser's width
+        
+        const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2 - parseInt(laser.style.width)/2;  // Center laser on robot
+        const yLaserPosition = this.boardHeight; // Place laser starting at bottom of gameboard
         laser.style.left = `${xLaserPosition}px`;
         laser.style.top = `${yLaserPosition}px`;
-        laser.style.height = "0px";
 
         this.elements.gameBoard.appendChild(laser);
 
         return laser;
+    }
+
+    _checkLaserBallCollision(ball) {
+        const ballRect = ball.ballElement.getBoundingClientRect();
+        const laserRect = this.laserObject.laserElement.getBoundingClientRect();
+
+        if (
+            ballRect.right >= laserRect.left &&
+            ballRect.left <= laserRect.right &&
+            ballRect.top <= laserRect.bottom &&
+            ballRect.bottom >= laserRect.top
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Game start transition
@@ -447,6 +477,7 @@ class GameController {
         this._placeCharacter(this.boardWidth, this.boardHeight, this.characterWidth, this.characterHeight);
         this._setUpEventListeners();
 
+        let ballID = 0;
         for (let ball of balls) {
             // Create ball DOM element
             const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
@@ -454,6 +485,9 @@ class GameController {
             let ballObject = new Ball(ballElem, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.boardWidth, this.boardHeight);
             ballObject.bounce();
 
+
+            ballID++;
+            
             let currentXPosition, currentYPosition;
             // Ball position tracking code from chatGPT. 
             // set up a callback function to track the x/y position of the ball in the GameController class
@@ -461,15 +495,21 @@ class GameController {
                 currentXPosition = position.xPosition;
                 currentYPosition = position.yPosition;
 
-                if (currentXPosition === this.boardWidth / 2) {
-                    
-                    ballObject.delete();
-
+                if (this.robotObject.isLaserActive) {
+                    const collision = this._checkLaserBallCollision(ballObject);
+                    if (collision) {
+                        ballObject.delete();
+                        this.robotObject.isLaserActive = false;
+                        this.laserObject.delete();
+                    }
                 }
+
+
+                // if (currentXPosition === this.boardWidth / 2) {
+                //     ballObject.delete();
+                // }
             }
         }
-
-        
     }
 
 
