@@ -93,6 +93,12 @@ class Robot {
     }
 
     _laserAnimation() {
+        // this.isLaserActive is set false in the GameController when a collision between the laser and ball is detected
+        // Break out of the laser animation when collision occurs
+        if (!this.isLaserActive) {
+            return;
+        }
+
         // Increase the height of the laser object's property and laser DOM element
         const step = 4;
         this.laserObject.height += step;
