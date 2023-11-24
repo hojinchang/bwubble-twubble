@@ -175,7 +175,8 @@ class Laser {
 const gravity = 0.05;  // Gravity constant
 class Ball {
     constructor(
-        ballElement, 
+        ballElement,
+        id,
         width, 
         height, 
         xPosition, 
@@ -185,6 +186,7 @@ class Ball {
         bounceHeight,
         gameBoardElement,
     ) {
+        this.id = id;
         this.ballElement = ballElement;  // ball DOM element
         this.gameBoardElement = gameBoardElement;   // gameboard DOM element
         this.width = width;   // ball width
@@ -243,7 +245,7 @@ class Ball {
         this.ballElement.style.top = `${this.yPosition}px`;
         this.ballElement.style.left = `${this.xPosition}px`;
 
-        if (this._onPositionChange) {
+        if (this._onPositionChange) {   //  if callback function is set, execute it
             this._onPositionChange();
         }
         
@@ -264,31 +266,31 @@ const ballSizes = {
         width: 20,
         height: 20,
         bounceHeight: 115,
-        num: 1,
+        id: 1,
     },
     ball2: {
         width: 32,
         height: 32,
         bounceHeight: 175,
-        num: 2,
+        id: 2,
     },
     ball3: {
         width: 60,
         height: 60,
         bounceHeight: 250,
-        num: 3,
+        id: 3,
     },
     ball4: {
         width: 90,
         height: 90,
         bounceHeight: 300,
-        num: 4,
+        id: 4,
     },
     ball5: {
         width: 115,
         height: 115,
         bounceHeight: 350,
-        num: 5,
+        id: 5,
     }
 }
 /* ********************************************
@@ -319,6 +321,7 @@ class GameController {
                 balls: [
                     {
                         ballSize: ballSizes.ball3,
+                        id: 3,
                         xPosition: 500,
                         yPosition: 200,
                         xVelocity: 1,
@@ -326,8 +329,17 @@ class GameController {
                     },
                     {
                         ballSize: ballSizes.ball3,
-                        xPosition: 100,
-                        yPosition: 100,
+                        id: 3,
+                        xPosition: 300,
+                        yPosition: 260,
+                        xVelocity: -1,
+                        yVelocity: 0,
+                    },
+                    {
+                        ballSize: ballSizes.ball4,
+                        id: 4,
+                        xPosition: 200,
+                        yPosition: 150,
                         xVelocity: -1,
                         yVelocity: 0,
                     },
@@ -335,13 +347,16 @@ class GameController {
             },
             {
                 ballSrc: this.ballImages[1],
-                ballWidth: 100,
-                ballHeight: 100,
-                xPosition: 650,
-                yPosition: 150,
-                xVelocity: -1,
-                yVelocity: 0,
-                bounceHeight: 350,
+                balls: [
+                    {
+                        ballSize: ballSizes.ball4,
+                        id: 4,
+                        xPosition: 500,
+                        yPosition: 200,
+                        xVelocity: 1,
+                        yVelocity: 0,
+                    },
+                ],
             }
         ];
 
@@ -399,79 +414,6 @@ class GameController {
         return ballImages;
     }
 
-    // Dynamically create ball elements
-    _createBallElement(planet, ballWidth, ballHeight, xPosition, yPosition) {
-        const ball = document.createElement("div");
-        ball.classList.add("planet-container");
-        const ballIcon = document.createElement("img");
-
-        ballIcon.src = planet.src;
-        ballIcon.style.width = `${ballWidth}px`;
-        ballIcon.style.height = `${ballHeight}px`;
-        ball.appendChild(ballIcon);
-
-        ball.style.left = `${xPosition}px`;
-        ball.style.top = `${yPosition}px`;
-
-        this.elements.gameBoard.appendChild(ball);
-
-        return ball;
-    }
-
-    _createLaserElement() {
-        const laser = document.createElement("div");
-        laser.classList.add("laser");
-        laser.style.height = "0px";  // Laser's initial height
-        laser.style.width = "8px"  // Laser's width
-        
-        const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2 - parseInt(laser.style.width)/2;  // Center laser on robot
-        const yLaserPosition = this.boardHeight - this.robotObject.height/2; // Place laser starting from the middle of character
-        
-        laser.style.left = `${xLaserPosition}px`;
-        laser.style.top = `${yLaserPosition}px`;
-
-        this.elements.gameBoard.appendChild(laser);
-
-        return laser;
-    }
-
-    // _checkLaserBallCollision(ball) {
-    //     const ballRect = ball.ballElement.getBoundingClientRect();
-    //     const laserRect = this.laserObject.laserElement.getBoundingClientRect();
-
-    //     if (
-    //         ballRect.right >= laserRect.left &&
-    //         ballRect.left <= laserRect.right &&
-    //         ballRect.top <= laserRect.bottom &&
-    //         ballRect.bottom >= laserRect.top
-    //     ) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
-    _checkCollision(ball, objectType) {
-        const ballRect = ball.ballElement.getBoundingClientRect();
-        let collisionElementRect;
-        if (objectType === "laser") {
-            collisionElementRect = this.laserObject.laserElement.getBoundingClientRect();
-        } else if (objectType === "character") {
-            collisionElementRect = this.robotObject.characterElement.getBoundingClientRect();
-        }
-
-        if (
-            ballRect.right >= collisionElementRect.left &&
-            ballRect.left <= collisionElementRect.right &&
-            ballRect.top <= collisionElementRect.bottom &&
-            ballRect.bottom >= collisionElementRect.top
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // Game start transition
     _startGame(displayGameBoard = false) {
         if (!displayGameBoard) {
@@ -491,6 +433,68 @@ class GameController {
         this.elements.character.style.top = `${yInitPosition}px`;
         this.robotObject.xPosition = xInitPosition;
     }
+
+    // Dynamically create ball elements
+    _createBallElement(planet, ballWidth, ballHeight, xPosition, yPosition) {
+        const ball = document.createElement("div");
+        ball.classList.add("planet-container");
+        const ballIcon = document.createElement("img");
+
+        ballIcon.src = planet.src;
+        ballIcon.style.width = `${ballWidth}px`;
+        ballIcon.style.height = `${ballHeight}px`;
+        ball.appendChild(ballIcon);
+
+        ball.style.left = `${xPosition}px`;
+        ball.style.top = `${yPosition}px`;
+
+        this.elements.gameBoard.appendChild(ball);
+
+        return ball;
+    }
+
+    // Dynamically create laser element
+    _createLaserElement() {
+        const laser = document.createElement("div");
+        laser.classList.add("laser");
+        laser.style.height = "0px";  // Laser's initial height
+        laser.style.width = "8px"  // Laser's width
+        
+        const xLaserPosition = this.robotObject.xPosition + this.robotObject.width/2 - parseInt(laser.style.width)/2;  // Center laser on robot
+        const yLaserPosition = this.boardHeight - this.robotObject.height/2; // Place laser starting from the middle of character
+        
+        laser.style.left = `${xLaserPosition}px`;
+        laser.style.top = `${yLaserPosition}px`;
+
+        this.elements.gameBoard.appendChild(laser);
+
+        return laser;
+    }
+
+    // Check ball collision
+    _checkCollision(ball, objectType) {
+        const ballRect = ball.ballElement.getBoundingClientRect();
+
+        let collisionElementRect;
+        if (objectType === "laser") {
+            collisionElementRect = this.laserObject.laserElement.getBoundingClientRect();
+        } else if (objectType === "character") {
+            collisionElementRect = this.robotObject.characterElement.getBoundingClientRect();
+        }
+
+        // Collision conditions
+        if (
+            ballRect.right >= collisionElementRect.left &&
+            ballRect.left <= collisionElementRect.right &&
+            ballRect.top <= collisionElementRect.bottom &&
+            ballRect.bottom >= collisionElementRect.top
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     // Level method
     playLevel(level) {
@@ -514,7 +518,6 @@ class GameController {
             }
         }
 
-
         // Collect balls src and array from levels array
         const { 
             ballSrc, 
@@ -526,19 +529,16 @@ class GameController {
         this._placeCharacter(this.elements.gameBoard, this.elements.character);
         this._setUpEventListeners();
 
-        let ballID = 0;
         for (let ball of balls) {
             // Create ball DOM element
             const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
             // Create new ball object and make it bounce >:^)
-            let ballObject = new Ball(ballElem, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
+            let ballObject = new Ball(ballElem, ball.id, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
             ballObject.bounce();
 
-
-            ballID++;
             
             // Ball position tracking code from chatGPT. 
-            // set up a callback function to track the x/y position of the ball in the GameController class
+            // set collision callback functions
             ballObject.onPositionChangeCallback = () => {
                 _ballCharacterCollision(ballObject);
                 _ballLaserCollision(ballObject, this.robotObject, this.laserObject);
