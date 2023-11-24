@@ -307,7 +307,10 @@ class GameController {
         this.robotObject;
         this.laserObject;
         this.gameBoard = this.elements.gameBoard;
+
+        this.levelWin = false;
         this.ballsKilled = 0;
+        this.ballsRequired;
 
         if (this.devmode) this._devmode();
 
@@ -490,7 +493,6 @@ class GameController {
         if (robotObject.isLaserActive) {
             const ballLaserCollision = this._checkCollision(ballObject, "laser")
             if (ballLaserCollision) {
-                // ballObject.delete();
                 this._splitBalls(ballObject, ballSrc);
                 robotObject.isLaserActive = false;
                 laserObject.delete();
@@ -507,8 +509,11 @@ class GameController {
         return ballsRequired;
     }
 
-    _checkLevelWin(ballsRequired) {
-
+    _checkLevelWin(ballsKilled, ballsRequired) {
+        if (ballsKilled === ballsRequired) {
+            this.levelWin = true;
+            console.log("WINNER WINNER CHICKEN DINNER")
+        }
     }
     
     /*
@@ -517,12 +522,12 @@ class GameController {
         The decrease in ball size is determined by the ball sizes in the ballSizes array.
      */
     _splitBalls(ball, ballSrc) {
+        this.ballsKilled++;  // Update number of balls killed
+
         const currentBallID = ball.id;
         // If smallest ball, delete it
         if (currentBallID === 1) {
             ball.delete();
-            this.ballsKilled++;
-
             return;
         }
 
@@ -569,6 +574,7 @@ class GameController {
             ballObject.onPositionChangeCallback = () => {
                 this._ballCharacterCollision(ballObject, ballSrc);
                 this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
+                this._checkLevelWin(this.ballsKilled, this.ballsRequired);
             }
         }
     }
@@ -583,7 +589,7 @@ class GameController {
             balls,
         } = this.levels[level];
 
-        console.log(ballsRequired)
+        this.ballsRequired = ballsRequired;
 
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
@@ -602,6 +608,7 @@ class GameController {
             ballObject.onPositionChangeCallback = () => {
                 this._ballCharacterCollision(ballObject, ballSrc);
                 this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
+                this._checkLevelWin(this.ballsKilled, this.ballsRequired);
             }
         }
     }
