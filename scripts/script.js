@@ -284,8 +284,8 @@ const ballSizes = {
         id: 4,
     },
     ball5: {
-        width: 115,
-        height: 115,
+        width: 130,
+        height: 130,
         bounceHeight: 350,
         id: 5,
     }
@@ -316,6 +316,7 @@ class GameController {
         this.levels = [
             {   
                 ballSrc: this.ballImages[0],
+                ballsRequired: this._determineBallsRequired(3),
                 balls: [
                     {
                         ballSize: ballSizes.ball3,
@@ -497,6 +498,19 @@ class GameController {
             }
         }
     }
+
+    _determineBallsRequired(ballID) {
+        let ballsRequired = 0;
+        for (let i = ballID; i > 0; i--) {
+            ballsRequired += Math.pow(2, i-1);
+        }
+
+        return ballsRequired;
+    }
+
+    _checkLevelWin(ballsRequired) {
+
+    }
     
     /*
         This method controls the splitting behaviour of the balls once collision with laser is detected.
@@ -509,6 +523,7 @@ class GameController {
         if (currentBallID === 1) {
             ball.delete();
             this.ballsKilled++;
+
             return;
         }
 
@@ -556,19 +571,20 @@ class GameController {
                 this._ballCharacterCollision(ballObject, ballSrc);
                 this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
             }
-
         }
     }
-
 
     // Level method
     playLevel(level) {
 
         // Collect balls src and array from levels array
         const { 
-            ballSrc, 
+            ballSrc,
+            ballsRequired,
             balls,
         } = this.levels[level];
+
+        console.log(ballsRequired)
 
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
