@@ -177,10 +177,6 @@ class Ball {
     constructor(
         ballElement,
         id,
-        width, 
-        height, 
-        xPosition, 
-        yPosition, 
         xVelocity, 
         yVelocity, 
         bounceHeight,
@@ -189,10 +185,11 @@ class Ball {
         this.id = id;
         this.ballElement = ballElement;  // ball DOM element
         this.gameBoardElement = gameBoardElement;   // gameboard DOM element
-        this.width = width;   // ball width
-        this.height = height;  // ball height
-        this.xPosition = xPosition;  // Horizontal position
-        this.yPosition = yPosition;   // Vertical position
+        this.width = this.ballElement.clientWidth;   // ball width
+        this.height = this.ballElement.clientHeight;  // ball height
+        this.xPosition = parseInt(this.ballElement.style.left);  // Horizontal position
+        this.yPosition = parseInt(this.ballElement.style.top);   // Vertical position
+
         this.xVelocity = xVelocity;  // Horizontal velocity
         this.yVelocity = yVelocity;  // Vertical velocity
         this.bounceHeight = bounceHeight;  // Bounce height of balls in pixels
@@ -327,22 +324,22 @@ class GameController {
                         xVelocity: 1,
                         yVelocity: 0,
                     },
-                    {
-                        ballSize: ballSizes.ball3,
-                        id: 3,
-                        xPosition: 300,
-                        yPosition: 260,
-                        xVelocity: -1,
-                        yVelocity: 0,
-                    },
-                    {
-                        ballSize: ballSizes.ball4,
-                        id: 4,
-                        xPosition: 200,
-                        yPosition: 150,
-                        xVelocity: -1,
-                        yVelocity: 0,
-                    },
+                    // {
+                    //     ballSize: ballSizes.ball3,
+                    //     id: 3,
+                    //     xPosition: 300,
+                    //     yPosition: 260,
+                    //     xVelocity: -1,
+                    //     yVelocity: 0,
+                    // },
+                    // {
+                    //     ballSize: ballSizes.ball4,
+                    //     id: 4,
+                    //     xPosition: 200,
+                    //     yPosition: 150,
+                    //     xVelocity: -1,
+                    //     yVelocity: 0,
+                    // },
                 ],
             },
             {
@@ -494,29 +491,87 @@ class GameController {
             return false;
         }
     }
+    
+    _splitBalls(ball, ballSrc) {
+        const currentBallID = ball.id;
+        // If smallest ball, delete it
+        if (currentBallID === 1) {
+            ball.delete();
+            return;
+        }
+
+        const currentBallWidth = ball.width;
+        const currentBallHeight = ball.height;
+        const currentBallxPosition = ball.xPosition;
+        const currentBallyPosition = ball.yPosition;
+
+        const splitBallID = ball.id - 1;
+        const splitBallxPosition = currentBallxPosition + currentBallWidth/2;
+        const splitBallyPosition = currentBallyPosition + currentBallHeight/2;
+        const splitBallProperties = ballSizes[`ball${splitBallID}`];
+
+        ball.delete();
+
+        // Create 2 balls, 1 which splits left, 1 which splits right
+        for (let i = 0; i < 2; i++) {
+            // Create ball element
+            const ballElement = this._createBallElement(
+                ballSrc, 
+                splitBallProperties.width,
+                splitBallProperties.height,
+                splitBallxPosition,
+                splitBallyPosition
+            );
+            
+            const yVelocity = -4;
+            let xVelocity = -1;
+            if (i === 1) xVelocity = 1;  // The second ball splits in the right direction
+            
+            // Create ball object
+            const ballObject = new Ball(
+                ballElement,
+                splitBallID,
+                xVelocity,
+                yVelocity,
+                splitBallProperties.bounceHeight,
+                this.gameBoard,
+            )
+
+            ballObject.bounce();
+            
+            // Set ball callback functions which detects ball collision
+            ballObject.onPositionChangeCallback = () => {
+                this._ballCharacterCollision(ballObject, ballSrc);
+                this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
+            }
+
+        }
+    }
+
+    // Ball to character collision logic helper function
+    _ballCharacterCollision(ballObject) {
+        const collision = this._checkCollision(ballObject, "character");
+        if (collision) {
+            ballObject.delete();
+        }
+    }
+
+    // Ball to laser collision logic helper function
+    _ballLaserCollision(ballObject, ballSrc, robotObject, laserObject) {
+        if (robotObject.isLaserActive) {
+            const ballLaserCollision = this._checkCollision(ballObject, "laser")
+            if (ballLaserCollision) {
+                // ballObject.delete();
+                this._splitBalls(ballObject, ballSrc);
+                robotObject.isLaserActive = false;
+                laserObject.delete();
+            }
+        }
+    }
 
 
     // Level method
     playLevel(level) {
-        // Ball to character collision logic helper function
-        const _ballCharacterCollision = (ballObject) => {
-            const collision = this._checkCollision(ballObject, "character");
-            if (collision) {
-                ballObject.delete();
-            }
-        }
-
-        // Ball to laser collision logic helper function
-        const _ballLaserCollision = (ballObject, robotObject, laserObject) => {
-            if (robotObject.isLaserActive) {
-                const ballLaserCollision = this._checkCollision(ballObject, "laser")
-                if (ballLaserCollision) {
-                    ballObject.delete();
-                    robotObject.isLaserActive = false;
-                    laserObject.delete();
-                }
-            }
-        }
 
         // Collect balls src and array from levels array
         const { 
@@ -533,15 +588,15 @@ class GameController {
             // Create ball DOM element
             const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
             // Create new ball object and make it bounce >:^)
-            let ballObject = new Ball(ballElem, ball.id, ball.ballSize.width, ball.ballSize.height, ball.xPosition,ball. yPosition, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
+            let ballObject = new Ball(ballElem, ball.id, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
             ballObject.bounce();
 
             
             // Ball position tracking code from chatGPT. 
             // set collision callback functions
             ballObject.onPositionChangeCallback = () => {
-                _ballCharacterCollision(ballObject);
-                _ballLaserCollision(ballObject, this.robotObject, this.laserObject);
+                this._ballCharacterCollision(ballObject, ballSrc);
+                this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
             }
         }
     }
