@@ -32,42 +32,57 @@ header h1 {
 
 
 main {
-    display: flex;
-    justify-content: center;
+    margin-top: 40px;
 }
 
 .game-container {
+    margin: 0 auto;
     position: relative;
-}
-
-.intro-screen,
-.game-board {
     height: 600px;
     width: 1000px;
 }
 
-.intro-screen {
-    background-color: gray;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    transition: opacity 1s ease-in-out;
+.intro-screen,
+.game-board {
+    height: 100%;
+    width: 100%;
 }
 
-.intro-text {
+.intro-screen {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 30px;
+
+    position: absolute;
+    z-index: 2;
+
+    background-image: url(../assets/background/background-resized.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+    transition: opacity 1s ease-in-out;
+}
+
+.intro-text {
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
 }
 
 .intro-screen h2 {
     font-size: 36px;
 }
 
-.intro-screen .start-game-btn {
+.intro-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.intro-screen .intro-btn {
     padding: 12px 24px;
     border-radius: 12px;
     border: none;
@@ -76,11 +91,11 @@ main {
     transition: transform 0.1s ease;
 }
 
-.intro-screen .start-game-btn:active {
+.intro-screen .intro-btn:active {
     transform: translateY(2px);
 }
 
-.intro-screen .start-game-btn span {
+.intro-screen .intro-btn span {
     font-size: 32px;
 }
 

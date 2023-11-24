@@ -9,6 +9,7 @@ class Robot {
         characterIcon, 
         gameBoardElement,
     ) {
+        this.lives = 3;
         this.characterElement = characterElement;
         this.characterIcon = characterIcon;
         this.gameBoardElement = gameBoardElement;
@@ -31,7 +32,6 @@ class Robot {
         this._runAnimation = this._runAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame
         this._laserAnimation = this._laserAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame
     }
-
     _getRunImages() {
         const runImages = [];
         for (let i = 0; i < 8; i++) {
@@ -41,7 +41,6 @@ class Robot {
         }
         return runImages;
     }
-
 
     /* 
         Cycle through runImages array to animate running.
@@ -131,7 +130,7 @@ class Robot {
             this.isLaserActive = true;
             this.laserObject = laser;
  
-            const yLaserStart = this.boardHeight - this.height/2;
+            const yLaserStart = this.boardHeight - this.height/2;   // Make laser start at middle of character height 
             this._laserAnimation(yLaserStart);
         }
     }
@@ -257,6 +256,7 @@ class Ball {
     }
 }
 
+// Object containing the sizes and bounce heights of the different balls
 const ballSizes = {
     ball1: {
         width: 20,
@@ -294,7 +294,9 @@ const ballSizes = {
 *********************************************** */
 
 
-
+/* ********************************************
+                Game Controller
+*********************************************** */
 class GameController {
     constructor(devmode = false) {
         this.devmode = devmode;
@@ -345,8 +347,10 @@ class GameController {
             }
         ];
 
-        this.playLevel(this.currentLevel);
+        // this.playLevel(this.currentLevel);
         // this.playLevel(1);
+
+        this._setUpGameIntro();
     }
 
     // Collect the required DOM elements
@@ -358,33 +362,9 @@ class GameController {
         this.elements.characterIcon = document.querySelector(".character-icon");
     }
 
-    // Set up event listeners
-    _setUpEventListeners() {
-        // Robot arrow key controls pt.1
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowRight") {
-                this.robotObject.run("right");
-            } else if (e.key === "ArrowLeft") {
-                this.robotObject.run("left");
-            } else if (e.key === " " && !this.robotObject.isLaserActive) {
-                const laserElement = this._createLaserElement();
-                this.laserObject = new Laser(laserElement);
-                this.robotObject.shoot(this.laserObject);
-            }
-        })
-
-        // Robot arrow key controls pt.2
-        document.addEventListener("keyup", (e) => {
-            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-                this.robotObject.stopRunning();
-            }
-        })
-
-
-        if (!this.devmode) {
-            this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
-            this.elements.introScreen.addEventListener("transitionend", () => {this._startGame(true)});
-        }
+    _setUpGameIntro() {
+        this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
+        this.elements.introScreen.addEventListener("transitionend", () => {this._startGame(true)});
     }
 
     // Load ball images into image object
@@ -406,6 +386,7 @@ class GameController {
         } else {
             this.elements.introScreen.classList.add("hide");
             this.elements.gameBoard.classList.add("fade-in");
+            this.playLevel(this.currentLevel);
         }
     }
 
@@ -417,6 +398,29 @@ class GameController {
         this.elements.character.style.left = `${xInitPosition}px`;
         this.elements.character.style.top = `${yInitPosition}px`;
         this.robotObject.xPosition = xInitPosition;
+    }
+
+    // Set up event listeners
+    _setUpRobotEventListeners() {
+        // Robot arrow key controls pt.1
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowRight") {
+                this.robotObject.run("right");
+            } else if (e.key === "ArrowLeft") {
+                this.robotObject.run("left");
+            } else if (e.key === " " && !this.robotObject.isLaserActive) {   // shoot
+                const laserElement = this._createLaserElement();
+                this.laserObject = new Laser(laserElement);
+                this.robotObject.shoot(this.laserObject);
+            }
+        })
+
+        // Robot arrow key controls pt.2
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+                this.robotObject.stopRunning();
+            }
+        })
     }
 
     // Dynamically create ball elements
@@ -594,8 +598,9 @@ class GameController {
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this._placeCharacter(this.elements.gameBoard, this.elements.character);
-        this._setUpEventListeners();
+        this._setUpRobotEventListeners();
 
+        // Create initial balls once level starts
         for (let ball of balls) {
             // Create ball DOM element
             const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
@@ -624,5 +629,9 @@ class GameController {
     
 }
 
-const game = new GameController(true);
-// const game = new GameController(false);
+// const game = new GameController(true);
+const game = new GameController();
+
+/* ********************************************
+                Game Controller
+*********************************************** */
