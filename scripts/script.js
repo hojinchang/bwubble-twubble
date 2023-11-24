@@ -308,6 +308,7 @@ class GameController {
         this.robotObject;
         this.laserObject;
         this.gameBoard = this.elements.gameBoard;
+        this.ballsKilled = 0;
 
         if (this.devmode) this._devmode();
 
@@ -324,22 +325,6 @@ class GameController {
                         xVelocity: 1,
                         yVelocity: 0,
                     },
-                    // {
-                    //     ballSize: ballSizes.ball3,
-                    //     id: 3,
-                    //     xPosition: 300,
-                    //     yPosition: 260,
-                    //     xVelocity: -1,
-                    //     yVelocity: 0,
-                    // },
-                    // {
-                    //     ballSize: ballSizes.ball4,
-                    //     id: 4,
-                    //     xPosition: 200,
-                    //     yPosition: 150,
-                    //     xVelocity: -1,
-                    //     yVelocity: 0,
-                    // },
                 ],
             },
             {
@@ -491,12 +476,39 @@ class GameController {
             return false;
         }
     }
+
+    // Ball to character collision logic helper function
+    _ballCharacterCollision(ballObject) {
+        const collision = this._checkCollision(ballObject, "character");
+        if (collision) {
+            ballObject.delete();
+        }
+    }
+
+    // Ball to laser collision logic helper function
+    _ballLaserCollision(ballObject, ballSrc, robotObject, laserObject) {
+        if (robotObject.isLaserActive) {
+            const ballLaserCollision = this._checkCollision(ballObject, "laser")
+            if (ballLaserCollision) {
+                // ballObject.delete();
+                this._splitBalls(ballObject, ballSrc);
+                robotObject.isLaserActive = false;
+                laserObject.delete();
+            }
+        }
+    }
     
+    /*
+        This method controls the splitting behaviour of the balls once collision with laser is detected.
+        When a collision is detected, the current ball is deleted and split into 2 smaller balls.
+        The decrease in ball size is determined by the ball sizes in the ballSizes array.
+     */
     _splitBalls(ball, ballSrc) {
         const currentBallID = ball.id;
         // If smallest ball, delete it
         if (currentBallID === 1) {
             ball.delete();
+            this.ballsKilled++;
             return;
         }
 
@@ -548,27 +560,6 @@ class GameController {
         }
     }
 
-    // Ball to character collision logic helper function
-    _ballCharacterCollision(ballObject) {
-        const collision = this._checkCollision(ballObject, "character");
-        if (collision) {
-            ballObject.delete();
-        }
-    }
-
-    // Ball to laser collision logic helper function
-    _ballLaserCollision(ballObject, ballSrc, robotObject, laserObject) {
-        if (robotObject.isLaserActive) {
-            const ballLaserCollision = this._checkCollision(ballObject, "laser")
-            if (ballLaserCollision) {
-                // ballObject.delete();
-                this._splitBalls(ballObject, ballSrc);
-                robotObject.isLaserActive = false;
-                laserObject.delete();
-            }
-        }
-    }
-
 
     // Level method
     playLevel(level) {
@@ -590,7 +581,6 @@ class GameController {
             // Create new ball object and make it bounce >:^)
             let ballObject = new Ball(ballElem, ball.id, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
             ballObject.bounce();
-
             
             // Ball position tracking code from chatGPT. 
             // set collision callback functions
