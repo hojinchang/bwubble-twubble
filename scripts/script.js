@@ -28,8 +28,8 @@ class Robot {
         this.isLaserActive;
 
         this.runImages = this._getRunImages();
-        this._runAnimation = this._runAnimation.bind(this);
-        this._laserAnimation = this._laserAnimation.bind(this);
+        this._runAnimation = this._runAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame
+        this._laserAnimation = this._laserAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame
     }
 
     _getRunImages() {
@@ -200,8 +200,7 @@ class Ball {
         this.isDeleted = false;
 
         this._onPositionChange;
-        this.bounce = this.bounce.bind(this);
-        this.delete = this.delete.bind(this);
+        this.bounce = this.bounce.bind(this);  // bind 'this' instance to be the ball object, 'this' loses pointer to ball object during animation frame
     }
 
     // Ball position tracking code from chatGPT. 
