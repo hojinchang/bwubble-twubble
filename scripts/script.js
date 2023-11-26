@@ -363,6 +363,7 @@ class GameController {
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
 
+        this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.modalBackdrop = document.createElement("div");
         this.elements.modalBackdrop.classList.add("modal-backdrop");
     }
@@ -373,6 +374,13 @@ class GameController {
             modal.style.display = "grid";
             modalBackdrop.style.display = "block";
             gameContainer.insertBefore(modalBackdrop, this.elements.gameBoard);
+        }
+
+        const _closeModal = (e, modalBackdrop, gameContainer) => {
+            const modal = e.target.closest(".modal");
+            modal.style.display = "none";
+            modalBackdrop.style.display = "none";
+            gameContainer.removeChild(modalBackdrop);
         }
 
 
@@ -388,6 +396,13 @@ class GameController {
         this.elements.instructionsBtn.addEventListener("click", () => {
             _openModal(this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
         });
+
+        // Close modal
+        this.elements.modalCloseBtn.forEach(closeBtn => {
+            closeBtn.addEventListener("click", (e) => {
+                _closeModal(e, this.elements.modalBackdrop, this.elements.gameContainer)
+            })
+        })
     }
 
     // Load ball images into image object
