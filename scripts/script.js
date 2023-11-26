@@ -401,14 +401,14 @@ class GameController {
 
         this.elements.creditsBtn.addEventListener("click", () => {
             _openModal("credits", this.elements.creditsModal, this.elements.modalBackdrop, this.elements.gameContainer);
-        })
+        });
 
         // Close modal
         this.elements.modalCloseBtn.forEach(closeBtn => {
             closeBtn.addEventListener("click", (e) => {
                 _closeModal(e, this.elements.modalBackdrop, this.elements.gameContainer)
             })
-        })
+        });
     }
 
     // Load ball images into image object
@@ -533,6 +533,7 @@ class GameController {
         const collision = this._checkCollision(ballObject, "character");
         if (collision) {
             ballObject.delete();
+            this.robotObject.lives--;
         }
     }
 
