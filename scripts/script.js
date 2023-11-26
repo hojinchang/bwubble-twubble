@@ -313,8 +313,6 @@ class GameController {
         this.ballsKilled = 0;
         this.ballsRequired;
 
-        if (this.devmode) this._devmode();
-
         this.currentLevel = 0;
         this.levels = [
             {   
@@ -350,6 +348,7 @@ class GameController {
         // this.playLevel(1);
 
         this._setUpGameIntro();
+        if (this.devmode) this._devmode();
     }
 
     // Collect the required DOM elements
@@ -362,6 +361,7 @@ class GameController {
         this.elements.creditsBtn = document.querySelector(".credits-btn");
         this.elements.creditsModal = document.querySelector(".credits-modal")
         this.elements.gameBoard = document.querySelector(".game-board");
+        this.elements.countdownText = document.querySelectorAll(".countdown-container div");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
 
@@ -391,14 +391,15 @@ class GameController {
             // Stop trigger on my button scale transform transition end
             if (e.propertyName === "transform") return;
             
-            this._startGame(true)
+            this._startGame(true);
         });
 
-        // Show the instructions modal
+        // Show instructions modal
         this.elements.instructionsBtn.addEventListener("click", () => {
             _openModal("instructions", this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
         });
 
+        // Show credits modal
         this.elements.creditsBtn.addEventListener("click", () => {
             _openModal("credits", this.elements.creditsModal, this.elements.modalBackdrop, this.elements.gameContainer);
         });
@@ -409,6 +410,17 @@ class GameController {
                 _closeModal(e, this.elements.modalBackdrop, this.elements.gameContainer)
             })
         });
+    }
+
+    // Game start transition
+    _startGame(displayGameBoard = false) {
+        if (!displayGameBoard) {
+            this.elements.introScreen.classList.add("fade-out");
+        } else {
+            this.elements.introScreen.classList.add("hide");
+            this.elements.gameBoard.classList.add("fade-in");
+            this.playLevel(this.currentLevel);
+        }
     }
 
     // Load ball images into image object
@@ -423,16 +435,18 @@ class GameController {
         return ballImages;
     }
 
-    // Game start transition
-    _startGame(displayGameBoard = false) {
-        if (!displayGameBoard) {
-            this.elements.introScreen.classList.add("fade-out");
-        } else {
-            this.elements.introScreen.classList.add("hide");
-            this.elements.gameBoard.classList.add("fade-in");
-            this.playLevel(this.currentLevel);
+    /*
+        This function calculates the required number of balls to be destroyed to complete a level.
+        Each ballSize > 1 can split in 2, thus doubling the number of balls to be destroyed. 
+    */
+    _determineBallsRequired(ballID) {
+        let ballsRequired = 0;
+        for (let i = ballID; i > 0; i--) {
+            ballsRequired += Math.pow(2, i-1);
         }
-    }
+
+        return ballsRequired;
+    }   
 
     // Place robot character on the bottom and center of the screen
     _placeCharacter(gameBoardElement, characterElement) {
@@ -468,12 +482,13 @@ class GameController {
     }
 
     // Dynamically create ball elements
-    _createBallElement(planet, ballWidth, ballHeight, xPosition, yPosition) {
+    _createBallElement(ballImage, ballWidth, ballHeight, xPosition, yPosition) {
         const ball = document.createElement("div");
         ball.classList.add("planet-container");
         const ballIcon = document.createElement("img");
 
-        ballIcon.src = planet.src;
+        ballIcon.src = ballImage.src;
+        ballIcon.setAttribute("alt", "Ball");
         ballIcon.style.width = `${ballWidth}px`;
         ballIcon.style.height = `${ballHeight}px`;
         ball.appendChild(ballIcon);
@@ -549,14 +564,61 @@ class GameController {
         }
     }
 
-    _determineBallsRequired(ballID) {
-        let ballsRequired = 0;
-        for (let i = ballID; i > 0; i--) {
-            ballsRequired += Math.pow(2, i-1);
+        /*
+        This method controls the splitting behaviour of the balls once collision with laser is detected.
+        When a collision is detected, the current ball is deleted and split into 2 smaller balls.
+        The decrease in ball size is determined by the ball sizes in the ballSizes array.
+     */
+        _splitBalls(ball, ballSrc) {
+            this.ballsKilled++;  // Update number of balls killed
+    
+            const currentBallID = ball.id;
+            // If smallest ball, delete it
+            if (currentBallID === 1) {
+                ball.delete();
+                return;
+            }
+    
+            const currentBallWidth = ball.width;
+            const currentBallHeight = ball.height;
+            const currentBallxPosition = ball.xPosition;
+            const currentBallyPosition = ball.yPosition;
+    
+            const splitBallID = ball.id - 1;
+            const splitBallxPosition = currentBallxPosition + currentBallWidth/2;
+            const splitBallyPosition = currentBallyPosition + currentBallHeight/2;
+            const splitBallProperties = ballSizes[`ball${splitBallID}`];
+    
+            ball.delete();
+    
+            // Create 2 balls, 1 which splits left, 1 which splits right
+            for (let i = 0; i < 2; i++) {
+                // Create ball element
+                const ballElement = this._createBallElement(
+                    ballSrc, 
+                    splitBallProperties.width,
+                    splitBallProperties.height,
+                    splitBallxPosition,
+                    splitBallyPosition
+                );
+                
+                const yVelocity = -4;
+                let xVelocity = -1;
+                if (i === 1) xVelocity = 1;  // Ensure the balls split in opposite directions
+                
+                // Create ball object
+                const ballObject = new Ball(
+                    ballElement,
+                    splitBallID,
+                    xVelocity,
+                    yVelocity,
+                    splitBallProperties.bounceHeight,
+                    this.gameBoard,
+                )
+    
+                this._activateBall(ballObject);
+            }
         }
-
-        return ballsRequired;
-    }
 
     _checkLevelWin(ballsKilled, ballsRequired) {
         if (ballsKilled === ballsRequired) {
@@ -564,73 +626,63 @@ class GameController {
             console.log("WINNER WINNER CHICKEN DINNER")
         }
     }
-    
-    /*
-        This method controls the splitting behaviour of the balls once collision with laser is detected.
-        When a collision is detected, the current ball is deleted and split into 2 smaller balls.
-        The decrease in ball size is determined by the ball sizes in the ballSizes array.
-     */
-    _splitBalls(ball, ballSrc) {
-        this.ballsKilled++;  // Update number of balls killed
 
-        const currentBallID = ball.id;
-        // If smallest ball, delete it
-        if (currentBallID === 1) {
-            ball.delete();
-            return;
+    // Activate ball movement and set collision detection callback functions
+   _activateBall(ballObject) {
+        let ballSrc = ballObject.ballElement.querySelector("img");
+        // Make ball bounce >:^)
+        ballObject.bounce();
+        
+        // The idea to use callback functions to detect collisions is from ChatGPT
+        // Set ball callback functions which detects ball collision
+        ballObject.onPositionChangeCallback = () => {
+            this._ballCharacterCollision(ballObject, ballSrc);
+            this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
+            this._checkLevelWin(this.ballsKilled, this.ballsRequired);
+        }
+   }
+
+    _countdown(i) {
+        let delay;
+        (i === 0) ? delay=0 : delay=1000;
+        if (i < this.elements.countdownText.length+1) {
+            setTimeout(() => {
+                if (i !== 0) {
+                    this.elements.countdownText[i - 1].classList.remove("activate");
+                    this.elements.countdownText[i - 1].classList.add("deactivate");
+                }
+
+                if (i === this.elements.countdownText.length) {
+                    return
+                }
+               
+                this.elements.countdownText[i].classList.add("activate");
+                this._countdown(i + 1);
+            }, delay);
+        }
+    }
+
+    // Initialize the level by creating and placing the robot, and create balls
+    _initLevel(ballSrc, balls) {
+        // Create new robot instance
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
+        this._placeCharacter(this.elements.gameBoard, this.elements.character);
+
+        const ballObjects = []
+        // Create initial balls once level starts
+        for (let ball of balls) {
+            // Create ball DOM element
+            const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
+            // Create new ball object
+            const ballObject = new Ball(ballElem, ball.id, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
+            ballObjects.push(ballObject);
         }
 
-        const currentBallWidth = ball.width;
-        const currentBallHeight = ball.height;
-        const currentBallxPosition = ball.xPosition;
-        const currentBallyPosition = ball.yPosition;
-
-        const splitBallID = ball.id - 1;
-        const splitBallxPosition = currentBallxPosition + currentBallWidth/2;
-        const splitBallyPosition = currentBallyPosition + currentBallHeight/2;
-        const splitBallProperties = ballSizes[`ball${splitBallID}`];
-
-        ball.delete();
-
-        // Create 2 balls, 1 which splits left, 1 which splits right
-        for (let i = 0; i < 2; i++) {
-            // Create ball element
-            const ballElement = this._createBallElement(
-                ballSrc, 
-                splitBallProperties.width,
-                splitBallProperties.height,
-                splitBallxPosition,
-                splitBallyPosition
-            );
-            
-            const yVelocity = -4;
-            let xVelocity = -1;
-            if (i === 1) xVelocity = 1;  // The second ball splits in the right direction
-            
-            // Create ball object
-            const ballObject = new Ball(
-                ballElement,
-                splitBallID,
-                xVelocity,
-                yVelocity,
-                splitBallProperties.bounceHeight,
-                this.gameBoard,
-            )
-
-            ballObject.bounce();
-            
-            // Set ball callback functions which detects ball collision
-            ballObject.onPositionChangeCallback = () => {
-                this._ballCharacterCollision(ballObject, ballSrc);
-                this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
-                this._checkLevelWin(this.ballsKilled, this.ballsRequired);
-            }
-        }
+        return ballObjects;
     }
 
     // Level method
     playLevel(level) {
-
         // Collect balls src and array from levels array
         const { 
             ballSrc,
@@ -639,28 +691,16 @@ class GameController {
         } = this.levels[level];
 
         this.ballsRequired = ballsRequired;
+        const ballObjects = this._initLevel(ballSrc, balls);  // initialize level
 
-        // Create new robot instance
-        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
-        this._placeCharacter(this.elements.gameBoard, this.elements.character);
-        this._setUpRobotEventListeners();
+        this._countdown(0);
 
-        // Create initial balls once level starts
-        for (let ball of balls) {
-            // Create ball DOM element
-            const ballElem = this._createBallElement(ballSrc, ball.ballSize.width, ball.ballSize.height, ball.xPosition, ball.yPosition);
-            // Create new ball object and make it bounce >:^)
-            let ballObject = new Ball(ballElem, ball.id, ball.xVelocity, ball.yVelocity, ball.ballSize.bounceHeight, this.elements.gameBoard);
-            ballObject.bounce();
-            
-            // Ball position tracking code from chatGPT. 
-            // set collision callback functions
-            ballObject.onPositionChangeCallback = () => {
-                this._ballCharacterCollision(ballObject, ballSrc);
-                this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
-                this._checkLevelWin(this.ballsKilled, this.ballsRequired);
+        setTimeout(() => {
+            this._setUpRobotEventListeners();
+            for (let ballObject of ballObjects) {
+                this._activateBall(ballObject);
             }
-        }
+        }, 5000);
     }
 
 
@@ -669,6 +709,7 @@ class GameController {
         this.elements.introScreen.classList.add("hide");
         this.elements.gameBoard.style.opacity = 100;
         this.elements.gameBoard.style.transition = null;
+        this.playLevel(this.currentLevel);
     }
 
     
