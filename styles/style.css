@@ -43,6 +43,7 @@ main {
 }
 
 .intro-screen,
+.modal-container,
 .game-board {
     height: 100%;
     width: 100%;
@@ -95,19 +96,42 @@ main {
     transform: translateY(2px);
 }
 
+.intro-screen .intro-btn:hover {
+    background-color: var(--header-text-color);
+    transform: scale(1.05);
+}
+
 .intro-screen .intro-btn span {
-    font-size: 32px;
+    font-size: 24px;
+}
+
+.instructions-modal {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 300px; /* Adjust width as needed */
+    height: 200px;
+}
+
+.instructions-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.instructions-modal img {
+    width: 50px;
+    height: auto;
 }
 
 .game-board {
-    /* display: none; */
     opacity: 0;
     background-image: url(../assets/background/background-resized.jpg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
 
-    position: relative;
+    /* position: relative; */
     overflow: hidden;
 
     transition: opacity 1s ease-in-out;

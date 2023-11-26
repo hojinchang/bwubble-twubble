@@ -32,6 +32,7 @@ class Robot {
         this._runAnimation = this._runAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame
         this._laserAnimation = this._laserAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame
     }
+
     _getRunImages() {
         const runImages = [];
         for (let i = 0; i < 8; i++) {
@@ -90,9 +91,8 @@ class Robot {
     _laserAnimation(yLaserStart) {
         // this.isLaserActive is set false in the GameController when a collision between the laser and ball is detected
         // Break out of the laser animation when collision occurs
-        if (!this.isLaserActive) {
-            return;
-        }
+        if (!this.isLaserActive) return;
+        
 
         // Increase the height of the laser object's property and laser DOM element
         const step = 4;
@@ -209,9 +209,8 @@ class Ball {
     }
 
     bounce() {
-        if (this.isDeleted) {
-            return;
-        }
+        if (this.isDeleted) return;
+    
 
         // Ball Drop
         this.yVelocity += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
@@ -357,6 +356,8 @@ class GameController {
     _getElements() {
         this.elements.introScreen = document.querySelector(".intro-screen");
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
+        this.elements.instructionsBtn = document.querySelector(".instructions-btn");
+        this.elements.instructionsModal = document.querySelector(".instructions-modal");
         this.elements.gameBoard = document.querySelector(".game-board");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
@@ -364,7 +365,18 @@ class GameController {
 
     _setUpGameIntro() {
         this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
-        this.elements.introScreen.addEventListener("transitionend", () => {this._startGame(true)});
+        this.elements.introScreen.addEventListener("transitionend", (e) => {
+            // Stop trigger on my button scale transform transition end
+            if (e.propertyName === "transform") return;
+            
+            this._startGame(true)
+        });
+
+        // Show the instructions dialog modal
+        this.elements.instructionsBtn.addEventListener("click", () => {this.elements.instructionsModal.showModal()});
+
+        // Close the instructions dialog modal
+        this.elements.instructionsModal.addEventListener("click", () => {this.elements.instructionsModal.close()});
     }
 
     // Load ball images into image object
