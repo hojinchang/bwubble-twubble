@@ -7,6 +7,7 @@
 :root {
     --accent-colour:  #FEDD00;
     --background-colour: #282A35;
+    --text-colour: #FFFFFF;
     --font-family: 'Sometype Mono', monospace;
 }
 
@@ -35,12 +36,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-    color: var(--accent-colour);
+    color: var(--text-colour);
 	text-decoration: none;
     font-family: var(--font-family);
 }
 
 a:visited {
+    color: var(--text-colour);
+}
+
+a:hover {
     color: var(--accent-colour);
 }
 
@@ -57,9 +62,9 @@ table {
 
 th, 
 td {
-    border: 1px solid white;
+    border: 1px solid var(--text-colour);
     padding: 1rem;
-    color: white;
+    color: var(--text-colour);
 }
 
 th {
@@ -173,7 +178,7 @@ th {
 
 .modal-close-button span {
     font-size: 35px;
-    color: white;
+    color: var(--text-colour);
     transition: transform 0.2s ease-in-out;
 }
 
@@ -189,7 +194,7 @@ th {
 }
 
 .instructions-modal {
-    grid-template: auto 1fr 1fr 1fr / 1fr 1fr 1fr;
+    grid-template: auto 1fr 1fr 1fr / 1fr 1fr 1.25fr;
     justify-items: center;
     align-items: center;
     gap: 12px;
@@ -201,7 +206,7 @@ th {
 }
 
 .instructions-modal p {
-    color: white;
+    color: var(--text-colour);
 }
 
 .instructions-container {
