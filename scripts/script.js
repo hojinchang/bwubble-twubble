@@ -372,8 +372,8 @@ class GameController {
 
     _setUpGameIntro() {
         // Help function with sets the modal and backdrop to show
-        const _openModal = (modal, modalBackdrop, gameContainer) => {
-            modal.style.display = "grid";
+        const _openModal = (modalType, modal, modalBackdrop, gameContainer) => {
+            (modalType === "instructions") ? modal.style.display = "grid": modal.style.display = "block"
             modalBackdrop.style.display = "block";
             gameContainer.insertBefore(modalBackdrop, this.elements.gameBoard);
         }
@@ -396,11 +396,11 @@ class GameController {
 
         // Show the instructions modal
         this.elements.instructionsBtn.addEventListener("click", () => {
-            _openModal(this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
+            _openModal("instructions", this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
         });
 
         this.elements.creditsBtn.addEventListener("click", () => {
-            _openModal(this.elements.creditsModal, this.elements.modalBackdrop, this.elements.gameContainer);
+            _openModal("credits", this.elements.creditsModal, this.elements.modalBackdrop, this.elements.gameContainer);
         })
 
         // Close modal
