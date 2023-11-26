@@ -564,7 +564,7 @@ class GameController {
         }
     }
 
-        /*
+    /*
         This method controls the splitting behaviour of the balls once collision with laser is detected.
         When a collision is detected, the current ball is deleted and split into 2 smaller balls.
         The decrease in ball size is determined by the ball sizes in the ballSizes array.
@@ -573,8 +573,7 @@ class GameController {
             this.ballsKilled++;  // Update number of balls killed
     
             const currentBallID = ball.id;
-            // If smallest ball, delete it
-            if (currentBallID === 1) {
+            if (currentBallID === 1) {   // If smallest ball, delete it
                 ball.delete();
                 return;
             }
@@ -588,8 +587,6 @@ class GameController {
             const splitBallxPosition = currentBallxPosition + currentBallWidth/2;
             const splitBallyPosition = currentBallyPosition + currentBallHeight/2;
             const splitBallProperties = ballSizes[`ball${splitBallID}`];
-    
-            ball.delete();
     
             // Create 2 balls, 1 which splits left, 1 which splits right
             for (let i = 0; i < 2; i++) {
@@ -618,6 +615,9 @@ class GameController {
     
                 this._activateBall(ballObject);
             }
+
+            // Delete parent ball after being split in 2
+            ball.delete();
         }
 
     _checkLevelWin(ballsKilled, ballsRequired) {
