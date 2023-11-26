@@ -354,6 +354,7 @@ class GameController {
 
     // Collect the required DOM elements
     _getElements() {
+        this.elements.gameContainer = document.querySelector(".game-container");
         this.elements.introScreen = document.querySelector(".intro-screen");
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
@@ -361,9 +362,20 @@ class GameController {
         this.elements.gameBoard = document.querySelector(".game-board");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
+
+        this.elements.modalBackdrop = document.createElement("div");
+        this.elements.modalBackdrop.classList.add("modal-backdrop");
     }
 
     _setUpGameIntro() {
+        // Help function with sets the modal and backdrop to show
+        const _openModal = (modal, modalBackdrop, gameContainer) => {
+            modal.style.display = "grid";
+            modalBackdrop.style.display = "block";
+            gameContainer.insertBefore(modalBackdrop, this.elements.gameBoard);
+        }
+
+
         this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
         this.elements.introScreen.addEventListener("transitionend", (e) => {
             // Stop trigger on my button scale transform transition end
@@ -373,10 +385,9 @@ class GameController {
         });
 
         // Show the instructions dialog modal
-        this.elements.instructionsBtn.addEventListener("click", () => {this.elements.instructionsModal.showModal()});
-
-        // Close the instructions dialog modal
-        this.elements.instructionsModal.addEventListener("click", () => {this.elements.instructionsModal.close()});
+        this.elements.instructionsBtn.addEventListener("click", () => {
+            _openModal(this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
+        });
     }
 
     // Load ball images into image object
