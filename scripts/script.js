@@ -359,6 +359,8 @@ class GameController {
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
         this.elements.instructionsModal = document.querySelector(".instructions-modal");
+        this.elements.creditsBtn = document.querySelector(".credits-btn");
+        this.elements.creditsModal = document.querySelector(".credits-modal")
         this.elements.gameBoard = document.querySelector(".game-board");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
@@ -392,10 +394,14 @@ class GameController {
             this._startGame(true)
         });
 
-        // Show the instructions dialog modal
+        // Show the instructions modal
         this.elements.instructionsBtn.addEventListener("click", () => {
             _openModal(this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
         });
+
+        this.elements.creditsBtn.addEventListener("click", () => {
+            _openModal(this.elements.creditsModal, this.elements.modalBackdrop, this.elements.gameContainer);
+        })
 
         // Close modal
         this.elements.modalCloseBtn.forEach(closeBtn => {
