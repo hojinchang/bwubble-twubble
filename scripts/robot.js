@@ -49,14 +49,14 @@ class Robot {
     */
     _runAnimation() {
         this.characterIcon.src = this.runImages[this.runIdx].src;
-        
         this.xPosition = parseInt(this.characterElement.style.left);   // Current xPosition
-        const step = 2;
+        
+        const step = 4;
 
         // Update the xPosition depending on if moving left or right
         (this.direction === "left") 
-            ? this.xPosition = this.xPosition - step 
-            : this.xPosition = this.xPosition + step;
+            ? this.xPosition -= step   // Move left
+            : this.xPosition += step;  // Move right
 
         // Set xPosition limits to be the edges of the game board
         if ((this.xPosition + this.width) >= this.boardWidth) {
@@ -88,14 +88,31 @@ class Robot {
         }
     }
 
-    _laserAnimation(yLaserStart) {
+    // Run method
+    run(direction) {
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.direction = direction;
+
+            (this.direction === "left") 
+                ? this.characterElement.classList.add("flip-character") 
+                : this.characterElement.classList.remove("flip-character");
+
+            this._runAnimation();
+        }
+    }
+
+    _laserAnimation(yLaserStart, lastFrameTime) {
         // this.isLaserActive is set false in the GameController when a collision between the laser and ball is detected
         // Break out of the laser animation when collision occurs
         if (!this.isLaserActive) return;
         
+        const currentTime = performance.now(); // Get current timestamp
+        const deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
+        lastFrameTime = currentTime;
 
         // Increase the height of the laser object's property and laser DOM element
-        const step = 4;
+        const step = 500 * deltaTime;
         this.laserObject.height += step;
         this.laserObject.laserElement.style.height = `${this.laserObject.height}px`;
 
@@ -119,19 +136,19 @@ class Robot {
             this.laserObject.delete();   // Delete the laser object and DOM element
             this.laserObject = null;   // Remove laserObject from robot class
         } else {
-            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation(yLaserStart));
+            this.laserAnimationFrame = requestAnimationFrame(() => this._laserAnimation(yLaserStart, lastFrameTime));
         }
     }
 
     // Shoot method
-    shoot(laser) {
+    shoot(laser, lastFrameTime) {
         // Only shoot if there is no lasers active
         if (!this.isLaserActive) {
             this.isLaserActive = true;
             this.laserObject = laser;
  
             const yLaserStart = this.boardHeight - this.height/2;   // Make laser start at middle of character height 
-            this._laserAnimation(yLaserStart);
+            this._laserAnimation(yLaserStart, lastFrameTime);
         }
     }
     

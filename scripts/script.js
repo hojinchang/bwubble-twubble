@@ -31,7 +31,7 @@ class GameController {
                         id: 3,
                         xPosition: 500,
                         yPosition: 200,
-                        xVelocity: 1,
+                        xVelocity: 150,
                         yVelocity: 0,
                     },
                 ],
@@ -44,7 +44,7 @@ class GameController {
                         id: 4,
                         xPosition: 500,
                         yPosition: 200,
-                        xVelocity: 1,
+                        xVelocity: 150,
                         yVelocity: 0,
                     },
                 ],
@@ -167,7 +167,29 @@ class GameController {
 
     // Set up event listeners
     _setUpRobotEventListeners() {
-        // Robot arrow key controls pt.1
+        // // Robot arrow key controls pt.1
+        // document.addEventListener("keydown", (e) => {
+        //     let lastFrameTime = performance.now();
+        //     if (e.key === "ArrowRight") {
+        //         this.robotObject.run("right", lastFrameTime);
+        //     } else if (e.key === "ArrowLeft") {
+        //         this.robotObject.run("left", lastFrameTime);
+        //     } else if (e.key === " " && !this.robotObject.isLaserActive) {   // shoot
+        //         const laserElement = this._createLaserElement();
+        //         this.laserObject = new Laser(laserElement);
+        //         this.robotObject.shoot(this.laserObject, lastFrameTime);
+        //     }
+        // })
+
+        // // Robot arrow key controls pt.2
+        // document.addEventListener("keyup", (e) => {
+        //     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        //         this.robotObject.stopRunning();
+        //         this.robotObject.direction = null;
+        //     }
+        // })
+
+
         document.addEventListener("keydown", (e) => {
             if (e.key === "ArrowRight") {
                 this.robotObject.run("right");
@@ -178,14 +200,13 @@ class GameController {
                 this.laserObject = new Laser(laserElement);
                 this.robotObject.shoot(this.laserObject);
             }
-        })
+        });
 
-        // Robot arrow key controls pt.2
         document.addEventListener("keyup", (e) => {
             if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
                 this.robotObject.stopRunning();
             }
-        })
+        });
     }
 
     // Dynamically create ball elements
@@ -306,9 +327,9 @@ class GameController {
                     splitBallyPosition
                 );
                 
-                const yVelocity = -4;
-                let xVelocity = -1;
-                if (i === 1) xVelocity = 1;  // Ensure the balls split in opposite directions
+                const yVelocity = -550;
+                let xVelocity = -150;
+                if (i === 1) xVelocity = 150;  // Ensure the balls split in opposite directions
                 
                 // Create ball object
                 const ballObject = new Ball(
@@ -338,7 +359,8 @@ class GameController {
    _activateBall(ballObject) {
         let ballSrc = ballObject.ballElement.querySelector("img");
         // Make ball bounce >:^)
-        ballObject.bounce();
+        let lastFrameTime = performance.now();
+        ballObject.bounce(lastFrameTime);
         
         // The idea to use callback functions to detect collisions is from ChatGPT
         // Set ball callback functions which detects ball collision
@@ -422,8 +444,8 @@ class GameController {
     
 }
 
-// const game = new GameController(true);
-const game = new GameController();
+const game = new GameController(true);
+// const game = new GameController();
 
 /* ********************************************
                 Game Controller
