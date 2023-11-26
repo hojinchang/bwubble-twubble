@@ -373,7 +373,7 @@ class GameController {
     _setUpGameIntro() {
         // Help function with sets the modal and backdrop to show
         const _openModal = (modalType, modal, modalBackdrop, gameContainer) => {
-            (modalType === "instructions") ? modal.style.display = "grid": modal.style.display = "block"
+            (modalType === "instructions") ? modal.style.display = "grid": modal.style.display = "flex"
             modalBackdrop.style.display = "block";
             gameContainer.insertBefore(modalBackdrop, this.elements.gameBoard);
         }
