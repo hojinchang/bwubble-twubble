@@ -51,18 +51,19 @@ class Robot {
         this.characterIcon.src = this.runImages[this.runIdx].src;
         this.xPosition = parseInt(this.characterElement.style.left);   // Current xPosition
         
+        // chatGPT's solution to create frame rate independent animations. Animations differ based on monitor/screen's frame rate (Hz)
         const currentTime = performance.now(); // Get current timestamp
         const deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
         lastFrameTime = currentTime;
 
-        console.log(deltaTime)
-        const step = 100 * deltaTime;
-        // const step = 4;
+        const speed = 200;
+        const rightCorrection = 0.97;
+        const step = speed * deltaTime;
 
         // Update the xPosition depending on if moving left or right
         (this.direction === "left") 
             ? this.xPosition -= step   // Move left
-            : this.xPosition += step;  // Move right
+            : this.xPosition += step+rightCorrection;  // Move right
 
         // Set xPosition limits to be the edges of the game board
         if ((this.xPosition + this.width) >= this.boardWidth) {
@@ -100,6 +101,7 @@ class Robot {
         // Break out of the laser animation when collision occurs
         if (!this.isLaserActive) return;
         
+        // chatGPT's solution to create frame rate independent animations. Animations differ based on monitor/screen's frame rate (Hz)
         const currentTime = performance.now(); // Get current timestamp
         const deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
         lastFrameTime = currentTime;
@@ -123,7 +125,7 @@ class Robot {
             Else, continue the laser animation.
         */
         if ((this.laserObject.height + this.height/2) >= this.boardHeight) {    // Since the laser starts from the center of the robot, half of the character height must be added to the laser height to "reach" the top of the gameboard
-            this.laserAnimationFrame = cancelAnimationFrame(this.laserAnimationFrame);
+            cancelAnimationFrame(this.laserAnimationFrame);
             this.isLaserActive = false;
 
             this.laserObject.delete();   // Delete the laser object and DOM element
@@ -147,7 +149,7 @@ class Robot {
     
     // Stop running method
     stopRunning() {
-        this.runAnimationFrame = cancelAnimationFrame(this.runAnimationFrame);
+        cancelAnimationFrame(this.runAnimationFrame);
         this.isRunning = false;
         this.characterIcon.src = this.idleState;
     }

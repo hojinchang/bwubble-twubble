@@ -41,10 +41,10 @@ class Ball {
     bounce(lastFrameTime) {
         if (this.isDeleted) return;
 
+        // chatGPT's solution to create frame rate independent animations. Animations differ based on monitor/screen's frame rate (Hz)
         const currentTime = performance.now();   // Get current timestamp
         const deltaTime = (currentTime - lastFrameTime) / 1000;   // Convert to seconds
         lastFrameTime = currentTime;
-    
 
         // Ball Drop
         this.yVelocity += gravity * deltaTime;   // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
