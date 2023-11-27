@@ -57,13 +57,12 @@ class Robot {
         lastFrameTime = currentTime;
 
         const speed = 200;
-        const rightCorrection = 0.97;
-        const step = speed * deltaTime;
+        const step = Math.ceil(speed * deltaTime);
 
         // Update the xPosition depending on if moving left or right
         (this.direction === "left") 
             ? this.xPosition -= step   // Move left
-            : this.xPosition += step+rightCorrection;  // Move right
+            : this.xPosition += step;  // Move right
 
         // Set xPosition limits to be the edges of the game board
         if ((this.xPosition + this.width) >= this.boardWidth) {
