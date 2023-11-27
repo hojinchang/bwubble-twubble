@@ -9,15 +9,9 @@
     --background-colour: #282A35;
     --text-colour: #FFFFFF;
     --font-family: 'Sometype Mono', monospace;
-}
-
-header {
-    text-align: center;
-    background-color: var(--background-colour);
-}
-
-header h1 {
-    margin: 0 0 2rem;
+    --laser-glow-shadow: 0px 0px 10px 2px rgba(255, 255, 0, 0.5),
+                         0px 0px 20px 4px rgba(255, 255, 0, 0.5),
+                         0px 0px 40px 6px rgba(255, 255, 0, 0.5);
 }
 
 body {
@@ -33,6 +27,15 @@ main {
 
 h1, h2, h3, h4, h5, h6 {
     color: var(--accent-colour);
+    margin: 0;
+}
+
+h1 {
+    font-size: 42px;
+}
+
+h2 {
+    font-size: 32px;
 }
 
 a {
@@ -93,7 +96,7 @@ th {
     align-items: center;
     gap: 40px;
     position: absolute;
-    z-index: 2;
+    z-index: 3;
 
     background-image: url(../assets/background/background-resized.jpg);
     background-repeat: no-repeat;
@@ -109,37 +112,28 @@ th {
     border-radius: 12px;
 }
 
-.intro-screen h2 {
-    font-size: 36px;
-}
-
 .intro-buttons {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.intro-screen .intro-btn {
+.select-btn {
+    cursor: pointer;
     padding: 12px 24px;
     border-radius: 12px;
     border: none;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+    font-size: 24px;
 
     transition: transform 0.1s ease;
 }
 
-.intro-screen .intro-btn:active {
-    transform: translateY(2px);
-}
-
-.intro-screen .intro-btn:hover {
+.select-btn:hover {
     background-color: var(--accent-colour);
     transform: scale(1.05);
 }
 
-.intro-screen .intro-btn span {
-    font-size: 24px;
-}
 
 .modal-backdrop {
     display: none;
@@ -147,26 +141,34 @@ th {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
+}
+
+.intro-modal-backdrop {
+    z-index: 3;
+}
+
+.level-win-modal-backdrop {
     z-index: 2;
 }
 
 .modal {
-    display: none;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 16px;
     background-color: #4D4F5A;
-    z-index: 3;
-
-    width: 625px;
-    height: 475px;
+    z-index: 4;
     padding: 20px 40px;
 
-    box-shadow: 0px 0px 10px 2px rgba(255, 255, 0, 0.5),
-                0px 0px 20px 4px rgba(255, 255, 0, 0.5),
-                0px 0px 40px 6px rgba(255, 255, 0, 0.5);
+    box-shadow: var(--laser-glow-shadow);
+}
+
+.instructions-modal,
+.credits-modal {
+    display: none;
+    width: 625px;
+    height: 500px;
 }
 
 .modal-close-button {
@@ -187,9 +189,8 @@ th {
     transform: scale(1.2);
 }
 
-.modal h3 {
+.modal h2 {
     text-align: center;
-    font-size: 32px;
     margin-bottom: 16px;
 }
 
@@ -200,7 +201,7 @@ th {
     gap: 12px;
 }
 
-.instructions-modal h3 {
+.instructions-modal h2 {
     grid-column: 1 / 4;
     grid-row: 1 / 2;
 }
@@ -297,7 +298,6 @@ th {
 
 .game-board {
     opacity: 0;
-    /* position: relative; */
     background-image: url(../assets/background/background-resized.jpg);
     background-repeat: no-repeat;
     background-position: center;
@@ -320,7 +320,7 @@ th {
 }
 
 .countdown-container {
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     position: relative;
@@ -330,7 +330,7 @@ th {
     width: 200px;
     height: 200px;
     overflow: hidden;
-    z-index: 3;
+    z-index: 1;
 }
 
 .countdown-container .countdown-number {
@@ -350,10 +350,24 @@ th {
     transform: translateX(-150px) scale(0);
 }
 
+.level-win-modal {
+    opacity: 0;
+    display: none;
+    position: absolute;
+    transition: opacity 1s ease-in-out;
+    z-index: 3;
+}
+
+.next-level-btn {
+    display: block;
+    margin: 0 auto;
+}
+
+
 
 .character-container {
     position: absolute;
-    z-index: 2;
+    z-index: 1;
 }
 
 .character-icon {
@@ -378,9 +392,7 @@ th {
 .laser-icon {
     position: absolute;
     background-color: rgb(255, 255, 0);
-    box-shadow: 0px 0px 10px 2px rgba(255, 255, 0, 0.5),
-                0px 0px 20px 4px rgba(255, 255, 0, 0.5),
-                0px 0px 40px 6px rgba(255, 255, 0, 0.5);
+    box-shadow: var(--laser-glow-shadow);
     border: 3px solid red;
     border-radius: 10px;
 }

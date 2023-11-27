@@ -23,13 +23,14 @@ class GameController {
         this.currentLevel = 0;
         this.levels = [
             {   
+                level: 1,
                 ballSrc: this.ballImages[0],
                 ballsRequired: this._determineBallsRequired(3),
                 balls: [
                     {
                         ballSize: ballSizes.ball3,
                         id: 3,
-                        xPosition: 500,
+                        xPosition: 450,
                         yPosition: 200,
                         xVelocity: 150,
                         yVelocity: 0,
@@ -37,12 +38,13 @@ class GameController {
                 ],
             },
             {
+                level: 2,
                 ballSrc: this.ballImages[1],
                 balls: [
                     {
                         ballSize: ballSizes.ball4,
                         id: 4,
-                        xPosition: 500,
+                        xPosition: 300,
                         yPosition: 200,
                         xVelocity: 150,
                         yVelocity: 0,
@@ -68,13 +70,18 @@ class GameController {
         this.elements.creditsBtn = document.querySelector(".credits-btn");
         this.elements.creditsModal = document.querySelector(".credits-modal")
         this.elements.gameBoard = document.querySelector(".game-board");
+        this.elements.coundownContainer = document.querySelector(".countdown-container");
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
+        this.elements.levelWinModal = document.querySelector(".level-win-modal");
+        this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
-        this.elements.modalBackdrop = document.createElement("div");
-        this.elements.modalBackdrop.classList.add("modal-backdrop");
+        this.elements.introModalBackdrop = document.createElement("div");
+        this.elements.introModalBackdrop.classList.add("modal-backdrop", "intro-modal-backdrop");
+        this.elements.levelWinModalBackdrop = document.createElement("div");
+        this.elements.levelWinModalBackdrop.classList.add("modal-backdrop", "level-win-modal-backdrop");
     }
 
     _setUpGameIntro() {
@@ -103,18 +110,18 @@ class GameController {
 
         // Show instructions modal
         this.elements.instructionsBtn.addEventListener("click", () => {
-            _openModal("instructions", this.elements.instructionsModal, this.elements.modalBackdrop, this.elements.gameContainer);
+            _openModal("instructions", this.elements.instructionsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
         });
 
         // Show credits modal
         this.elements.creditsBtn.addEventListener("click", () => {
-            _openModal("credits", this.elements.creditsModal, this.elements.modalBackdrop, this.elements.gameContainer);
+            _openModal("credits", this.elements.creditsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
         });
 
         // Close modal
         this.elements.modalCloseBtn.forEach(closeBtn => {
             closeBtn.addEventListener("click", (e) => {
-                _closeModal(e, this.elements.modalBackdrop, this.elements.gameContainer)
+                _closeModal(e, this.elements.introModalBackdrop, this.elements.gameContainer)
             })
         });
     }
@@ -278,61 +285,69 @@ class GameController {
         When a collision is detected, the current ball is deleted and split into 2 smaller balls.
         The decrease in ball size is determined by the ball sizes in the ballSizes array.
      */
-        _splitBalls(ball, ballSrc) {
-            this.ballsKilled++;  // Update number of balls killed
-    
-            const currentBallID = ball.id;
-            if (currentBallID === 1) {   // If smallest ball, delete it
-                ball.delete();
-                return;
-            }
-    
-            const currentBallWidth = ball.width;
-            const currentBallHeight = ball.height;
-            const currentBallxPosition = ball.xPosition;
-            const currentBallyPosition = ball.yPosition;
-    
-            const splitBallID = ball.id - 1;
-            const splitBallxPosition = currentBallxPosition + currentBallWidth/2;
-            const splitBallyPosition = currentBallyPosition + currentBallHeight/2;
-            const splitBallProperties = ballSizes[`ball${splitBallID}`];
-    
-            // Create 2 balls, 1 which splits left, 1 which splits right
-            for (let i = 0; i < 2; i++) {
-                // Create ball element
-                const ballElement = this._createBallElement(
-                    ballSrc, 
-                    splitBallProperties.width,
-                    splitBallProperties.height,
-                    splitBallxPosition,
-                    splitBallyPosition
-                );
-                
-                const yVelocity = -550;
-                let xVelocity = -150;
-                if (i === 1) xVelocity = 150;  // Ensure the balls split in opposite directions
-                
-                // Create ball object
-                const ballObject = new Ball(
-                    ballElement,
-                    splitBallID,
-                    xVelocity,
-                    yVelocity,
-                    splitBallProperties.bounceHeight,
-                    this.gameBoard,
-                )
-    
-                this._activateBall(ballObject);
-            }
+    _splitBalls(ball, ballSrc) {
+        this.ballsKilled++;  // Update number of balls killed
 
-            // Delete parent ball after being split in 2
+        const currentBallID = ball.id;
+        if (currentBallID === 1) {   // If smallest ball, delete it
             ball.delete();
+            return;
         }
+
+        const currentBallWidth = ball.width;
+        const currentBallHeight = ball.height;
+        const currentBallxPosition = ball.xPosition;
+        const currentBallyPosition = ball.yPosition;
+
+        const splitBallID = ball.id - 1;
+        const splitBallxPosition = currentBallxPosition + currentBallWidth/2;
+        const splitBallyPosition = currentBallyPosition + currentBallHeight/2;
+        const splitBallProperties = ballSizes[`ball${splitBallID}`];
+
+        // Create 2 balls, 1 which splits left, 1 which splits right
+        for (let i = 0; i < 2; i++) {
+            // Create ball element
+            const ballElement = this._createBallElement(
+                ballSrc, 
+                splitBallProperties.width,
+                splitBallProperties.height,
+                splitBallxPosition,
+                splitBallyPosition
+            );
+            
+            const yVelocity = -550;  // Launch balls upwards
+            let xVelocity = -150;
+            if (i === 1) xVelocity = 150;  // Ensure the balls split in opposite directions
+            
+            // Create ball object
+            const ballObject = new Ball(
+                ballElement,
+                splitBallID,
+                xVelocity,
+                yVelocity,
+                splitBallProperties.bounceHeight,
+                this.gameBoard,
+            )
+
+            this._activateBall(ballObject);
+        }
+
+        // Delete parent ball after being split in 2
+        ball.delete();
+    }
+
+    _displayLevelWin() {
+
+    }
 
     _checkLevelWin(ballsKilled, ballsRequired) {
         if (ballsKilled === ballsRequired) {
             this.levelWin = true;
-            console.log("WINNER WINNER CHICKEN DINNER")
+
+            this.elements.levelWinModal.style.display = "block"
+            this.elements.levelWinModal.style.opacity = 1;
+            this.elements.levelWinModalBackdrop.style.display = "block";
+            this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
         }
     }
 
@@ -403,9 +418,11 @@ class GameController {
         this.ballsRequired = ballsRequired;
         const ballObjects = this._initLevel(ballSrc, balls);  // initialize level
 
+        this.elements.coundownContainer.style.display = "flex";
         this._countdown(0);
 
         setTimeout(() => {
+            this.elements.coundownContainer.style.display = "none";
             this._setUpRobotEventListeners();
             for (let ballObject of ballObjects) {
                 this._activateBall(ballObject);
@@ -425,8 +442,8 @@ class GameController {
     
 }
 
-const game = new GameController(true);
-// const game = new GameController();
+// const game = new GameController(true);
+const game = new GameController();
 
 /* ********************************************
                 Game Controller
