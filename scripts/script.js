@@ -167,46 +167,27 @@ class GameController {
 
     // Set up event listeners
     _setUpRobotEventListeners() {
-        // // Robot arrow key controls pt.1
-        // document.addEventListener("keydown", (e) => {
-        //     let lastFrameTime = performance.now();
-        //     if (e.key === "ArrowRight") {
-        //         this.robotObject.run("right", lastFrameTime);
-        //     } else if (e.key === "ArrowLeft") {
-        //         this.robotObject.run("left", lastFrameTime);
-        //     } else if (e.key === " " && !this.robotObject.isLaserActive) {   // shoot
-        //         const laserElement = this._createLaserElement();
-        //         this.laserObject = new Laser(laserElement);
-        //         this.robotObject.shoot(this.laserObject, lastFrameTime);
-        //     }
-        // })
-
-        // // Robot arrow key controls pt.2
-        // document.addEventListener("keyup", (e) => {
-        //     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        //         this.robotObject.stopRunning();
-        //         this.robotObject.direction = null;
-        //     }
-        // })
-
-
+        // Robot arrow key controls pt.1
         document.addEventListener("keydown", (e) => {
+            let lastFrameTime = performance.now();
             if (e.key === "ArrowRight") {
-                this.robotObject.run("right");
+                this.robotObject.run("right", lastFrameTime);
             } else if (e.key === "ArrowLeft") {
-                this.robotObject.run("left");
+                this.robotObject.run("left", lastFrameTime);
             } else if (e.key === " " && !this.robotObject.isLaserActive) {   // shoot
                 const laserElement = this._createLaserElement();
                 this.laserObject = new Laser(laserElement);
-                this.robotObject.shoot(this.laserObject);
+                this.robotObject.shoot(this.laserObject, lastFrameTime);
             }
-        });
+        })
 
+        // Robot arrow key controls pt.2
         document.addEventListener("keyup", (e) => {
             if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
                 this.robotObject.stopRunning();
+                this.robotObject.direction = null;
             }
-        });
+        })
     }
 
     // Dynamically create ball elements

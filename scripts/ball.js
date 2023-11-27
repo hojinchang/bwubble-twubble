@@ -46,14 +46,9 @@ class Ball {
         lastFrameTime = currentTime;
     
 
-        // // Ball Drop
-        // this.yVelocity += gravity;  // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
-        // this.yPosition += this.yVelocity;  // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i  =>  where dt = each animation frame
-        // this.xPosition += this.xVelocity;
-
-        // Apply physics using deltaTime
-        this.yVelocity += gravity * deltaTime;
-        this.yPosition += this.yVelocity * deltaTime;
+        // Ball Drop
+        this.yVelocity += gravity * deltaTime;   // a = dy/dt  =>  dy = a*dt  =>  dy_f - dy_i = a*dt  =>  dy_f = a*dt + dy_i  =>  where dt = each animation frame
+        this.yPosition += this.yVelocity * deltaTime;   // v = dx/dt  =>  dx = v*dt  =>  dx_f - dx_i = v*dt  =>  dx_f = v*dt + dx_i  =>  where dt = each animation frame
         this.xPosition += this.xVelocity * deltaTime;
         
         // Bounce

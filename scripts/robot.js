@@ -47,11 +47,17 @@ class Robot {
         Cycle through runImages array to animate running.
         Move the character with a step of 2px when running
     */
-    _runAnimation() {
+    _runAnimation(lastFrameTime) {
         this.characterIcon.src = this.runImages[this.runIdx].src;
         this.xPosition = parseInt(this.characterElement.style.left);   // Current xPosition
         
-        const step = 4;
+        const currentTime = performance.now(); // Get current timestamp
+        const deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
+        lastFrameTime = currentTime;
+
+        console.log(deltaTime)
+        const step = 100 * deltaTime;
+        // const step = 4;
 
         // Update the xPosition depending on if moving left or right
         (this.direction === "left") 
@@ -71,11 +77,11 @@ class Robot {
         this.runIdx = (this.runIdx + 1) % this.runImages.length;
 
         // Rerun the animation frame because it only runs once
-        this.runAnimationFrame = requestAnimationFrame(() => this._runAnimation());
+        this.runAnimationFrame = requestAnimationFrame(() => this._runAnimation(lastFrameTime));
     }
 
     // Run method
-    run(direction) {
+    run(direction, lastFrameTime) {
         if (!this.isRunning) {
             this.isRunning = true;
             this.direction = direction;
@@ -84,23 +90,10 @@ class Robot {
                 ? this.characterElement.classList.add("flip-character") 
                 : this.characterElement.classList.remove("flip-character");
 
-            this._runAnimation();
+            this._runAnimation(lastFrameTime);
         }
     }
 
-    // Run method
-    run(direction) {
-        if (!this.isRunning) {
-            this.isRunning = true;
-            this.direction = direction;
-
-            (this.direction === "left") 
-                ? this.characterElement.classList.add("flip-character") 
-                : this.characterElement.classList.remove("flip-character");
-
-            this._runAnimation();
-        }
-    }
 
     _laserAnimation(yLaserStart, lastFrameTime) {
         // this.isLaserActive is set false in the GameController when a collision between the laser and ball is detected
