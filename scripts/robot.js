@@ -135,15 +135,20 @@ class Robot {
     }
 
     // Shoot method
-    shoot(laser, lastFrameTime) {
+    shoot(laserElement, lastFrameTime) {
         // Only shoot if there is no lasers active
         if (!this.isLaserActive) {
             this.isLaserActive = true;
-            this.laserObject = laser;
+            this.laserObject = laserElement;
  
             const yLaserStart = this.boardHeight - this.height/2;   // Make laser start at middle of character height 
             this._laserAnimation(yLaserStart, lastFrameTime);
         }
+    }
+
+    stopLaser() {
+        cancelAnimationFrame(this.laserAnimationFrame);
+        this.isLaserActive = false;
     }
     
     // Stop running method

@@ -62,7 +62,7 @@ class GameController {
                 ballSrc: this.ballImages[1],
                 ballsRequired: 
                     this._determineBallsRequired(3) 
-                    + this._determineBallsRequired(3),
+                    + this._determineBallsRequired(2),
                 balls: [
                     {
                         ballSize: ballSizes.ball3,
@@ -73,8 +73,8 @@ class GameController {
                         yVelocity: 0,
                     },
                     {
-                        ballSize: ballSizes.ball3,
-                        id: 3,
+                        ballSize: ballSizes.ball2,
+                        id: 2,
                         xPosition: 800,
                         yPosition: 200,
                         xVelocity: -150,
@@ -328,8 +328,6 @@ class GameController {
         if (collision) {
             // this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
-
-            // setTimeout(this._checkGameState, 1000);
             this._checkGameState();
         }
 
@@ -355,6 +353,7 @@ class GameController {
     */
     _collisionPause() {
         this._removeRobotEventListeners();
+        this.robotObject.stopLaser();
 
         for (let ballObject of this.activeBallObjects) {
             ballObject.stopBounce();
@@ -381,7 +380,6 @@ class GameController {
 
         } else {   // Player lose 1 out of 3 lives
             this._collisionPause();
-            console.log("PAUSED")
 
             // Pause the game for 2 seconds before resetting it
             setTimeout(() => {
