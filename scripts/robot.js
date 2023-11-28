@@ -26,7 +26,7 @@ class Robot {
         this.xPosition;
 
         this.laserObject;
-        this.isLaserActive;
+        this.isLaserActive = false;
 
         this.runImages = this._getRunImages();
         this._runAnimation = this._runAnimation.bind(this);   // bind this instance to be the robot object, this loses pointer to robot object during animation frame

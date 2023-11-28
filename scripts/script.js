@@ -175,12 +175,12 @@ class GameController {
     }
 
     // Reverse the actions from _startGame()
-    _returnToMain() {
+    _returnToMain(died=false) {
         this._resetGame();
         this.elements.gameBoard.classList.remove("fade-in");
         this.elements.introScreen.classList.remove("fade-out");
 
-        this._closeLevelWinModal();
+        if (!died) this._closeLevelWinModal();
     }
 
     // Load ball images into image object
@@ -319,12 +319,19 @@ class GameController {
     _ballCharacterCollision(ballObject) {
         const collision = this._checkCollision(ballObject, "character");
         if (collision) {
-            ballObject.delete();
+            this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
 
-            this._resetLevel();
-            this.playLevel(this.currentLevel);
+            if (this.robotObject.lives <= 0) {
+                console.log("DIE DIE DIE")
+                this._returnToMain(true);
+            } else {
+                this._resetLevel();
+                this.playLevel(this.currentLevel);
+            }
         }
+
+        return collision
     }
 
     // Ball to laser collision logic helper function
@@ -340,10 +347,13 @@ class GameController {
         }
     }
 
-    // Remove ball from activeBallObjects array. Keep track of active balls
-    _removeBallsFromArray(ball) {
-        const idx = this.activeBallObjects.indexOf(ball);
+    // Remove ball from the game
+    _removeBallFromGame(ball) {
+        // Remove ball from activeBallObjects array
+        const idx = this.activeBallObjects.indexOf(ball);   
         this.activeBallObjects.splice(idx, 1);
+        // Delete ball
+        ball.delete();
     }
 
     /*
@@ -354,12 +364,9 @@ class GameController {
     _splitBalls(ball, ballSrc) {
         this.ballsKilled++;  // Update number of balls killed
 
-        console.log(this.activeBallObjects)
-
         const currentBallID = ball.id;
         if (currentBallID === 1) {   // If smallest ball, delete it
-            this._removeBallsFromArray(ball);
-            ball.delete();
+            this._removeBallFromGame(ball);
             return;
         }
 
@@ -403,8 +410,7 @@ class GameController {
         }
 
         // Delete parent ball after being split in 2
-        this._removeBallsFromArray(ball);
-        ball.delete();
+        this._removeBallFromGame(ball);
     }
 
     // Show level win modal
@@ -444,9 +450,11 @@ class GameController {
         // The idea to use callback functions to detect collisions is from ChatGPT
         // Set ball callback functions which detects ball collision
         ballObject.onPositionChangeCallback = () => {
-            this._ballCharacterCollision(ballObject, ballSrc);
-            this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
-            this._checkLevelWin(this.ballsKilled, this.ballsRequired);
+            const characterCollision = this._ballCharacterCollision(ballObject, ballSrc);
+            if (!characterCollision) {
+                this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
+                this._checkLevelWin(this.ballsKilled, this.ballsRequired);
+            }
         }
    }
 
@@ -507,7 +515,7 @@ class GameController {
 
         // Delete every ball object, there are alot of redundancy. 
         for (let ballObject of this.activeBallObjects) {
-            ballObject.delete();
+            this._removeBallFromGame(ballObject);
         }
 
         this.activeBallObjects = [];
