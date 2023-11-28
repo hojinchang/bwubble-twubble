@@ -15,6 +15,7 @@ class GameController {
         // Create new robot instance
         this.robotObject;
         this.laserObject;
+        this.activeBallObjects;
         this.gameBoard = this.elements.gameBoard;
         this.keyDownHandler;
         this.keyUpHandler;
@@ -158,9 +159,8 @@ class GameController {
             this.playLevel(this.currentLevel);
         });
 
-        this.elements.returnMainBtn.addEventListener("click", (e) => {
-            this._returnToMain(e)
-        });
+        // Return to menu button for level win modal
+        this.elements.returnMainBtn.addEventListener("click", () => {this._returnToMain()});
     }
 
     // Game start transition
@@ -174,7 +174,8 @@ class GameController {
     }
 
     // Reverse the actions from _startGame()
-    _returnToMain(e) {
+    _returnToMain() {
+        this._resetGame();
         this.elements.gameBoard.classList.remove("fade-in");
         this.elements.introScreen.classList.remove("fade-out");
 
@@ -319,6 +320,9 @@ class GameController {
         if (collision) {
             ballObject.delete();
             this.robotObject.lives--;
+
+            this._resetLevel();
+            this.playLevel(this.currentLevel);
         }
     }
 
@@ -330,8 +334,14 @@ class GameController {
                 this._splitBalls(ballObject, ballSrc);
                 robotObject.isLaserActive = false;
                 laserObject.delete();
+                this.laserObject = null;
             }
         }
+    }
+
+    _removeBallsFromArray(ball) {
+        const idx = this.activeBallObjects.indexOf(ball);
+        this.activeBallObjects.splice(idx, 1);
     }
 
     /*
@@ -342,8 +352,11 @@ class GameController {
     _splitBalls(ball, ballSrc) {
         this.ballsKilled++;  // Update number of balls killed
 
+        console.log(this.activeBallObjects)
+
         const currentBallID = ball.id;
         if (currentBallID === 1) {   // If smallest ball, delete it
+            this._removeBallsFromArray(ball);
             ball.delete();
             return;
         }
@@ -384,9 +397,11 @@ class GameController {
             )
 
             this._activateBall(ballObject);
+            this.activeBallObjects.push(ballObject)
         }
 
         // Delete parent ball after being split in 2
+        this._removeBallsFromArray(ball);
         ball.delete();
     }
 
@@ -465,24 +480,34 @@ class GameController {
         return ballObjects;
     }
 
+    // Resets the level 
     _resetLevel() {
-        this.ballsKilled = 0;  // Reset the ball kill count
-        this.ballsRequired = 0;   //
-        this.levelWin = false;  // Reset level win flag
+        if (this.laserObject) {
+            this.robotObject.isLaserActive = false;
+            this.laserObject.delete(); // Remove the laser if it exists
+        }
+        
+        this.ballsKilled = 0;   // Reset the ball kill count
+        this.levelWin = false;   // Reset level win flag
+        this._removeRobotEventListeners();   // Stop user from controlling the robot
 
         // Remove deactivate class from countdown text
         for (let countdown of this.elements.countdownText) {
             countdown.classList.remove("deactivate");
         }
-    }
 
-    
+        // Delete every ball object, there are alot of redundancy. 
+        for (let ballObject of this.activeBallObjects) {
+            ballObject.delete();
+        }
+
+        this.activeBallObjects = [];
+    }
 
     _resetGame() {
         this._resetLevel();
         this.currentLevel = 0;
         this.robotObject = null;
-
     }
 
     // Level method
@@ -494,17 +519,18 @@ class GameController {
             balls,
         } = this.levels[level];
 
-        this.ballsRequired = ballsRequired;
-        console.log(this.ballsRequired)
-        const ballObjects = this._initLevel(ballSrc, balls);  // initialize level
+        this.ballsRequired = ballsRequired; 
+        console.log("balls required", this.ballsRequired)
+        this.activeBallObjects = this._initLevel(ballSrc, balls);
 
+        // Display the countdown container and begin game countdown
         this.elements.countdownContainer.style.display = "flex";
         this._countdown(0);
 
         setTimeout(() => {
             this.elements.countdownContainer.style.display = "none";
             this._setUpRobotEventListeners();
-            for (let ballObject of ballObjects) {
+            for (let ballObject of this.activeBallObjects) {
                 this._activateBall(ballObject);
             }
         }, 5000);
