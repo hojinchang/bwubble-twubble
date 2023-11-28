@@ -106,7 +106,7 @@ class Robot {
         lastFrameTime = currentTime;
 
         // Increase the height of the laser object's property and laser DOM element
-        const step = 500 * deltaTime;
+        const step = Math.ceil(500 * deltaTime);
         this.laserObject.height += step;
         this.laserObject.laserElement.style.height = `${this.laserObject.height}px`;
 

@@ -354,13 +354,24 @@ th {
     opacity: 0;
     display: none;
     position: absolute;
+    width: 600px;
     transition: opacity 1s ease-in-out;
     z-index: 3;
 }
 
-.next-level-btn {
-    display: block;
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    max-width: 500px;
     margin: 0 auto;
+}
+
+.return-menu-btn,
+.next-level-btn {
+    flex: 1;
+    font-size: 20px;
 }
 
 

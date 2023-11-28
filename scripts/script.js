@@ -12,9 +12,12 @@ class GameController {
 
         this.ballImages = this._getBallImages();
 
-        this.robotObject;
+        // Create new robot instance
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.laserObject;
         this.gameBoard = this.elements.gameBoard;
+        this.keyDownHandler;
+        this.keyUpHandler;
 
         this.levelWin = false;
         this.ballsKilled = 0;
@@ -22,14 +25,29 @@ class GameController {
 
         this.currentLevel = 0;
         this.levels = [
+            // {   
+            //     level: 1,
+            //     ballSrc: this.ballImages[0],
+            //     ballsRequired: this._determineBallsRequired(3),
+            //     balls: [
+            //         {
+            //             ballSize: ballSizes.ball3,
+            //             id: 3,
+            //             xPosition: 450,
+            //             yPosition: 200,
+            //             xVelocity: 150,
+            //             yVelocity: 0,
+            //         },
+            //     ],
+            // },
             {   
                 level: 1,
                 ballSrc: this.ballImages[0],
-                ballsRequired: this._determineBallsRequired(3),
+                ballsRequired: this._determineBallsRequired(1),
                 balls: [
                     {
-                        ballSize: ballSizes.ball3,
-                        id: 3,
+                        ballSize: ballSizes.ball1,
+                        id: 1,
                         xPosition: 450,
                         yPosition: 200,
                         xVelocity: 150,
@@ -40,13 +58,24 @@ class GameController {
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
+                ballsRequired: 
+                    this._determineBallsRequired(3) 
+                    + this._determineBallsRequired(3),
                 balls: [
                     {
-                        ballSize: ballSizes.ball4,
-                        id: 4,
-                        xPosition: 300,
+                        ballSize: ballSizes.ball3,
+                        id: 3,
+                        xPosition: 200,
                         yPosition: 200,
                         xVelocity: 150,
+                        yVelocity: 0,
+                    },
+                    {
+                        ballSize: ballSizes.ball3,
+                        id: 3,
+                        xPosition: 800,
+                        yPosition: 200,
+                        xVelocity: -150,
                         yVelocity: 0,
                     },
                 ],
@@ -70,7 +99,7 @@ class GameController {
         this.elements.creditsBtn = document.querySelector(".credits-btn");
         this.elements.creditsModal = document.querySelector(".credits-modal")
         this.elements.gameBoard = document.querySelector(".game-board");
-        this.elements.coundownContainer = document.querySelector(".countdown-container");
+        this.elements.countdownContainer = document.querySelector(".countdown-container");
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
         this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
@@ -174,8 +203,8 @@ class GameController {
 
     // Set up event listeners
     _setUpRobotEventListeners() {
-        // Robot arrow key controls pt.1
-        document.addEventListener("keydown", (e) => {
+        // Keydown function, robot running and shooting
+        this.keyDownHandler = (e) => {
             let lastFrameTime = performance.now();
             if (e.key === "ArrowRight") {
                 this.robotObject.run("right", lastFrameTime);
@@ -186,15 +215,25 @@ class GameController {
                 this.laserObject = new Laser(laserElement);
                 this.robotObject.shoot(this.laserObject, lastFrameTime);
             }
-        })
+        }
 
-        // Robot arrow key controls pt.2
-        document.addEventListener("keyup", (e) => {
+        // Keyup function, stop robot from running
+        this.keyUpHandler = (e) => {
             if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
                 this.robotObject.stopRunning();
                 this.robotObject.direction = null;
             }
-        })
+        }
+
+        document.addEventListener("keydown", this.keyDownHandler);
+        document.addEventListener("keyup", this.keyUpHandler);
+    }
+
+    // Remove event listeners to stop robot control once level win
+    _removeRobotEventListeners() {
+        document.removeEventListener("keydown", this.keyDownHandler);
+        document.removeEventListener("keyup", this.keyUpHandler);
+        this.robotObject.stopRunning();
     }
 
     // Dynamically create ball elements
@@ -337,17 +376,43 @@ class GameController {
     }
 
     _displayLevelWin() {
+        this.elements.levelWinModal.style.display = "block"
+        this.elements.levelWinModal.style.opacity = 1;
+        this.elements.levelWinModalBackdrop.style.display = "block";
+        this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
+    }
 
+    _closeLevelWin() {
+        this.elements.levelWinModal.style.display = "none"
+        this.elements.levelWinModal.style.opacity = 0;
+        this.elements.levelWinModalBackdrop.style.display = "none";
+        this.elements.gameContainer.removeChild(this.elements.levelWinModalBackdrop);
+    }
+
+    _resetLevel() {
+        this.ballsKilled = 0;  // Reset the ball kill count
+        this.ballsRequired = 0;   //
+        this.levelWin = false;  // Reset level win flag
+
+        // Remove deactivate class from countdown text
+        for (let countdown of this.elements.countdownText) {
+            countdown.classList.remove("deactivate");
+        }
     }
 
     _checkLevelWin(ballsKilled, ballsRequired) {
         if (ballsKilled === ballsRequired) {
             this.levelWin = true;
+            this._removeRobotEventListeners();
+            this._displayLevelWin();
 
-            this.elements.levelWinModal.style.display = "block"
-            this.elements.levelWinModal.style.opacity = 1;
-            this.elements.levelWinModalBackdrop.style.display = "block";
-            this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
+            this.elements.nextLevelBtn.addEventListener("click", () => {
+                this.currentLevel++;
+
+                this._closeLevelWin();
+                this._resetLevel();
+                this.playLevel(this.currentLevel);
+            })
         }
     }
 
@@ -389,8 +454,6 @@ class GameController {
 
     // Initialize the level by creating and placing the robot, and create balls
     _initLevel(ballSrc, balls) {
-        // Create new robot instance
-        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this._placeCharacter(this.elements.gameBoard, this.elements.character);
 
         const ballObjects = []
@@ -416,13 +479,14 @@ class GameController {
         } = this.levels[level];
 
         this.ballsRequired = ballsRequired;
+        console.log(this.ballsRequired)
         const ballObjects = this._initLevel(ballSrc, balls);  // initialize level
 
-        this.elements.coundownContainer.style.display = "flex";
+        this.elements.countdownContainer.style.display = "flex";
         this._countdown(0);
 
         setTimeout(() => {
-            this.elements.coundownContainer.style.display = "none";
+            this.elements.countdownContainer.style.display = "none";
             this._setUpRobotEventListeners();
             for (let ballObject of ballObjects) {
                 this._activateBall(ballObject);
@@ -442,8 +506,8 @@ class GameController {
     
 }
 
-// const game = new GameController(true);
-const game = new GameController();
+const game = new GameController(true);
+// const game = new GameController();
 
 /* ********************************************
                 Game Controller
