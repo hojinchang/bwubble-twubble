@@ -103,7 +103,7 @@ th {
     background-position: center;
     background-size: cover;
 
-    transition: opacity 1s ease-in-out;
+    transition: opacity 2s ease-in-out;
 }
 
 .intro-text {
@@ -298,25 +298,24 @@ th {
 
 .game-board {
     opacity: 0;
+    visibility: hidden;
     background-image: url(../assets/background/background-resized.jpg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     overflow: hidden;
 
-    transition: opacity 1s ease-in-out;
+    transition: opacity 2s ease-in-out;
 }
 
 .fade-out {
+    visibility: hidden;
     opacity: 0;
 }
 
 .fade-in {
+    visibility: visible;
     opacity: 1;
-}
-
-.hide {
-    display: none;
 }
 
 .countdown-container {

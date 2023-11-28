@@ -13,7 +13,7 @@ class GameController {
         this.ballImages = this._getBallImages();
 
         // Create new robot instance
-        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
+        this.robotObject;
         this.laserObject;
         this.gameBoard = this.elements.gameBoard;
         this.keyDownHandler;
@@ -85,7 +85,7 @@ class GameController {
         // this.playLevel(this.currentLevel);
         // this.playLevel(1);
 
-        this._setUpGameIntro();
+        this._setUpGame();
         if (this.devmode) this._devmode();
     }
 
@@ -103,6 +103,7 @@ class GameController {
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
         this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
+        this.elements.returnMainBtn = document.querySelector(".return-menu-btn");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
 
@@ -113,57 +114,71 @@ class GameController {
         this.elements.levelWinModalBackdrop.classList.add("modal-backdrop", "level-win-modal-backdrop");
     }
 
-    _setUpGameIntro() {
-        // Help function with sets the modal and backdrop to show
-        const _openModal = (modalType, modal, modalBackdrop, gameContainer) => {
+    _setUpGame() {
+        // Helper function which sets the modal and backdrop to show
+        const _openIntroModal = (modalType, modal, modalBackdrop, gameContainer) => {
             (modalType === "instructions") ? modal.style.display = "grid": modal.style.display = "flex"
             modalBackdrop.style.display = "block";
             gameContainer.insertBefore(modalBackdrop, this.elements.gameBoard);
         }
 
-        const _closeModal = (e, modalBackdrop, gameContainer) => {
+        // Helper function which closes the modal and backdrop
+        const _closeIntroModal = (e, modalBackdrop, gameContainer) => {
             const modal = e.target.closest(".modal");
             modal.style.display = "none";
             modalBackdrop.style.display = "none";
             gameContainer.removeChild(modalBackdrop);
         }
 
-
+        // Start game
         this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
-        this.elements.introScreen.addEventListener("transitionend", (e) => {
-            // Stop trigger on my button scale transform transition end
-            if (e.propertyName === "transform") return;
-            
-            this._startGame(true);
-        });
 
         // Show instructions modal
         this.elements.instructionsBtn.addEventListener("click", () => {
-            _openModal("instructions", this.elements.instructionsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
+            _openIntroModal("instructions", this.elements.instructionsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
         });
 
         // Show credits modal
         this.elements.creditsBtn.addEventListener("click", () => {
-            _openModal("credits", this.elements.creditsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
+            _openIntroModal("credits", this.elements.creditsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
         });
 
         // Close modal
         this.elements.modalCloseBtn.forEach(closeBtn => {
             closeBtn.addEventListener("click", (e) => {
-                _closeModal(e, this.elements.introModalBackdrop, this.elements.gameContainer)
+                _closeIntroModal(e, this.elements.introModalBackdrop, this.elements.gameContainer)
             })
+        });
+
+        // Next level button for level win modal
+        this.elements.nextLevelBtn.addEventListener("click", () => {
+            this.currentLevel++;
+            this._closeLevelWinModal();
+            this._resetLevel();
+            this.playLevel(this.currentLevel);
+        });
+
+        this.elements.returnMainBtn.addEventListener("click", (e) => {
+            this._returnToMain(e)
         });
     }
 
     // Game start transition
-    _startGame(displayGameBoard = false) {
-        if (!displayGameBoard) {
-            this.elements.introScreen.classList.add("fade-out");
-        } else {
-            this.elements.introScreen.classList.add("hide");
-            this.elements.gameBoard.classList.add("fade-in");
-            this.playLevel(this.currentLevel);
-        }
+    _startGame() {
+        this.elements.introScreen.classList.add("fade-out");
+        this.elements.gameBoard.classList.add("fade-in");
+        
+        // Create new robot instance
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
+        this.playLevel(this.currentLevel);
+    }
+
+    // Reverse the actions from _startGame()
+    _returnToMain(e) {
+        this.elements.gameBoard.classList.remove("fade-in");
+        this.elements.introScreen.classList.remove("fade-out");
+
+        this._closeLevelWinModal();
     }
 
     // Load ball images into image object
@@ -375,44 +390,25 @@ class GameController {
         ball.delete();
     }
 
-    _displayLevelWin() {
+    _displayLevelWinModal() {
         this.elements.levelWinModal.style.display = "block"
         this.elements.levelWinModal.style.opacity = 1;
         this.elements.levelWinModalBackdrop.style.display = "block";
         this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
     }
 
-    _closeLevelWin() {
+    _closeLevelWinModal() {
         this.elements.levelWinModal.style.display = "none"
         this.elements.levelWinModal.style.opacity = 0;
         this.elements.levelWinModalBackdrop.style.display = "none";
         this.elements.gameContainer.removeChild(this.elements.levelWinModalBackdrop);
     }
 
-    _resetLevel() {
-        this.ballsKilled = 0;  // Reset the ball kill count
-        this.ballsRequired = 0;   //
-        this.levelWin = false;  // Reset level win flag
-
-        // Remove deactivate class from countdown text
-        for (let countdown of this.elements.countdownText) {
-            countdown.classList.remove("deactivate");
-        }
-    }
-
     _checkLevelWin(ballsKilled, ballsRequired) {
         if (ballsKilled === ballsRequired) {
             this.levelWin = true;
             this._removeRobotEventListeners();
-            this._displayLevelWin();
-
-            this.elements.nextLevelBtn.addEventListener("click", () => {
-                this.currentLevel++;
-
-                this._closeLevelWin();
-                this._resetLevel();
-                this.playLevel(this.currentLevel);
-            })
+            this._displayLevelWinModal();
         }
     }
 
@@ -469,6 +465,26 @@ class GameController {
         return ballObjects;
     }
 
+    _resetLevel() {
+        this.ballsKilled = 0;  // Reset the ball kill count
+        this.ballsRequired = 0;   //
+        this.levelWin = false;  // Reset level win flag
+
+        // Remove deactivate class from countdown text
+        for (let countdown of this.elements.countdownText) {
+            countdown.classList.remove("deactivate");
+        }
+    }
+
+    
+
+    _resetGame() {
+        this._resetLevel();
+        this.currentLevel = 0;
+        this.robotObject = null;
+
+    }
+
     // Level method
     playLevel(level) {
         // Collect balls src and array from levels array
@@ -500,14 +516,15 @@ class GameController {
         this.elements.introScreen.classList.add("hide");
         this.elements.gameBoard.style.opacity = 100;
         this.elements.gameBoard.style.transition = null;
+        this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.playLevel(this.currentLevel);
     }
 
     
 }
 
-const game = new GameController(true);
-// const game = new GameController();
+// const game = new GameController(true);
+const game = new GameController();
 
 /* ********************************************
                 Game Controller
