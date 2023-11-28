@@ -103,6 +103,7 @@ class GameController {
         this.elements.countdownContainer = document.querySelector(".countdown-container");
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
+        this.elements.currentLevelSpan = document.querySelector(".current-level");
         this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
         this.elements.returnMainBtn = document.querySelector(".return-menu-btn");
         this.elements.character = document.querySelector(".character-container");
@@ -339,6 +340,7 @@ class GameController {
         }
     }
 
+    // Remove ball from activeBallObjects array. Keep track of active balls
     _removeBallsFromArray(ball) {
         const idx = this.activeBallObjects.indexOf(ball);
         this.activeBallObjects.splice(idx, 1);
@@ -405,13 +407,17 @@ class GameController {
         ball.delete();
     }
 
+    // Show level win modal
     _displayLevelWinModal() {
+        this.elements.currentLevelSpan.innerText = this.currentLevel + 1;
+
         this.elements.levelWinModal.style.display = "block"
         this.elements.levelWinModal.style.opacity = 1;
         this.elements.levelWinModalBackdrop.style.display = "block";
         this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
     }
 
+    // Close level win modal
     _closeLevelWinModal() {
         this.elements.levelWinModal.style.display = "none"
         this.elements.levelWinModal.style.opacity = 0;
@@ -419,6 +425,7 @@ class GameController {
         this.elements.gameContainer.removeChild(this.elements.levelWinModalBackdrop);
     }
 
+    // Callback function which checks if level is won
     _checkLevelWin(ballsKilled, ballsRequired) {
         if (ballsKilled === ballsRequired) {
             this.levelWin = true;
@@ -443,21 +450,23 @@ class GameController {
         }
    }
 
+   // Level countdown method
     _countdown(i) {
         let delay;
-        (i === 0) ? delay=0 : delay=1000;
-        if (i < this.elements.countdownText.length+1) {
+        (i === 0) ? delay = 0 : delay = 1000;
+        if (i < this.elements.countdownText.length + 1) {  // Countdown from 3 to 0
             setTimeout(() => {
                 if (i !== 0) {
-                    this.elements.countdownText[i - 1].classList.remove("activate");
-                    this.elements.countdownText[i - 1].classList.add("deactivate");
+                    this.elements.countdownText[i - 1].classList.remove("activate");   // Remove class
+                    this.elements.countdownText[i - 1].classList.add("deactivate");   //  Slide number out of view
                 }
 
+                // break out of loop
                 if (i === this.elements.countdownText.length) {
                     return
                 }
                
-                this.elements.countdownText[i].classList.add("activate");
+                this.elements.countdownText[i].classList.add("activate");   // Slide number into view
                 this._countdown(i + 1);
             }, delay);
         }
