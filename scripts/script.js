@@ -329,14 +329,8 @@ class GameController {
             // this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
 
-            if (this.robotObject.lives <= 0) {   // Player lost all 3 lives
-                this.died = true;
-                this._resetLevel();
-                this._displayInGameModal(this.elements.gameLoseModal);   // Show game lose modal
-            } else {   // Player lose 1 out of 3 lives
-                this._resetLevel();
-                this.playLevel(this.currentLevel);
-            }
+            // setTimeout(this._checkGameState, 1000);
+            this._checkGameState();
         }
 
         return collision
@@ -352,6 +346,48 @@ class GameController {
                 laserObject.delete();
                 this.laserObject = null;
             }
+        }
+    }
+
+    /* 
+        Pause the game when a ball to character collision is detected
+        Pause so the player can see the collision rather than immediately resetting the game
+    */
+    _collisionPause() {
+        this._removeRobotEventListeners();
+
+        for (let ballObject of this.activeBallObjects) {
+            ballObject.stopBounce();
+        }
+    }
+
+    /*
+        Method which checks the game state
+        If the player has > 1 lives, restart the level
+        If the player has <= 0 lives, player loses, show game lose modal 
+    */
+    _checkGameState() {
+        const timoutDelay = 2000;
+
+        if (this.robotObject.lives <= 0) {   // Player lost all 3 lives
+            this.died = true;
+            this._collisionPause();
+
+            // Pause the game for 2 seconds before resetting it
+            setTimeout(() => {
+                this._resetLevel();
+                this._displayInGameModal(this.elements.gameLoseModal);   // Show game lose modal
+            }, timoutDelay);
+
+        } else {   // Player lose 1 out of 3 lives
+            this._collisionPause();
+            console.log("PAUSED")
+
+            // Pause the game for 2 seconds before resetting it
+            setTimeout(() => {
+                this._resetLevel();
+                this.playLevel(this.currentLevel);
+            }, timoutDelay);
         }
     }
 
@@ -438,8 +474,8 @@ class GameController {
     }
 
     // Callback function which checks if level is won
-    _checkLevelWin(ballsKilled, ballsRequired) {
-        if (ballsKilled === ballsRequired) {
+    _checkLevelWin(ballsKilled, ballsRequired, lives) {
+        if (ballsKilled === ballsRequired && lives > 0) {
             this.levelWin = true;
             this._removeRobotEventListeners();
             this._displayInGameModal(this.elements.levelWinModal);
@@ -459,7 +495,7 @@ class GameController {
             const characterCollision = this._ballCharacterCollision(ballObject, ballSrc);
             if (!characterCollision) {
                 this._ballLaserCollision(ballObject, ballSrc, this.robotObject, this.laserObject);
-                this._checkLevelWin(this.ballsKilled, this.ballsRequired);
+                this._checkLevelWin(this.ballsKilled, this.ballsRequired, this.robotObject.lives);
             }
         }
    }
@@ -551,6 +587,7 @@ class GameController {
         this.elements.countdownContainer.style.display = "flex";
         this._countdown(0);
 
+        // Run after the countdown
         setTimeout(() => {
             this.elements.countdownContainer.style.display = "none";
             this._setUpRobotEventListeners();

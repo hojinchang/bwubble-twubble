@@ -80,11 +80,14 @@ class Ball {
         this.bounceAnimationFrame = requestAnimationFrame(() => this.bounce(lastFrameTime));
     }
 
-    delete() {
-        this.isDeleted = true;
+    stopBounce() {
         cancelAnimationFrame(this.bounceAnimationFrame);
         this.bounceAnimationFrame = null;
         this._onPositionChange = null;  // Stop callback function
+        this.isDeleted = true;
+    }
+
+    delete() {
         this.ballElement.remove();  // Remove ball element from DOM
     }
 }
