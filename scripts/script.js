@@ -15,7 +15,7 @@ class GameController {
         // Create new robot instance
         this.robotObject;
         this.laserObject;
-        this.activeBallObjects;
+        this.activeBallObjects = [];
         this.gameBoard = this.elements.gameBoard;
         this.keyDownHandler;
         this.keyUpHandler;
@@ -41,21 +41,21 @@ class GameController {
             //         },
             //     ],
             // },
-            {   
-                level: 1,
-                ballSrc: this.ballImages[0],
-                ballsRequired: this._determineBallsRequired(1),
-                balls: [
-                    {
-                        ballSize: ballSizes.ball1,
-                        id: 1,
-                        xPosition: 450,
-                        yPosition: 200,
-                        xVelocity: 150,
-                        yVelocity: 0,
-                    },
-                ],
-            },
+            // {   
+            //     level: 1,
+            //     ballSrc: this.ballImages[0],
+            //     ballsRequired: this._determineBallsRequired(1),
+            //     balls: [
+            //         {
+            //             ballSize: ballSizes.ball1,
+            //             id: 1,
+            //             xPosition: 450,
+            //             yPosition: 200,
+            //             xVelocity: 150,
+            //             yVelocity: 0,
+            //         },
+            //     ],
+            // },
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
@@ -108,6 +108,7 @@ class GameController {
         this.elements.returnMainBtn = document.querySelector(".return-menu-btn");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
+        this.elements.gameLoseModal = document.querySelector(".game-lose-modal");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
@@ -155,7 +156,7 @@ class GameController {
         // Next level button for level win modal
         this.elements.nextLevelBtn.addEventListener("click", () => {
             this.currentLevel++;
-            this._closeLevelWinModal();
+            this._closeInGameModal(this.elements.levelWinModal);
             this._resetLevel();
             this.playLevel(this.currentLevel);
         });
@@ -174,14 +175,28 @@ class GameController {
         this.playLevel(this.currentLevel);
     }
 
-    // Reverse the actions from _startGame()
     _returnToMain(died=false) {
         this._resetGame();
+        // Reverse the animations from _startGame()
         this.elements.gameBoard.classList.remove("fade-in");
         this.elements.introScreen.classList.remove("fade-out");
 
         if (!died) this._closeLevelWinModal();
+
+        // (died) 
+        //     ? this._displayInGameModal(this.elements.gameLoseModal)
+        //     : this._closeInGameModal(this.elements.levelWinModal);
     }
+
+
+    // _returnToMain() {
+    //     this._resetGame();
+    //     // Reverse the animations from _startGame()
+    //     this.elements.gameBoard.classList.remove("fade-in");
+    //     this.elements.introScreen.classList.remove("fade-out");
+
+    //     this._closeInGameModal(this.elements.levelWinModal);
+    // }
 
     // Load ball images into image object
     _getBallImages() {
@@ -319,13 +334,16 @@ class GameController {
     _ballCharacterCollision(ballObject) {
         const collision = this._checkCollision(ballObject, "character");
         if (collision) {
-            this._removeBallFromGame(ballObject);
+            // this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
 
             if (this.robotObject.lives <= 0) {
                 console.log("DIE DIE DIE")
                 this._returnToMain(true);
+                // this._resetGame();
+                // this._displayInGameModal(this.elements.gameLoseModal);
             } else {
+                console.log("RESET DUE TO COLLIISION")
                 this._resetLevel();
                 this.playLevel(this.currentLevel);
             }
@@ -414,19 +432,17 @@ class GameController {
     }
 
     // Show level win modal
-    _displayLevelWinModal() {
-        this.elements.currentLevelSpan.innerText = this.currentLevel + 1;
-
-        this.elements.levelWinModal.style.display = "block"
-        this.elements.levelWinModal.style.opacity = 1;
+    _displayInGameModal(modal) {
+        modal.style.display = "block"
+        modal.style.opacity = 1;
         this.elements.levelWinModalBackdrop.style.display = "block";
         this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
     }
 
     // Close level win modal
-    _closeLevelWinModal() {
-        this.elements.levelWinModal.style.display = "none"
-        this.elements.levelWinModal.style.opacity = 0;
+    _closeInGameModal(modal) {
+        modal.style.display = "none"
+        modal.style.opacity = 0;
         this.elements.levelWinModalBackdrop.style.display = "none";
         this.elements.gameContainer.removeChild(this.elements.levelWinModalBackdrop);
     }
@@ -436,7 +452,7 @@ class GameController {
         if (ballsKilled === ballsRequired) {
             this.levelWin = true;
             this._removeRobotEventListeners();
-            this._displayLevelWinModal();
+            this._displayInGameModal(this.elements.levelWinModal);
         }
     }
 
@@ -513,11 +529,11 @@ class GameController {
             countdown.classList.remove("deactivate");
         }
 
-        // Delete every ball object, there are alot of redundancy. 
+        // Delete every active ball
         for (let ballObject of this.activeBallObjects) {
-            this._removeBallFromGame(ballObject);
+            ballObject.delete();
         }
-
+        
         this.activeBallObjects = [];
     }
 
