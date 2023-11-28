@@ -9,7 +9,7 @@ class Robot {
         characterIcon, 
         gameBoardElement,
     ) {
-        this.lives = 3;
+        this.lives = 1;
         this.characterElement = characterElement;
         this.characterIcon = characterIcon;
         this.gameBoardElement = gameBoardElement;

@@ -21,6 +21,7 @@ class GameController {
         this.keyUpHandler;
 
         this.levelWin = false;
+        this.died = false;
         this.ballsKilled = 0;
         this.ballsRequired;
 
@@ -41,21 +42,21 @@ class GameController {
             //         },
             //     ],
             // },
-            // {   
-            //     level: 1,
-            //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(1),
-            //     balls: [
-            //         {
-            //             ballSize: ballSizes.ball1,
-            //             id: 1,
-            //             xPosition: 450,
-            //             yPosition: 200,
-            //             xVelocity: 150,
-            //             yVelocity: 0,
-            //         },
-            //     ],
-            // },
+            {   
+                level: 1,
+                ballSrc: this.ballImages[0],
+                ballsRequired: this._determineBallsRequired(1),
+                balls: [
+                    {
+                        ballSize: ballSizes.ball1,
+                        id: 1,
+                        xPosition: 450,
+                        yPosition: 200,
+                        xVelocity: 150,
+                        yVelocity: 0,
+                    },
+                ],
+            },
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
@@ -105,7 +106,7 @@ class GameController {
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
         this.elements.currentLevelSpan = document.querySelector(".current-level");
         this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
-        this.elements.returnMainBtn = document.querySelector(".return-menu-btn");
+        this.elements.returnMainBtn = document.querySelectorAll(".return-menu-btn");
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
         this.elements.gameLoseModal = document.querySelector(".game-lose-modal");
@@ -113,8 +114,8 @@ class GameController {
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
         this.elements.introModalBackdrop.classList.add("modal-backdrop", "intro-modal-backdrop");
-        this.elements.levelWinModalBackdrop = document.createElement("div");
-        this.elements.levelWinModalBackdrop.classList.add("modal-backdrop", "level-win-modal-backdrop");
+        this.elements.inGameModalBackdrop = document.createElement("div");
+        this.elements.inGameModalBackdrop.classList.add("modal-backdrop", "level-win-modal-backdrop");
     }
 
     _setUpGame() {
@@ -162,7 +163,9 @@ class GameController {
         });
 
         // Return to menu button for level win modal
-        this.elements.returnMainBtn.addEventListener("click", () => {this._returnToMain()});
+        this.elements.returnMainBtn.forEach(btn => {
+            btn.addEventListener("click", () => {this._returnToMain()});
+        });
     }
 
     // Game start transition
@@ -175,28 +178,17 @@ class GameController {
         this.playLevel(this.currentLevel);
     }
 
-    _returnToMain(died=false) {
-        this._resetGame();
+    _returnToMain() {
         // Reverse the animations from _startGame()
         this.elements.gameBoard.classList.remove("fade-in");
         this.elements.introScreen.classList.remove("fade-out");
 
-        if (!died) this._closeLevelWinModal();
+        (this.died) 
+            ? this._closeInGameModal(this.elements.gameLoseModal)
+            : this._closeInGameModal(this.elements.levelWinModal);
 
-        // (died) 
-        //     ? this._displayInGameModal(this.elements.gameLoseModal)
-        //     : this._closeInGameModal(this.elements.levelWinModal);
+        this._resetGame();
     }
-
-
-    // _returnToMain() {
-    //     this._resetGame();
-    //     // Reverse the animations from _startGame()
-    //     this.elements.gameBoard.classList.remove("fade-in");
-    //     this.elements.introScreen.classList.remove("fade-out");
-
-    //     this._closeInGameModal(this.elements.levelWinModal);
-    // }
 
     // Load ball images into image object
     _getBallImages() {
@@ -337,13 +329,11 @@ class GameController {
             // this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
 
-            if (this.robotObject.lives <= 0) {
-                console.log("DIE DIE DIE")
-                this._returnToMain(true);
-                // this._resetGame();
-                // this._displayInGameModal(this.elements.gameLoseModal);
-            } else {
-                console.log("RESET DUE TO COLLIISION")
+            if (this.robotObject.lives <= 0) {   // Player lost all 3 lives
+                this.died = true;
+                this._resetLevel();
+                this._displayInGameModal(this.elements.gameLoseModal);   // Show game lose modal
+            } else {   // Player lose 1 out of 3 lives
                 this._resetLevel();
                 this.playLevel(this.currentLevel);
             }
@@ -435,16 +425,16 @@ class GameController {
     _displayInGameModal(modal) {
         modal.style.display = "block"
         modal.style.opacity = 1;
-        this.elements.levelWinModalBackdrop.style.display = "block";
-        this.elements.gameContainer.insertBefore(this.elements.levelWinModalBackdrop, this.elements.gameBoard);
+        this.elements.inGameModalBackdrop.style.display = "block";
+        this.elements.gameContainer.insertBefore(this.elements.inGameModalBackdrop, this.elements.gameBoard);
     }
 
     // Close level win modal
     _closeInGameModal(modal) {
         modal.style.display = "none"
         modal.style.opacity = 0;
-        this.elements.levelWinModalBackdrop.style.display = "none";
-        this.elements.gameContainer.removeChild(this.elements.levelWinModalBackdrop);
+        this.elements.inGameModalBackdrop.style.display = "none";
+        this.elements.gameContainer.removeChild(this.elements.inGameModalBackdrop);
     }
 
     // Callback function which checks if level is won
@@ -541,6 +531,7 @@ class GameController {
         this._resetLevel();
         this.currentLevel = 0;
         this.robotObject = null;
+        this.died = false;
     }
 
     // Level method

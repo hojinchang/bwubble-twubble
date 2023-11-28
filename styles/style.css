@@ -164,6 +164,10 @@ th {
     box-shadow: var(--laser-glow-shadow);
 }
 
+.modal p {
+    color: var(--text-colour);
+}
+
 .instructions-modal,
 .credits-modal {
     display: none;
@@ -204,10 +208,6 @@ th {
 .instructions-modal h2 {
     grid-column: 1 / 4;
     grid-row: 1 / 2;
-}
-
-.instructions-modal p {
-    color: var(--text-colour);
 }
 
 .instructions-container {
@@ -377,12 +377,23 @@ th {
 .game-lose-modal {
     opacity: 0;
     display: none;
-    position: absolute;
     width: 600px;
     transition: opacity 1s ease-in-out;
     z-index: 3;
+    text-align: center;
 }
 
+.game-lose-modal h2 {
+    margin: 0;
+}
+
+.game-lose-modal .game-lose-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 3rem 0;
+    font-size: 1.2rem;
+}
 
 .character-container {
     position: absolute;
