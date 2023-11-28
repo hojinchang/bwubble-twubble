@@ -27,29 +27,14 @@ class GameController {
 
         this.currentLevel = 0;
         this.levels = [
-            // {   
-            //     level: 1,
-            //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(3),
-            //     balls: [
-            //         {
-            //             ballSize: ballSizes.ball3,
-            //             id: 3,
-            //             xPosition: 450,
-            //             yPosition: 200,
-            //             xVelocity: 150,
-            //             yVelocity: 0,
-            //         },
-            //     ],
-            // },
             {   
                 level: 1,
                 ballSrc: this.ballImages[0],
-                ballsRequired: this._determineBallsRequired(1),
+                ballsRequired: this._determineBallsRequired(3),
                 balls: [
                     {
-                        ballSize: ballSizes.ball1,
-                        id: 1,
+                        ballSize: ballSizes.ball3,
+                        id: 3,
                         xPosition: 450,
                         yPosition: 200,
                         xVelocity: 150,
@@ -57,6 +42,21 @@ class GameController {
                     },
                 ],
             },
+            // {   
+            //     level: 1,
+            //     ballSrc: this.ballImages[0],
+            //     ballsRequired: this._determineBallsRequired(1),
+            //     balls: [
+            //         {
+            //             ballSize: ballSizes.ball1,
+            //             id: 1,
+            //             xPosition: 450,
+            //             yPosition: 200,
+            //             xVelocity: 150,
+            //             yVelocity: 0,
+            //         },
+            //     ],
+            // },
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
@@ -182,11 +182,12 @@ class GameController {
         // Reverse the animations from _startGame()
         this.elements.gameBoard.classList.remove("fade-in");
         this.elements.introScreen.classList.remove("fade-out");
-
+        
         (this.died) 
             ? this._closeInGameModal(this.elements.gameLoseModal)
             : this._closeInGameModal(this.elements.levelWinModal);
 
+        // debugger;
         this._resetGame();
     }
 
@@ -374,7 +375,7 @@ class GameController {
 
             // Pause the game for 2 seconds before resetting it
             setTimeout(() => {
-                this._resetLevel();
+                // this._resetLevel();
                 this._displayInGameModal(this.elements.gameLoseModal);   // Show game lose modal
             }, timoutDelay);
 
@@ -542,6 +543,7 @@ class GameController {
         if (this.laserObject) {
             this.robotObject.isLaserActive = false;
             this.laserObject.delete(); // Remove the laser if it exists
+            this.laserObject = null;
         }
         
         this.ballsKilled = 0;   // Reset the ball kill count

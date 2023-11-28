@@ -9,7 +9,7 @@ class Robot {
         characterIcon, 
         gameBoardElement,
     ) {
-        this.lives = 3;
+        this.lives = 1;
         this.characterElement = characterElement;
         this.characterIcon = characterIcon;
         this.gameBoardElement = gameBoardElement;
@@ -135,11 +135,11 @@ class Robot {
     }
 
     // Shoot method
-    shoot(laserElement, lastFrameTime) {
+    shoot(laserObject, lastFrameTime) {
         // Only shoot if there is no lasers active
         if (!this.isLaserActive) {
             this.isLaserActive = true;
-            this.laserObject = laserElement;
+            this.laserObject = laserObject;
  
             const yLaserStart = this.boardHeight - this.height/2;   // Make laser start at middle of character height 
             this._laserAnimation(yLaserStart, lastFrameTime);

@@ -88,6 +88,7 @@ class Ball {
     }
 
     delete() {
+        this._onPositionChange = null;  // Stop callback function
         this.ballElement.remove();  // Remove ball element from DOM
     }
 }
