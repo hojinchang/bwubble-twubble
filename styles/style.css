@@ -289,10 +289,14 @@ th {
 .credits-modal {
     flex-direction: column;
     align-items: center;
-    gap: 12px;
 }
 
-.table-container {
+.credits-modal .credits-text {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+}
+
+.credits-modal .table-container {
     margin: 0 auto;
 }
 
