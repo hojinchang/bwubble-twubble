@@ -118,7 +118,7 @@ class GameController {
 
         this.elements.scoreBoard = document.querySelector(".score-board");
         this.elements.levelText = document.querySelector(".level-text");
-        this.elements.lifeHearts = document.querySelectorAll(".heart");
+        this.elements.lifeHearts = document.querySelectorAll(".heart-icon");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
@@ -340,6 +340,7 @@ class GameController {
         if (collision) {
             // this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
+            this._updateLifeHearts();
             this._checkGameState();
         }
 
@@ -581,9 +582,22 @@ class GameController {
         this.died = false;
     }
 
+    _updateLifeHearts() {
+        const lives = this.robotObject.lives;
+        for (let i = 0; i < 3; i++) {
+            if (i < lives) {
+                this.elements.lifeHearts[i].src = "../assets/scoreboard/heart.png";
+            } else {
+                this.elements.lifeHearts[i].src = "../assets/scoreboard/heart-black.png";
+            }
+        }
+    }
+
     // Level method
     playLevel(level) {
         this.elements.levelText.innerText = this.currentLevel+1;
+        // this._updateLifeHearts();
+
 
         // Collect balls src and array from levels array
         const { 
