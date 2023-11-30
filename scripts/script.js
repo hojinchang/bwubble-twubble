@@ -354,10 +354,14 @@ class GameController {
         if (robotObject.isLaserActive) {
             const ballLaserCollision = this._checkCollision(ballObject, "laser")
             if (ballLaserCollision) {
-                this._splitBalls(ballObject, ballSrc);
-                robotObject.isLaserActive = false;
-                laserObject.delete();
-                this.laserObject = null;
+                this._splitBalls(ballObject, ballSrc);   // Split the ball into 2
+                robotObject.isLaserActive = false;   // Reset
+                laserObject.delete();   // Delete laser 
+                this.laserObject = null;   // Delete laser 
+
+                // Update score
+                this.score += 100;
+                this.elements.scoreText.innerText = this.score;
             }
         }
     }
@@ -370,6 +374,7 @@ class GameController {
         this._removeRobotEventListeners();
         this.robotObject.stopLaser();
 
+        // Stop bounce animation of every ball
         for (let ballObject of this.activeBallObjects) {
             ballObject.stopBounce();
         }
@@ -597,9 +602,9 @@ class GameController {
 
     // Level method
     playLevel(level) {
+        // Update scoreboard
+        this.elements.scoreText.innerText = this.score;
         this.elements.levelText.innerText = this.currentLevel+1;
-        // this._updateLifeHearts();
-
 
         // Collect balls src and array from levels array
         const { 
