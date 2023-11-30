@@ -300,6 +300,51 @@ th {
     margin: 0 auto;
 }
 
+.level-win-modal {
+    opacity: 0;
+    display: none;
+    position: absolute;
+    width: 600px;
+    transition: opacity 1s ease-in-out;
+    z-index: 3;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 60px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.return-menu-btn,
+.next-level-btn {
+    flex: 1;
+    font-size: 20px;
+}
+
+.game-lose-modal {
+    opacity: 0;
+    display: none;
+    width: 600px;
+    transition: opacity 1s ease-in-out;
+    z-index: 3;
+    text-align: center;
+}
+
+.game-lose-modal h2 {
+    margin: 0;
+}
+
+.game-lose-modal .game-lose-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 3rem 0;
+    font-size: 1.2rem;
+}
+
 .game-board {
     opacity: 0;
     visibility: hidden;
@@ -310,16 +355,6 @@ th {
     overflow: hidden;
 
     transition: opacity 2s ease-in-out;
-}
-
-.fade-out {
-    visibility: hidden;
-    opacity: 0;
-}
-
-.fade-in {
-    visibility: visible;
-    opacity: 1;
 }
 
 .countdown-container {
@@ -353,51 +388,19 @@ th {
     transform: translateX(-150px) scale(0);
 }
 
-.level-win-modal {
+.score-board {
     opacity: 0;
-    display: none;
-    position: absolute;
-    width: 600px;
-    transition: opacity 1s ease-in-out;
-    z-index: 3;
-}
-
-.button-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 60px;
-    max-width: 500px;
+    visibility: hidden;
     margin: 0 auto;
+    width: 1000px;
+    height: 100px;
+    z-index: 10;
+    background: #333333;
+
+    transition: opacity 2s ease-in-out;
 }
 
-.return-menu-btn,
-.next-level-btn {
-    flex: 1;
-    font-size: 20px;
-}
 
-
-.game-lose-modal {
-    opacity: 0;
-    display: none;
-    width: 600px;
-    transition: opacity 1s ease-in-out;
-    z-index: 3;
-    text-align: center;
-}
-
-.game-lose-modal h2 {
-    margin: 0;
-}
-
-.game-lose-modal .game-lose-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin: 3rem 0;
-    font-size: 1.2rem;
-}
 
 .character-container {
     position: absolute;
@@ -429,4 +432,15 @@ th {
     box-shadow: var(--laser-glow-shadow);
     border: 3px solid red;
     border-radius: 10px;
+}
+
+
+.fade-out {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.fade-in {
+    visibility: visible;
+    opacity: 1;
 }

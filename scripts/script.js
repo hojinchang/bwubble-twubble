@@ -45,11 +45,11 @@ class GameController {
             // {   
             //     level: 1,
             //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(1),
+            //     ballsRequired: this._determineBallsRequired(3),
             //     balls: [
             //         {
-            //             ballSize: ballSizes.ball1,
-            //             id: 1,
+            //             ballSize: ballSizes.ball3,
+            //             id: 3,
             //             xPosition: 450,
             //             yPosition: 200,
             //             xVelocity: 150,
@@ -101,6 +101,7 @@ class GameController {
         this.elements.creditsBtn = document.querySelector(".credits-btn");
         this.elements.creditsModal = document.querySelector(".credits-modal")
         this.elements.gameBoard = document.querySelector(".game-board");
+        this.elements.scoreBoard = document.querySelector(".score-board");
         this.elements.countdownContainer = document.querySelector(".countdown-container");
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
@@ -172,6 +173,7 @@ class GameController {
     _startGame() {
         this.elements.introScreen.classList.add("fade-out");
         this.elements.gameBoard.classList.add("fade-in");
+        this.elements.scoreBoard.classList.add("fade-in");
         
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
@@ -180,8 +182,9 @@ class GameController {
 
     _returnToMain() {
         // Reverse the animations from _startGame()
-        this.elements.gameBoard.classList.remove("fade-in");
         this.elements.introScreen.classList.remove("fade-out");
+        this.elements.gameBoard.classList.remove("fade-in");
+        this.elements.scoreBoard.classList.remove("fade-in");
         
         (this.died) 
             ? this._closeInGameModal(this.elements.gameLoseModal)
