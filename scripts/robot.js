@@ -173,6 +173,7 @@ class Laser {
         this.laserElement = laserElement;
         this.height = 0;
         this.width = parseInt(this.laserElement.style.width);
+        console.log(this.width)
     }
 
     delete() {

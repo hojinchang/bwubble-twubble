@@ -20,7 +20,8 @@ class GameController {
         this.keyDownHandler;
         this.keyUpHandler;
 
-        this.score = 0;
+        this.previousScore = 0;
+        this.currentScore = 0;
         this.levelWin = false;
         this.died = false;
         this.ballsKilled = 0;
@@ -360,8 +361,8 @@ class GameController {
                 this.laserObject = null;   // Delete laser 
 
                 // Update score
-                this.score += 100;
-                this.elements.scoreText.innerText = this.score;
+                this.currentScore += 100;
+                this.elements.scoreText.innerText = this.currentScore;
             }
         }
     }
@@ -404,6 +405,7 @@ class GameController {
             // Pause the game for 2 seconds before resetting it
             setTimeout(() => {
                 this._resetLevel();
+                this.currentScore = this.previousScore;
                 this.playLevel(this.currentLevel);
             }, timoutDelay);
         }
@@ -585,7 +587,7 @@ class GameController {
     _resetGame() {
         this._resetLevel();
         this.currentLevel = 0;
-        this.score = 0;
+        this.currentScore = 0;
         this.robotObject = null;
         this.died = false;
     }
@@ -604,7 +606,8 @@ class GameController {
     // Level method
     playLevel(level) {
         // Update scoreboard
-        this.elements.scoreText.innerText = this.score;
+        this.previousScore = this.currentScore;
+        this.elements.scoreText.innerText = this.currentScore;
         this.elements.levelText.innerText = this.currentLevel+1;
 
         // Collect balls src and array from levels array
