@@ -428,8 +428,7 @@ th {
     margin: 0 auto;
     width: 1000px;
     height: 130px;
-    padding: 16px;
-    z-index: 10;
+    padding: 16px 32px;
     background: #333333;
 
     transition: opacity 2s ease-in-out;
@@ -443,6 +442,8 @@ th {
 
 .score-board .game-stats {
     position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .game-stats .level-container {
@@ -457,7 +458,7 @@ th {
 
 .game-stats .level-container h3 {
     font-size: 24px;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .game-stats .level-container .level {
@@ -473,7 +474,7 @@ th {
     color: white;
     font-size: 24px;
     top: 10px;
-    left: 0;
+    right: 0;
 }
 
 .game-stats .score-container h3 {
@@ -482,6 +483,18 @@ th {
 
 .game-stats .score-container .score {
     font-size: 20px;
+}
+
+.game-stats .lives-container {
+    display: flex;
+    position: absolute;
+    top: 10px;
+    left: -5px;
+}
+
+.game-stats .lives-container .heart-icon{
+    width: 40px;
+    height: 40px;
 }
 
 
@@ -493,4 +506,9 @@ th {
 .fade-in {
     visibility: visible;
     opacity: 1;
+}
+
+.hide {
+    visibility: hidden;
+    opacity: 0;
 }

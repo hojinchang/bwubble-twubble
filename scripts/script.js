@@ -118,6 +118,7 @@ class GameController {
 
         this.elements.scoreBoard = document.querySelector(".score-board");
         this.elements.levelText = document.querySelector(".level-text");
+        this.elements.lifeHearts = document.querySelectorAll(".heart");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
@@ -582,7 +583,7 @@ class GameController {
 
     // Level method
     playLevel(level) {
-        this.elements.levelText.innerText = this.currentLevel;
+        this.elements.levelText.innerText = this.currentLevel+1;
 
         // Collect balls src and array from levels array
         const { 
@@ -613,7 +614,8 @@ class GameController {
     _devmode() {
         console.log("Dev Mode")
         this.elements.introScreen.classList.add("hide");
-        this.elements.gameBoard.style.opacity = 100;
+        this.elements.gameBoard.classList.add("fade-in");
+        this.elements.scoreBoard.classList.add("fade-in");
         this.elements.gameBoard.style.transition = null;
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.playLevel(this.currentLevel);
@@ -622,8 +624,8 @@ class GameController {
     
 }
 
-// const game = new GameController(true);
-const game = new GameController();
+const game = new GameController(true);
+// const game = new GameController();
 
 /* ********************************************
                 Game Controller
