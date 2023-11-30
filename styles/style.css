@@ -421,13 +421,15 @@ th {
     border-radius: 10px;
 }
 
-
 .score-board {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     opacity: 0;
     visibility: hidden;
     margin: 0 auto;
     width: 1000px;
-    height: 130px;
+    height: 140px;
     padding: 16px 32px;
     background: #333333;
 
@@ -436,60 +438,22 @@ th {
 
 .score-board .timer {
     width: 100%;
-    height: 25px;
+    height: 30px;
     background-color: #1E1E2B;
 }
 
 .score-board .game-stats {
-    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    height: 100%;
-}
-
-.game-stats .level-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.game-stats .level-container h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.game-stats .level-container .level {
-    color: var(--text-colour);
-    font-size: 18px;
-}
-
-.game-stats .score-container {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    position: absolute;
-    color: white;
-    font-size: 24px;
-    top: 10px;
-    right: 0;
-}
-
-.game-stats .score-container h3 {
-    font-size: 24px;
-}
-
-.game-stats .score-container .score {
-    font-size: 20px;
 }
 
 .game-stats .lives-container {
     display: flex;
-    position: absolute;
-    top: 10px;
-    left: -5px;
+    align-items: center;
+    justify-content: flex-start;
+    width: 200px;
 }
 
 .game-stats .lives-container .heart-icon {
@@ -497,6 +461,37 @@ th {
     height: 40px;
 }
 
+.game-stats h3 {
+    font-size: 24px;
+}
+
+.game-stats .score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 24px;
+    margin: auto;
+}
+
+.game-stats .score-container .score-text {
+    font-size: 18px;
+}
+
+.game-stats .level-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+    width: 200px;
+}
+
+.game-stats .level-container .level {
+    color: var(--text-colour);
+    font-size: 18px;
+}
 
 .fade-out {
     visibility: hidden;

@@ -20,6 +20,7 @@ class GameController {
         this.keyDownHandler;
         this.keyUpHandler;
 
+        this.score = 0;
         this.levelWin = false;
         this.died = false;
         this.ballsKilled = 0;
@@ -119,6 +120,7 @@ class GameController {
         this.elements.scoreBoard = document.querySelector(".score-board");
         this.elements.levelText = document.querySelector(".level-text");
         this.elements.lifeHearts = document.querySelectorAll(".heart-icon");
+        this.elements.scoreText = document.querySelector(".score-text");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
