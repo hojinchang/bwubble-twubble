@@ -96,21 +96,28 @@ class GameController {
         this.elements.gameContainer = document.querySelector(".game-container");
         this.elements.introScreen = document.querySelector(".intro-screen");
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
+
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
         this.elements.instructionsModal = document.querySelector(".instructions-modal");
+
         this.elements.creditsBtn = document.querySelector(".credits-btn");
         this.elements.creditsModal = document.querySelector(".credits-modal")
+
         this.elements.gameBoard = document.querySelector(".game-board");
-        this.elements.scoreBoard = document.querySelector(".score-board");
         this.elements.countdownContainer = document.querySelector(".countdown-container");
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
+
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
         this.elements.currentLevelSpan = document.querySelector(".current-level");
         this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
         this.elements.returnMainBtn = document.querySelectorAll(".return-menu-btn");
+
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterIcon = document.querySelector(".character-icon");
         this.elements.gameLoseModal = document.querySelector(".game-lose-modal");
+
+        this.elements.scoreBoard = document.querySelector(".score-board");
+        this.elements.levelText = document.querySelector(".level-text");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
@@ -575,6 +582,8 @@ class GameController {
 
     // Level method
     playLevel(level) {
+        this.elements.levelText.innerText = this.currentLevel;
+
         // Collect balls src and array from levels array
         const { 
             ballSrc,
