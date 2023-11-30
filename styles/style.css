@@ -308,18 +308,29 @@ th {
     opacity: 0;
     display: none;
     position: absolute;
-    width: 600px;
+    width: 500px;
+    height: 300px;
     transition: opacity 1s ease-in-out;
     z-index: 3;
 }
 
-.button-container {
+.level-win-modal p {
+    font-size: 20px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.level-win-modal .button-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 60px;
-    max-width: 500px;
-    margin: 0 auto;
+    gap: 40px;
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    right: 40px;
+}
+
+.level-win-modal button {
+    height: 70px;
 }
 
 .return-menu-btn,
