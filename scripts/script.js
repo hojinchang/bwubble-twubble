@@ -585,6 +585,7 @@ class GameController {
     _resetGame() {
         this._resetLevel();
         this.currentLevel = 0;
+        this.score = 0;
         this.robotObject = null;
         this.died = false;
     }
