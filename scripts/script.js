@@ -646,8 +646,8 @@ class GameController {
     
 }
 
-const game = new GameController(true);
-// const game = new GameController();
+// const game = new GameController(true);
+const game = new GameController();
 
 /* ********************************************
                 Game Controller
