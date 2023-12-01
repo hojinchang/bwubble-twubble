@@ -8,10 +8,13 @@ class Timer {
         timerElement
     ) {
         this.timerElement = timerElement;
-        this.width = this.timerElement.clientWidth;
+        this.maxWidth = this.timerElement.clientWidth
+        this.width = this.maxWidth;
         this.stopped = false;
         this.animationFrame;
         this._onTimerEnd = null;  // This callback function is triggered once the timer runs out. The callback function is used to reset the game once the timer runs out
+        this._onTimerAddPoints = null;
+        this._onTimerAddPointsEnd = null;
     }
 
     // Starts the timer animation
@@ -20,7 +23,6 @@ class Timer {
         const deltaTime = (currentTime - lastFrameTime) / 1000;
         lastFrameTime = currentTime;
         const step = 20*deltaTime;
-        // const step = 300*deltaTime;
 
         this.width -= step;
         this.timerElement.style.width = `${this.width}px`;
@@ -36,6 +38,30 @@ class Timer {
         }
 
         this.animationFrame = requestAnimationFrame(() => {this.start(lastFrameTime)});
+    }
+
+    addTimerPoints(lastFrameTime) {
+        const currentTime = performance.now();
+        const deltaTime = (currentTime - lastFrameTime) / 1000;
+        lastFrameTime = currentTime;
+        const step = 500*deltaTime;
+
+        this.width -= step;
+        this.timerElement.style.width = `${this.width}px`;
+
+        if (this._onTimerAddPoints) this._onTimerAddPoints();
+    
+        
+        if (this.width <= 0) {
+            this.timerElement.style.display = "none";
+            this.stop();
+
+            if (this._onTimerAddPointsEnd) this._onTimerAddPointsEnd();
+
+            return;
+        }   
+
+        this.animationFrame = requestAnimationFrame(() => {this.addTimerPoints(lastFrameTime)});
     }
 
     // Stop the timer

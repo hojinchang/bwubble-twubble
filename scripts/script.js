@@ -48,11 +48,11 @@ class GameController {
             // {   
             //     level: 1,
             //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(3),
+            //     ballsRequired: this._determineBallsRequired(1),
             //     balls: [
             //         {
-            //             ballSize: ballSizes.ball3,
-            //             id: 3,
+            //             ballSize: ballSizes.ball1,
+            //             id: 1,
             //             xPosition: 450,
             //             yPosition: 200,
             //             xVelocity: 150,
@@ -86,9 +86,6 @@ class GameController {
                 ],
             }
         ];
-
-        // this.playLevel(this.currentLevel);
-        // this.playLevel(1);
 
         this._setUpGame();
         if (this.devmode) this._devmode();
@@ -194,6 +191,8 @@ class GameController {
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.timerObject = new Timer(this.elements.timer);   // Create new timer object
         this.timerObject._onTimerEnd = () => {this._levelLose("time")};
+        this.timerObject._onTimerAddPoints = () => {this._addTimerPoints()};
+        // this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal);}
         this.playLevel(this.currentLevel);
     }
 
@@ -319,9 +318,9 @@ class GameController {
         return laser;
     }
 
-    // Reset the game when level is lost
+    // Update and reset the game when level is lost
     _levelLose(loseReason) {
-
+        // Different lose message depending on the lose condition
         let loseMessage;
         (loseReason === "collision")
             ? loseMessage = "You got crushed by my planet!"
@@ -330,11 +329,11 @@ class GameController {
         this.elements.loseReasonContainer.classList.add("fade-in");
         this.elements.loseReasonContainer.innerText = loseMessage;
 
+        // Level updates
         this.robotObject.lives--;
         this._updateLifeHearts();
         this.timerObject.stop();
         this._checkGameState();
-
     }
 
     // Check ball collision
@@ -515,10 +514,18 @@ class GameController {
     _checkLevelWin(ballsKilled, ballsRequired, lives) {
         if (ballsKilled === ballsRequired && lives > 0) {
             this.levelWin = true;
-            this.timerObject.stop();
             this._removeRobotEventListeners();
-            this._displayInGameModal(this.elements.levelWinModal);
+
+            this.timerObject.stop();
+            let lastFrameTime = performance.now();
+            this.timerObject.addTimerPoints(lastFrameTime);
+            this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal);}
         }
+    }
+
+    _addTimerPoints() {
+        this.currentScore += 10;
+        this.elements.scoreText.innerText = this.currentScore;
     }
 
     // Activate ball movement and set collision detection callback functions
@@ -613,6 +620,11 @@ class GameController {
         this.robotObject = null;
         this.timerObject = null;
         this.died = false;
+
+        // reset heart UI
+        for (let i = 0; i < 3; i++) {
+            this.elements.lifeHearts[i].src = "../assets/scoreboard/heart.png";
+        }
     }
 
     _updateLifeHearts() {
