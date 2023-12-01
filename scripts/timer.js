@@ -19,8 +19,8 @@ class Timer {
         const currentTime = performance.now();
         const deltaTime = (currentTime - lastFrameTime) / 1000;
         lastFrameTime = currentTime;
-        // const step = 20*deltaTime;
-        const step = 300*deltaTime;
+        const step = 20*deltaTime;
+        // const step = 300*deltaTime;
 
         this.width -= step;
         this.timerElement.style.width = `${this.width}px`;

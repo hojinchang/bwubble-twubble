@@ -424,7 +424,16 @@ th {
     z-index: 1;
 }
 
-.character-icon {
+.character-container .character-hitbox {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 95%;
+}
+
+.character-container .character-icon {
     display: block;
     width: 60px;
 }

@@ -117,6 +117,7 @@ class GameController {
         this.elements.returnMainBtn = document.querySelectorAll(".return-menu-btn");
 
         this.elements.character = document.querySelector(".character-container");
+        this.elements.characterHitbox = document.querySelector(".character-hitbox");
         this.elements.characterIcon = document.querySelector(".character-icon");
         this.elements.gameLoseModal = document.querySelector(".game-lose-modal");
 
@@ -344,7 +345,7 @@ class GameController {
         if (objectType === "laser") {
             collisionElementRect = this.laserObject.laserElement.getBoundingClientRect();
         } else if (objectType === "character") {
-            collisionElementRect = this.robotObject.characterElement.getBoundingClientRect();
+            collisionElementRect = this.elements.characterHitbox.getBoundingClientRect();
         }
 
         // Collision conditions
