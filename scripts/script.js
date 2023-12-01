@@ -17,7 +17,7 @@ class GameController {
         this.laserObject;
         this.activeBallObjects = [];
         this.gameBoard = this.elements.gameBoard;
-        this.timerObject = new Timer(this.elements.timer);   // Create new timer object
+        // this.timerObject = new Timer(this.elements.timer);   // Create new timer object
         this.keyDownHandler;
         this.keyUpHandler;
 
@@ -191,6 +191,8 @@ class GameController {
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.timerObject = new Timer(this.elements.timer);   // Create new timer object
+        this.timerObject._onTimerEnd = this._levelLose.bind(this);
+
         this.playLevel(this.currentLevel);
     }
 
@@ -316,6 +318,14 @@ class GameController {
         return laser;
     }
 
+    // Reset the game when level is lost
+    _levelLose() {
+        this.robotObject.lives--;
+        this._updateLifeHearts();
+        this.timerObject.stop();
+        this._checkGameState();
+    }
+
     // Check ball collision
     _checkCollision(ball, objectType) {
         const ballRect = ball.ballElement.getBoundingClientRect();
@@ -343,13 +353,7 @@ class GameController {
     // Ball to character collision logic helper function
     _ballCharacterCollision(ballObject) {
         const collision = this._checkCollision(ballObject, "character");
-        if (collision) {
-            // this._removeBallFromGame(ballObject);
-            this.robotObject.lives--;
-            this._updateLifeHearts();
-            this.timerObject.stop();
-            this._checkGameState();
-        }
+        if (collision) this._levelLose();
 
         return collision
     }
