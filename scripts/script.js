@@ -17,6 +17,7 @@ class GameController {
         this.laserObject;
         this.activeBallObjects = [];
         this.gameBoard = this.elements.gameBoard;
+        this.timerObject = new Timer(this.elements.timer);   // Create new timer object
         this.keyDownHandler;
         this.keyUpHandler;
 
@@ -122,6 +123,7 @@ class GameController {
         this.elements.levelText = document.querySelector(".level-text");
         this.elements.lifeHearts = document.querySelectorAll(".heart-icon");
         this.elements.scoreText = document.querySelector(".score-text");
+        this.elements.timer = document.querySelector(".timer");
 
         this.elements.modalCloseBtn = document.querySelectorAll(".modal-close-button");
         this.elements.introModalBackdrop = document.createElement("div");
@@ -188,6 +190,7 @@ class GameController {
         
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
+        this.timerObject = new Timer(this.elements.timer);   // Create new timer object
         this.playLevel(this.currentLevel);
     }
 
@@ -344,6 +347,7 @@ class GameController {
             // this._removeBallFromGame(ballObject);
             this.robotObject.lives--;
             this._updateLifeHearts();
+            this.timerObject.stop();
             this._checkGameState();
         }
 
@@ -395,7 +399,6 @@ class GameController {
 
             // Pause the game for 2 seconds before resetting it
             setTimeout(() => {
-                // this._resetLevel();
                 this._displayInGameModal(this.elements.gameLoseModal);   // Show game lose modal
             }, timoutDelay);
 
@@ -497,6 +500,7 @@ class GameController {
     _checkLevelWin(ballsKilled, ballsRequired, lives) {
         if (ballsKilled === ballsRequired && lives > 0) {
             this.levelWin = true;
+            this.timerObject.stop();
             this._removeRobotEventListeners();
             this._displayInGameModal(this.elements.levelWinModal);
         }
@@ -569,6 +573,7 @@ class GameController {
         
         this.ballsKilled = 0;   // Reset the ball kill count
         this.levelWin = false;   // Reset level win flag
+        this.timerObject.reset();   // Reset timer
         this._removeRobotEventListeners();   // Stop user from controlling the robot
 
         // Remove deactivate class from countdown text
@@ -589,6 +594,7 @@ class GameController {
         this.currentLevel = 0;
         this.currentScore = 0;
         this.robotObject = null;
+        this.timerObject = null;
         this.died = false;
     }
 
@@ -610,6 +616,7 @@ class GameController {
         this.elements.scoreText.innerText = this.currentScore;
         this.elements.levelText.innerText = this.currentLevel+1;
 
+
         // Collect balls src and array from levels array
         const { 
             ballSrc,
@@ -627,6 +634,8 @@ class GameController {
 
         // Run after the countdown
         setTimeout(() => {
+            let lastFrameTime = performance.now();
+            this.timerObject.start(lastFrameTime);
             this.elements.countdownContainer.style.display = "none";
             this._setUpRobotEventListeners();
             for (let ballObject of this.activeBallObjects) {
