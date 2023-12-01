@@ -109,6 +109,7 @@ class GameController {
         this.elements.gameBoard = document.querySelector(".game-board");
         this.elements.countdownContainer = document.querySelector(".countdown-container");
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
+        this.elements.loseReasonContainer = document.querySelector(".lose-reason-container");
 
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
         this.elements.currentLevelSpan = document.querySelector(".current-level");
@@ -191,8 +192,7 @@ class GameController {
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.timerObject = new Timer(this.elements.timer);   // Create new timer object
-        this.timerObject._onTimerEnd = this._levelLose.bind(this);
-
+        this.timerObject._onTimerEnd = () => {this._levelLose("time")};
         this.playLevel(this.currentLevel);
     }
 
@@ -319,11 +319,21 @@ class GameController {
     }
 
     // Reset the game when level is lost
-    _levelLose() {
+    _levelLose(loseReason) {
+
+        let loseMessage;
+        (loseReason === "collision")
+            ? loseMessage = "You got crushed by my planet!"
+            : loseMessage = "You're too slow, timer ran out!"
+
+        this.elements.loseReasonContainer.classList.add("fade-in");
+        this.elements.loseReasonContainer.innerText = loseMessage;
+
         this.robotObject.lives--;
         this._updateLifeHearts();
         this.timerObject.stop();
         this._checkGameState();
+
     }
 
     // Check ball collision
@@ -353,7 +363,7 @@ class GameController {
     // Ball to character collision logic helper function
     _ballCharacterCollision(ballObject) {
         const collision = this._checkCollision(ballObject, "character");
-        if (collision) this._levelLose();
+        if (collision) this._levelLose("collision");
 
         return collision
     }
@@ -569,6 +579,8 @@ class GameController {
 
     // Resets the level 
     _resetLevel() {
+        this.elements.loseReasonContainer.classList.remove("fade-in");
+
         if (this.laserObject) {
             this.robotObject.isLaserActive = false;
             this.laserObject.delete(); // Remove the laser if it exists
@@ -629,7 +641,6 @@ class GameController {
         } = this.levels[level];
 
         this.ballsRequired = ballsRequired; 
-        console.log("balls required", this.ballsRequired)
         this.activeBallObjects = this._initLevel(ballSrc, balls);
 
         // Display the countdown container and begin game countdown

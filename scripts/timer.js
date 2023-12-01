@@ -19,7 +19,8 @@ class Timer {
         const currentTime = performance.now();
         const deltaTime = (currentTime - lastFrameTime) / 1000;
         lastFrameTime = currentTime;
-        const step = 20*deltaTime;
+        // const step = 20*deltaTime;
+        const step = 300*deltaTime;
 
         this.width -= step;
         this.timerElement.style.width = `${this.width}px`;
@@ -27,6 +28,7 @@ class Timer {
         if (this.stopped) return;
         if (this.width <= 0) {
             if (this._onTimerEnd) {
+                this.timerElement.style.display = "none";  // For some reason, the red from the timer still shows when this.width <= 0, so hide it when time runs out
                 this._onTimerEnd();
             }
 
@@ -44,8 +46,9 @@ class Timer {
 
     // Reset the timer
     reset() {
-        this.timerElement.style.width = "100%";
-        this.width = this.timerElement.clientWidth;
+        this.timerElement.style.display = "block";   // Show the red timer
+        this.timerElement.style.width = "100%";   // Reset the timer width to be as long as its container
+        this.width = this.timerElement.clientWidth;   // Reset width property
         this.stopped = false;
     }
 } 
