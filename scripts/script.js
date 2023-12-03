@@ -30,29 +30,14 @@ class GameController {
 
         this.currentLevel = 0;
         this.levels = [
-            {   
-                level: 1,
-                ballSrc: this.ballImages[0],
-                ballsRequired: this._determineBallsRequired(3),
-                balls: [
-                    {
-                        ballSize: ballSizes.ball3,
-                        id: 3,
-                        xPosition: 450,
-                        yPosition: 200,
-                        xVelocity: 150,
-                        yVelocity: 0,
-                    },
-                ],
-            },
             // {   
             //     level: 1,
             //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(1),
+            //     ballsRequired: this._determineBallsRequired(3),
             //     balls: [
             //         {
-            //             ballSize: ballSizes.ball1,
-            //             id: 1,
+            //             ballSize: ballSizes.ball3,
+            //             id: 3,
             //             xPosition: 450,
             //             yPosition: 200,
             //             xVelocity: 150,
@@ -60,6 +45,21 @@ class GameController {
             //         },
             //     ],
             // },
+            {   
+                level: 1,
+                ballSrc: this.ballImages[0],
+                ballsRequired: this._determineBallsRequired(1),
+                balls: [
+                    {
+                        ballSize: ballSizes.ball1,
+                        id: 1,
+                        xPosition: 450,
+                        yPosition: 200,
+                        xVelocity: 150,
+                        yVelocity: 0,
+                    },
+                ],
+            },
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
@@ -518,6 +518,7 @@ class GameController {
 
             this.timerObject.stop();
             let lastFrameTime = performance.now();
+            this.timerObject.width = 500;
             this.timerObject.addTimerPoints(lastFrameTime);
             this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal);}
         }
