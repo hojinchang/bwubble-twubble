@@ -516,9 +516,7 @@ class GameController {
             this._removeRobotEventListeners();
 
             this.timerObject.stop();
-            let lastFrameTime = performance.now();
-            // this.timerObject.width = 500;
-            this.timerObject.addTimerPoints(lastFrameTime);
+            this.timerObject.addTimerPoints();
             this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal)};
         }
     }
