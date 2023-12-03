@@ -190,9 +190,8 @@ class GameController {
         // Create new robot instance
         this.robotObject = new Robot(this.elements.character, this.elements.characterIcon, this.elements.gameBoard);
         this.timerObject = new Timer(this.elements.timer);   // Create new timer object
-        this.timerObject._onTimerEnd = () => {this._levelLose("time")};
-        this.timerObject._onTimerAddPoints = () => {this._addTimerPoints()};
-        // this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal);}
+        this.timerObject._onTimerEnd = () => {this._levelLose("time")};   // Set up timer callback function
+        this.timerObject._onTimerAddPoints = () => {this._addTimerPoints()};   // Set up timer callback function
         this.playLevel(this.currentLevel);
     }
 
@@ -518,9 +517,9 @@ class GameController {
 
             this.timerObject.stop();
             let lastFrameTime = performance.now();
-            this.timerObject.width = 500;
+            // this.timerObject.width = 500;
             this.timerObject.addTimerPoints(lastFrameTime);
-            this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal);}
+            this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal)};
         }
     }
 

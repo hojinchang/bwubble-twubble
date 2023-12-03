@@ -12,6 +12,7 @@ class Timer {
         this.width = this.maxWidth;
         this.stopped = false;
         this.animationFrame;
+        this.timeInterval;
         this._onTimerEnd = null;  // This callback function is triggered once the timer runs out. The callback function is used to reset the game once the timer runs out
         this._onTimerAddPoints = null;
         this._onTimerAddPointsEnd = null;
@@ -40,34 +41,46 @@ class Timer {
         this.animationFrame = requestAnimationFrame(() => {this.start(lastFrameTime)});
     }
 
-    addTimerPoints(lastFrameTime) {
-        const currentTime = performance.now();
-        const deltaTime = (currentTime - lastFrameTime) / 1000;
-        lastFrameTime = currentTime;
-        const step = 500*deltaTime;
+    /*
+        The reason I am using setInterval rather than than animation frame is due to monitor refresh rates.
+        Using animation frames, the "speed" or step of the time / ball / character could be scaled to different refresh rates by multipling the step by the delta time term.
+        In the addTimerPoints() method, I am trying to convert the remaining time on the timer into points by using the _onTimerAddPoints() callback function.
+        This callback function simply adds 10 points to the current score at every function call.
+        Using delta time in animation frames will scale the speed of the timer / ball / character animations at 
+        different refresh rates, but the functions are still called at the same frequency as the monitor.
+        For example, animation frames on a 60hz monitor results in the addTimerPoints() method being called every
+        1/60hz = 0.017 seconds. Animation frames on a 120hz monitor results in the method being called every
+        1/120hz = 0.0083 seconds. Thus, on a 120hz monitor, the method is called twice as much, resulting in more points being added to the total.
+        Using setIntervals ensures the method is called independent of the framerate.
+    */
+    // Convert remaining time into points
+    addTimerPoints() {
+        const step = 3;
 
-        this.width -= step;
-        this.timerElement.style.width = `${this.width}px`;
-
-        if (this._onTimerAddPoints) this._onTimerAddPoints();
+        this.timerInterval = setInterval(() => {
+            this.width -= step;
+            this.timerElement.style.width = `${this.width}px`;
     
+            if (this._onTimerAddPoints) this._onTimerAddPoints();
         
-        if (this.width <= 0) {
-            this.timerElement.style.display = "none";
-            this.stop();
-
-            if (this._onTimerAddPointsEnd) this._onTimerAddPointsEnd();
-
-            return;
-        }   
-
-        this.animationFrame = requestAnimationFrame(() => {this.addTimerPoints(lastFrameTime)});
+            if (this.width <= 0) {
+                this.timerElement.style.display = "none";
+                this.stop();
+    
+                if (this._onTimerAddPointsEnd) this._onTimerAddPointsEnd();
+                
+                clearInterval(this.timerInterval);
+            }   
+        }, 1);
     }
 
     // Stop the timer
     stop() {
         this.animationFrame = null;
         this.stopped = true;
+
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
     }
 
     // Reset the timer
