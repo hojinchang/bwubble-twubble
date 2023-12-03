@@ -19,6 +19,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Sometype+Mono:wght@400;500;700&display=swap" rel="stylesheet">
         <!-- Google material icons -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-...." crossorigin="anonymous">
         <!-- Style Imports -->
         <link rel="stylesheet" href="styles/normalize-fwd.css">
         <link rel="stylesheet" href="styles/style.css">
@@ -26,6 +27,7 @@
         <script src="scripts/timer.js" defer></script>
         <script src="scripts/robot.js" defer></script>
         <script src="scripts/ball.js" defer></script>
+        <script src="scripts/audio.js" defer></script>
         <script src="scripts/script.js" defer></script>
     </head>
     <body>
@@ -35,6 +37,13 @@
                     <div class="intro-text">
                         <h1>Don't Shoot My Planet</h1>
                     </div>
+
+                    <div class="audio-mode-buttons">
+                        <i class="fa-solid fa-volume-xmark"></i>
+                        <i class="fa-solid fa-face-smile-beam"></i>
+                        <i class="fa-solid fa-face-angry"></i>
+                    </div>
+
                     <div class="intro-buttons">
                         <button class="start-game-btn intro-btn select-btn">Start Game</button>
                         <button class="instructions-btn intro-btn select-btn">Instructions</button>
@@ -44,7 +53,7 @@
 
                 <div class="instructions-modal modal">
                     <div class="modal-close-button">
-                        <span class="material-symbols-outlined">close</span>
+                        <i class="fa-solid fa-xmark"></i>
                     </div>
 
                     <h2>Instructions</h2>
@@ -81,7 +90,7 @@
 
                 <div class="credits-modal modal">
                     <div class="modal-close-button">
-                        <span class="material-symbols-outlined">close</span>
+                        <i class="fa-solid fa-xmark"></i>
                     </div>
 
                     <h2>Credits</h2>
@@ -196,5 +205,28 @@
         <footer>
             <p class="copyright">&copy;2023 <a class="footer-link" href="https://github.com/hojinchang" target="_blank" rel="noopener noreferrer">Hojin Chang</a></p>
         </footer>
+
+
+        <audio class="ima-firin-mah-lazer">
+            <source src="assets/audio/ima-firin-mah-lazer.mp3">
+        </audio>
+        <audio class="chill-countdown-audio">
+            <source src="assets/audio/8bit-countdown.mp3">
+        </audio>
+        <audio class="hype-countdown-audio">
+            <source src="assets/audio/robotic-countdown.mp3">
+        </audio>
+        <audio class="select-audio">
+            <source src="assets/audio/select.wav">
+        </audio>
+        <audio class="laser-audio">
+            <source src="assets/audio/laserShoot.wav">
+        </audio>
+        <audio class="collision-audio">
+            <source src="assets/audio/hit.wav">
+        </audio>
+        <audio class="time-reward-audio">
+            <source src="assets/audio/powerUp.wav">
+        </audio>
     </body>
 </html>

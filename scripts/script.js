@@ -9,6 +9,7 @@ class GameController {
 
         this.elements = {};
         this._getElements();
+        this.gameAudioObject = new DankBeatz();
 
         this.ballImages = this._getBallImages();
 
@@ -17,7 +18,6 @@ class GameController {
         this.laserObject;
         this.activeBallObjects = [];
         this.gameBoard = this.elements.gameBoard;
-        // this.timerObject = new Timer(this.elements.timer);   // Create new timer object
         this.keyDownHandler;
         this.keyUpHandler;
 
@@ -96,9 +96,11 @@ class GameController {
         this.elements.gameContainer = document.querySelector(".game-container");
         this.elements.introScreen = document.querySelector(".intro-screen");
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
+        this.elements.buttons = document.querySelectorAll(".select-btn");
 
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
         this.elements.instructionsModal = document.querySelector(".instructions-modal");
+        this.elements.instructionsEasterEgg = document.querySelector(".shoot-instructions img");
 
         this.elements.creditsBtn = document.querySelector(".credits-btn");
         this.elements.creditsModal = document.querySelector(".credits-modal")
@@ -147,12 +149,22 @@ class GameController {
             gameContainer.removeChild(modalBackdrop);
         }
 
+        // Play select audio
+        this.elements.buttons.forEach(btn => {
+            btn.addEventListener("click", () => {this.gameAudioObject.select()});
+        });
+
         // Start game
         this.elements.startGameBtn.addEventListener("click", () => {this._startGame()});
 
         // Show instructions modal
         this.elements.instructionsBtn.addEventListener("click", () => {
             _openIntroModal("instructions", this.elements.instructionsModal, this.elements.introModalBackdrop, this.elements.gameContainer);
+        });
+
+        // Easter egg audio
+        this.elements.instructionsEasterEgg.addEventListener("click", () => {
+            this.gameAudioObject.imaFirinMahLazer();
         });
 
         // Show credits modal
@@ -163,6 +175,7 @@ class GameController {
         // Close modal
         this.elements.modalCloseBtn.forEach(closeBtn => {
             closeBtn.addEventListener("click", (e) => {
+                this.gameAudioObject.select();   // PLay audio
                 _closeIntroModal(e, this.elements.introModalBackdrop, this.elements.gameContainer)
             })
         });
@@ -256,6 +269,7 @@ class GameController {
             } else if (e.key === " " && !this.robotObject.isLaserActive) {   // shoot
                 const laserElement = this._createLaserElement();
                 this.laserObject = new Laser(laserElement);
+                this.gameAudioObject.laser();   // PLay laser sound
                 this.robotObject.shoot(this.laserObject, lastFrameTime);
             }
         }
@@ -353,6 +367,7 @@ class GameController {
             ballRect.top <= collisionElementRect.bottom &&
             ballRect.bottom >= collisionElementRect.top
         ) {
+            this.gameAudioObject.collision();
             return true;
         } else {
             return false;
@@ -517,6 +532,7 @@ class GameController {
 
             this.timerObject.stop();
             this.timerObject.addTimerPoints();
+            this.gameAudioObject.timeReward();
             this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal)};
         }
     }
@@ -657,6 +673,10 @@ class GameController {
         // Display the countdown container and begin game countdown
         this.elements.countdownContainer.style.display = "flex";
         this._countdown(0);
+        setTimeout(() => {
+            this.gameAudioObject.countdown();
+
+        }, 500);
 
         // Run after the countdown
         setTimeout(() => {

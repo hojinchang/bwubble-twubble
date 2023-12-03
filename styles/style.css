@@ -80,6 +80,7 @@ th {
     color: var(--accent-colour);
 }
 
+/* Intro Screen */
 .game-container {
     margin: 0 auto;
     position: relative;
@@ -139,6 +140,7 @@ th {
 }
 
 
+/* Modal styles */
 .modal-backdrop {
     display: none;
     position: absolute;
@@ -182,17 +184,17 @@ th {
 .modal-close-button {
     cursor: pointer;
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 14px;
+    right: 17px;
 }
 
-.modal-close-button span {
-    font-size: 35px;
+.modal-close-button i {
+    font-size: 30px;
     color: var(--text-colour);
     transition: transform 0.2s ease-in-out;
 }
 
-.modal-close-button span:hover {
+.modal-close-button i:hover {
     color: var(--accent-colour);
     transform: scale(1.2);
 }
@@ -280,6 +282,7 @@ th {
 }
 
 .instructions-modal .shoot-instructions img {
+    cursor: pointer;
     width: auto;
     height: 50px;
 }
@@ -361,6 +364,7 @@ th {
     font-size: 19px;
 }
 
+/* Game board */
 .game-board {
     opacity: 0;
     visibility: hidden;
@@ -462,6 +466,7 @@ th {
     border-radius: 10px;
 }
 
+/* Score board */
 .score-board {
     display: flex;
     flex-direction: column;
