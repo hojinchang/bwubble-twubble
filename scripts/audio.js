@@ -11,7 +11,7 @@ class DankBeatz {
 
     imaFirinMahLazer() {
         this.easterEggAudio.currentTime = 0;
-        this.easterEggAudio.volume = 0.7;
+        this.easterEggAudio.volume = 0.8;
         this.easterEggAudio.play();
     }
 

@@ -18,6 +18,11 @@ class Timer {
         this._onTimerAddPointsEnd = null;
     }
 
+    selectedMode() {
+        
+    }
+
+
     // Starts the timer animation
     start(lastFrameTime) {
         const currentTime = performance.now();

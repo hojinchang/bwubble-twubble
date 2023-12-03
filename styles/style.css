@@ -139,6 +139,42 @@ th {
     transform: scale(1.05);
 }
 
+.audio-mode-buttons {
+    display: flex;
+    gap: 12px;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+}
+
+.audio-mode-buttons .icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    height: 70px;
+
+}
+
+.audio-mode-buttons .icon-container > i {
+    cursor: pointer;
+    font-size: 40px;
+    padding: 8px;
+    color: var(--text-colour);
+
+    transition: color 0.3s ease-in-out;
+}
+
+.audio-mode-buttons .icon-container > i:hover {
+    color: var(--accent-colour);
+}
+
+.audio-mode-buttons .icon-container > i.selected {
+    color: var(--accent-colour);
+    border: 2px solid var(--accent-colour);
+    border-radius: 50%;
+}
+
 
 /* Modal styles */
 .modal-backdrop {

@@ -98,6 +98,11 @@ class GameController {
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
         this.elements.buttons = document.querySelectorAll(".select-btn");
 
+        this.elements.audioBtns = document.querySelectorAll(".audio-btn");
+        this.elements.audioMuteBtn = document.querySelector(".mute");
+        this.elements.audioHypeBtn = document.querySelector(".hype-mode");
+        this.elements.audioChillBtn = document.querySelector(".chill-mode");
+
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
         this.elements.instructionsModal = document.querySelector(".instructions-modal");
         this.elements.instructionsEasterEgg = document.querySelector(".shoot-instructions img");
@@ -148,6 +153,15 @@ class GameController {
             modalBackdrop.style.display = "none";
             gameContainer.removeChild(modalBackdrop);
         }
+
+        const _audioModeSelection = (audioMode) => {
+            this.elements.audioBtns.forEach(btn => btn.classList.remove("selected"));
+            audioMode.classList.add("selected");
+        }
+
+        this.elements.audioBtns.forEach(btn => {
+            btn.addEventListener("click", () => {_audioModeSelection(btn)});
+        })
 
         // Play select audio
         this.elements.buttons.forEach(btn => {
