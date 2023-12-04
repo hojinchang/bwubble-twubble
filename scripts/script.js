@@ -10,6 +10,7 @@ class GameController {
         this.elements = {};
         this._getElements();
         this.gameAudioObject = new DankBeatz();
+        this.audioMode = "chill-mode";
 
         this.ballImages = this._getBallImages();
 
@@ -154,14 +155,24 @@ class GameController {
             gameContainer.removeChild(modalBackdrop);
         }
 
+        // Helper function which toggles the audio mode buttons
         const _audioModeSelection = (audioMode) => {
             this.elements.audioBtns.forEach(btn => btn.classList.remove("selected"));
             audioMode.classList.add("selected");
+            this.audioMode = audioMode.classList[3];
+
+            this.gameAudioObject.audioMode = this.audioMode;
+            this.gameAudioObject.select();   // Play select noise
+            this.gameAudioObject.playBackgroundMusic();   // Play background music
         }
 
+        // Select audio mode
         this.elements.audioBtns.forEach(btn => {
             btn.addEventListener("click", () => {_audioModeSelection(btn)});
-        })
+        });
+
+        // Mute the background music 
+        this.elements.audioMuteBtn.addEventListener("click", () => {this.gameAudioObject.mute()});
 
         // Play select audio
         this.elements.buttons.forEach(btn => {

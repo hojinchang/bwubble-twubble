@@ -14,14 +14,9 @@ class Timer {
         this.animationFrame;
         this.timeInterval;
         this._onTimerEnd = null;  // This callback function is triggered once the timer runs out. The callback function is used to reset the game once the timer runs out
-        this._onTimerAddPoints = null;
-        this._onTimerAddPointsEnd = null;
+        this._onTimerAddPoints = null;  // This callback function is triggered once level is won. The callback function is used to convert the remaining time into points.
+        this._onTimerAddPointsEnd = null;   // This callback function is triggered once all of the time is converted into points.
     }
-
-    selectedMode() {
-        
-    }
-
 
     // Starts the timer animation
     start(lastFrameTime) {
