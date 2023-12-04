@@ -156,6 +156,10 @@ th {
 
 }
 
+.audio-mode-buttons .icon-container .fa-robot {
+    font-size: 35px;
+}
+
 .audio-mode-buttons .icon-container > i {
     cursor: pointer;
     font-size: 40px;

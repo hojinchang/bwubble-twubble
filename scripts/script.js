@@ -101,8 +101,8 @@ class GameController {
 
         this.elements.audioBtns = document.querySelectorAll(".audio-btn");
         this.elements.audioMuteBtn = document.querySelector(".mute");
-        this.elements.audioHypeBtn = document.querySelector(".hype-mode");
         this.elements.audioChillBtn = document.querySelector(".chill-mode");
+        this.elements.audioHypeBtn = document.querySelector(".hype-mode");
 
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
         this.elements.instructionsModal = document.querySelector(".instructions-modal");
@@ -157,11 +157,12 @@ class GameController {
 
         // Helper function which toggles the audio mode buttons
         const _audioModeSelection = (audioMode) => {
+            // Remove selected class from mute button if one of the mode buttons are pressed
+            if (this.elements.audioMuteBtn.classList.contains("selected")) this.elements.audioMuteBtn.classList.remove("selected");
             this.elements.audioBtns.forEach(btn => btn.classList.remove("selected"));
             audioMode.classList.add("selected");
-            this.audioMode = audioMode.classList[3];
 
-            this.gameAudioObject.audioMode = this.audioMode;
+            this.gameAudioObject.audioMode = audioMode.classList[3];
             this.gameAudioObject.select();   // Play select noise
             this.gameAudioObject.playBackgroundMusic();   // Play background music
         }
@@ -172,7 +173,17 @@ class GameController {
         });
 
         // Mute the background music 
-        this.elements.audioMuteBtn.addEventListener("click", () => {this.gameAudioObject.mute()});
+        this.elements.audioMuteBtn.addEventListener("click", () => {
+            if (this.elements.audioMuteBtn.classList.contains("selected")) {
+                this.elements.audioChillBtn.classList.add("selected");
+            }
+
+            this.elements.audioMuteBtn.classList.toggle("selected");
+            this.elements.audioBtns.forEach(btn => btn.classList.remove("selected"));
+
+            this.gameAudioObject.mute();
+            this.gameAudioObject.audioMode = "mute";
+        });
 
         // Play select audio
         this.elements.buttons.forEach(btn => {
