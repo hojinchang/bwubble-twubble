@@ -10,7 +10,7 @@ class GameController {
         this.elements = {};
         this._getElements();
         this.gameAudioObject = new DankBeatz();
-        this.audioMode = "chill-mode";
+        this.audioModeIdx = 0;
 
         this.ballImages = this._getBallImages();
 
@@ -99,10 +99,9 @@ class GameController {
         this.elements.startGameBtn = document.querySelector(".start-game-btn");
         this.elements.buttons = document.querySelectorAll(".select-btn");
 
-        this.elements.audioBtns = document.querySelectorAll(".audio-btn");
-        this.elements.audioMuteBtn = document.querySelector(".mute");
-        this.elements.audioChillBtn = document.querySelector(".chill-mode");
-        this.elements.audioHypeBtn = document.querySelector(".hype-mode");
+        this.elements.previousTrackBtn = document.querySelector(".previous-audio-btn");
+        this.elements.nextTrackBtn = document.querySelector(".next-audio-btn");
+        this.elements.audioTracks = document.querySelectorAll(".audio-mode");
 
         this.elements.instructionsBtn = document.querySelector(".instructions-btn");
         this.elements.instructionsModal = document.querySelector(".instructions-modal");
@@ -155,35 +154,9 @@ class GameController {
             gameContainer.removeChild(modalBackdrop);
         }
 
-        // Helper function which toggles the audio mode buttons
-        const _audioModeSelection = (audioMode) => {
-            // Remove selected class from mute button if one of the mode buttons are pressed
-            if (this.elements.audioMuteBtn.classList.contains("selected")) this.elements.audioMuteBtn.classList.remove("selected");
-            this.elements.audioBtns.forEach(btn => btn.classList.remove("selected"));
-            audioMode.classList.add("selected");
-
-            this.gameAudioObject.audioMode = audioMode.classList[3];
-            this.gameAudioObject.select();   // Play select noise
-            this.gameAudioObject.playBackgroundMusic();   // Play background music
-        }
-
-        // Select audio mode
-        this.elements.audioBtns.forEach(btn => {
-            btn.addEventListener("click", () => {_audioModeSelection(btn)});
-        });
-
-        // Mute the background music 
-        this.elements.audioMuteBtn.addEventListener("click", () => {
-            if (this.elements.audioMuteBtn.classList.contains("selected")) {
-                this.elements.audioChillBtn.classList.add("selected");
-            }
-
-            this.elements.audioMuteBtn.classList.toggle("selected");
-            this.elements.audioBtns.forEach(btn => btn.classList.remove("selected"));
-
-            this.gameAudioObject.mute();
-            this.gameAudioObject.audioMode = "mute";
-        });
+        // Audio selection carousel
+        this.elements.nextTrackBtn.addEventListener("click", () => {this._nextAudio(1)});
+        this.elements.previousTrackBtn.addEventListener("click", () => {this._nextAudio(-1)});
 
         // Play select audio
         this.elements.buttons.forEach(btn => {
@@ -244,6 +217,32 @@ class GameController {
         this.playLevel(this.currentLevel);
     }
 
+    // Audio selection carousel 
+    _nextAudio(increment) {
+        this.audioModeIdx += increment;   // Keep track of the current audio idx
+        
+        if (this.audioModeIdx === this.elements.audioTracks.length) this.audioModeIdx = 0;   // Go back to first option
+        if (this.audioModeIdx < 0) this.audioModeIdx = this.elements.audioTracks.length - 1;   // Go to last option
+        
+        this.elements.audioTracks.forEach(track => {track.classList.remove("active")});   // Remove active class from every audio track (stop displaying)
+
+        // Get selected audio ui element and associated audio mode
+        const selectedAudioElement = this.elements.audioTracks[this.audioModeIdx];
+        const audioMode = selectedAudioElement.dataset.audioMode;
+
+        selectedAudioElement.classList.add("active");   // Set the selected audio ui element to active (display it in carousel)
+
+        this.gameAudioObject.audioMode = audioMode;
+        if (audioMode === "chill-mode" || audioMode === "hype-mode") {
+            this.gameAudioObject.select();   // Play select noise
+            this.gameAudioObject.playBackgroundMusic();   // Play background music
+        } else {
+            this.gameAudioObject.mute();   // Mute background music
+            this.gameAudioObject.audioMode = "mute";
+        }
+    }
+
+    // Go back to main menu
     _returnToMain() {
         // Reverse the animations from _startGame()
         this.elements.introScreen.classList.remove("fade-out");
@@ -254,7 +253,6 @@ class GameController {
             ? this._closeInGameModal(this.elements.gameLoseModal)
             : this._closeInGameModal(this.elements.levelWinModal);
 
-        // debugger;
         this._resetGame();
     }
 

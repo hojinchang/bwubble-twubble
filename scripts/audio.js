@@ -51,7 +51,7 @@ class DankBeatz {
         track.currentTime = 0;
         track.play();
 
-        previousTrack.pause();
+        previousTrack.pause();   // Stop playing the previous track
         _fade();
     }
 

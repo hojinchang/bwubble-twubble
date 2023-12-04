@@ -6,6 +6,7 @@
 
 :root {
     --accent-colour:  #FEDD00;
+    --accent-colour-2: #ff0800;
     --background-colour: #282A35;
     --text-colour: #FFFFFF;
     --font-family: 'Sometype Mono', monospace;
@@ -139,45 +140,65 @@ th {
     transform: scale(1.05);
 }
 
-.audio-mode-buttons {
+.audio-mode-container {
     display: flex;
-    gap: 12px;
-    position: absolute;
-    top: 24px;
-    right: 24px;
-}
-
-.audio-mode-buttons .icon-container {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    width: 70px;
-    height: 70px;
-
+    justify-content: center;
+    gap: 50px;
+    position: absolute;
+    top: 20px;
+    right: 60px;
 }
 
-.audio-mode-buttons .icon-container .fa-robot {
-    font-size: 35px;
+.audio-mode-container h2 {
+    font-size: 30px;
+    font-weight: 500;
 }
 
-.audio-mode-buttons .icon-container > i {
-    cursor: pointer;
-    font-size: 40px;
-    padding: 8px;
+.audio-mode-container .audio-selector {
+    position: relative;
+}
+
+.audio-selector .audio-mode {
+    display: none;
+}
+
+.audio-selector .audio-mode.active {
+    display: block;
+}
+
+.audio-selector h3 {
     color: var(--text-colour);
+    font-weight: 400;
+} 
 
-    transition: color 0.3s ease-in-out;
+.audio-selector .previous-audio-btn,
+.audio-selector .next-audio-btn {
+    cursor: pointer;
+    font-size: 22px;
+    color: var(--text-colour);
+    transition: color 0.2s ease-in-out;
 }
 
-.audio-mode-buttons .icon-container > i:hover {
+.audio-selector .previous-audio-btn:hover,
+.audio-selector .next-audio-btn:hover {
     color: var(--accent-colour);
+} 
+
+.audio-selector .previous-audio-btn {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.audio-mode-buttons .icon-container > i.selected {
-    color: var(--accent-colour);
-    border: 2px solid var(--accent-colour);
-    border-radius: 50%;
+.audio-selector .next-audio-btn {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
 }
+
 
 
 /* Modal styles */
