@@ -11,7 +11,6 @@ class GameController {
         this._getElements();
         this.gameAudioObject = new DankBeatz();
         this.audioModeIdx = 0;
-
         this.ballImages = this._getBallImages();
 
         // Create new robot instance
@@ -22,38 +21,26 @@ class GameController {
         this.keyDownHandler;
         this.keyUpHandler;
 
-        this.previousScore = 0;
-        this.currentScore = 0;
+        this.gameWin = false;
         this.levelWin = false;
         this.died = false;
+        this.previousScore = 0;
+        this.currentScore = 0;
         this.ballsKilled = 0;
+        this.previousTotalBallsKilled = 0;
+        this.totalBallsKilled = 0;
         this.ballsRequired;
 
         this.currentLevel = 0;
         this.levels = [
-            // {   
-            //     level: 1,
-            //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(3),
-            //     balls: [
-            //         {
-            //             ballSize: ballSizes.ball3,
-            //             id: 3,
-            //             xPosition: 450,
-            //             yPosition: 200,
-            //             xVelocity: 150,
-            //             yVelocity: 0,
-            //         },
-            //     ],
-            // },
             {   
                 level: 1,
                 ballSrc: this.ballImages[0],
-                ballsRequired: this._determineBallsRequired(1),
+                ballsRequired: this._determineBallsRequired(3),
                 balls: [
                     {
-                        ballSize: ballSizes.ball1,
-                        id: 1,
+                        ballSize: ballSizes.ball3,
+                        id: 3,
                         xPosition: 450,
                         yPosition: 200,
                         xVelocity: 150,
@@ -61,6 +48,21 @@ class GameController {
                     },
                 ],
             },
+            // {   
+            //     level: 1,
+            //     ballSrc: this.ballImages[0],
+            //     ballsRequired: this._determineBallsRequired(1),
+            //     balls: [
+            //         {
+            //             ballSize: ballSizes.ball1,
+            //             id: 1,
+            //             xPosition: 450,
+            //             yPosition: 200,
+            //             xVelocity: 150,
+            //             yVelocity: 0,
+            //         },
+            //     ],
+            // },
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
@@ -86,6 +88,22 @@ class GameController {
                     },
                 ],
             }
+
+            // {   
+            //     level: 2,
+            //     ballSrc: this.ballImages[0],
+            //     ballsRequired: this._determineBallsRequired(1),
+            //     balls: [
+            //         {
+            //             ballSize: ballSizes.ball1,
+            //             id: 1,
+            //             xPosition: 450,
+            //             yPosition: 200,
+            //             xVelocity: 150,
+            //             yVelocity: 0,
+            //         },
+            //     ],
+            // },
         ];
 
         this._setUpGame();
@@ -115,6 +133,12 @@ class GameController {
         this.elements.countdownText = document.querySelectorAll(".countdown-container div");
         this.elements.loseReasonContainer = document.querySelector(".lose-reason-container");
 
+        this.elements.gameLoseModal = document.querySelector(".game-lose-modal");
+        this.elements.gameWinModal = document.querySelector(".game-win-modal");
+        this.elements.outputScore = document.querySelectorAll(".output-score");
+        this.elements.outputKillCount = document.querySelectorAll(".output-kill-count");
+
+
         this.elements.levelWinModal = document.querySelector(".level-win-modal");
         this.elements.currentLevelSpan = document.querySelector(".current-level");
         this.elements.nextLevelBtn = document.querySelector(".next-level-btn");
@@ -123,7 +147,6 @@ class GameController {
         this.elements.character = document.querySelector(".character-container");
         this.elements.characterHitbox = document.querySelector(".character-hitbox");
         this.elements.characterIcon = document.querySelector(".character-icon");
-        this.elements.gameLoseModal = document.querySelector(".game-lose-modal");
 
         this.elements.scoreBoard = document.querySelector(".score-board");
         this.elements.levelText = document.querySelector(".level-text");
@@ -248,10 +271,14 @@ class GameController {
         this.elements.introScreen.classList.remove("fade-out");
         this.elements.gameBoard.classList.remove("fade-in");
         this.elements.scoreBoard.classList.remove("fade-in");
-        
-        (this.died) 
-            ? this._closeInGameModal(this.elements.gameLoseModal)
-            : this._closeInGameModal(this.elements.levelWinModal);
+
+        if (this.died) {   // Case when user loses all 3 lives
+            this._closeInGameModal(this.elements.gameLoseModal);
+        } else if (this.gameWin) {   // Case when user wins the game
+            this._closeInGameModal(this.elements.gameWinModal);
+        } else {   // Case when user clicks back to main after winning a level
+            this._closeInGameModal(this.elements.levelWinModal);
+        }
 
         this._resetGame();
     }
@@ -261,7 +288,8 @@ class GameController {
         const ballImages = [];
         for (let i = 0; i < 10; i++) {
             const image = new Image();
-            image.src = `../assets/planets/planet0${i}.png`;
+            // image.src = `../assets/planets/planet0${i}.png`;
+            image.src = `./assets/planets/planet0${i}.png`;
 
             ballImages.push(image);
         }
@@ -461,6 +489,7 @@ class GameController {
 
             // Pause the game for 2 seconds before resetting it
             setTimeout(() => {
+                this._setOutputStats();
                 this._displayInGameModal(this.elements.gameLoseModal);   // Show game lose modal
             }, timoutDelay);
 
@@ -469,8 +498,10 @@ class GameController {
 
             // Pause the game for 2 seconds before resetting it
             setTimeout(() => {
-                this._resetLevel();
                 this.currentScore = this.previousScore;
+                this.totalBallsKilled = this.previousTotalBallsKilled;
+
+                this._resetLevel();
                 this.playLevel(this.currentLevel);
             }, timoutDelay);
         }
@@ -492,6 +523,7 @@ class GameController {
      */
     _splitBalls(ball, ballSrc) {
         this.ballsKilled++;  // Update number of balls killed
+        this.totalBallsKilled++;
 
         const currentBallID = ball.id;
         if (currentBallID === 1) {   // If smallest ball, delete it
@@ -560,6 +592,7 @@ class GameController {
 
     // Callback function which checks if level is won
     _checkLevelWin(ballsKilled, ballsRequired, lives) {
+        // Level is won if all of the balls are destroyed and player has lives remaining
         if (ballsKilled === ballsRequired && lives > 0) {
             this.levelWin = true;
             this._removeRobotEventListeners();
@@ -567,8 +600,26 @@ class GameController {
             this.timerObject.stop();
             this.timerObject.addTimerPoints();
             this.gameAudioObject.timeReward();
-            this.timerObject._onTimerAddPointsEnd = () => {this._displayInGameModal(this.elements.levelWinModal)};
+
+            // this.totalBallsKilled += this.ballsKilled;
+            this.previousTotalBallsKilled = this.totalBallsKilled;
+            this.previousScore = this.currentScore;
+
+            this.timerObject._onTimerAddPointsEnd = () => {
+                if (this.currentLevel === (this.levels.length - 1)) {   // Check if game win
+                    this.gameWin = true;
+                    this._setOutputStats();
+                    this._displayInGameModal(this.elements.gameWinModal);   // Display game win modal
+                } else {   // Else, you won a lavel
+                    this._displayInGameModal(this.elements.levelWinModal);   // Display level win modal
+                }
+            };
         }
+    }
+
+    _setOutputStats() {
+        this.elements.outputScore.forEach(element => element.innerText = this.currentScore);
+        this.elements.outputKillCount.forEach(element => element.innerText = this.totalBallsKilled);
     }
 
     _addTimerPoints() {
@@ -665,13 +716,17 @@ class GameController {
         this._resetLevel();
         this.currentLevel = 0;
         this.currentScore = 0;
+        this.previousScore = 0;
+        this.totalBallsKilled = 0;
+        this.previousTotalBallsKilled = 0;
         this.robotObject = null;
         this.timerObject = null;
         this.died = false;
+        this.gameWin = false;
 
         // reset heart UI
         for (let i = 0; i < 3; i++) {
-            this.elements.lifeHearts[i].src = "../assets/scoreboard/heart.png";
+            this.elements.lifeHearts[i].src = "./assets/scoreboard/heart.png";
         }
     }
 
@@ -679,9 +734,9 @@ class GameController {
         const lives = this.robotObject.lives;
         for (let i = 0; i < 3; i++) {
             if (i < lives) {
-                this.elements.lifeHearts[i].src = "../assets/scoreboard/heart.png";
+                this.elements.lifeHearts[i].src = "./assets/scoreboard/heart.png";
             } else {
-                this.elements.lifeHearts[i].src = "../assets/scoreboard/heart-black.png";
+                this.elements.lifeHearts[i].src = "./assets/scoreboard/heart-black.png";
             }
         }
     }
@@ -690,6 +745,7 @@ class GameController {
     playLevel(level) {
         // Update scoreboard
         this.previousScore = this.currentScore;
+        this.previousTotalBallsKilled = this.totalBallsKilled;
         this.elements.scoreText.innerText = this.currentScore;
         this.elements.levelText.innerText = this.currentLevel+1;
 

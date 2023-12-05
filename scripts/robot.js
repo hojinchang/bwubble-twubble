@@ -18,7 +18,7 @@ class Robot {
         this.boardWidth = this.gameBoardElement.clientWidth;
         this.boardHeight = this.gameBoardElement.clientHeight;
 
-        this.idleState = "../assets/character/Idle-1.png";
+        this.idleState = "./assets/character/Idle-1.png";
         this.isRunning = false;
         this.runAnimationFrame;
         this.runIdx = 0;
@@ -37,7 +37,7 @@ class Robot {
         const runImages = [];
         for (let i = 0; i < 8; i++) {
             const image = new Image();
-            image.src = `../assets/character/Run-${i+1}.png`;
+            image.src = `./assets/character/Run-${i+1}.png`;
             runImages.push(image);
         }
         return runImages;
