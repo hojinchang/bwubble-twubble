@@ -81,6 +81,10 @@ th {
     color: var(--accent-colour);
 }
 
+thead {
+    background-color: var(--background-colour);
+}
+
 /* Intro Screen */
 .game-container {
     margin: 0 auto;
