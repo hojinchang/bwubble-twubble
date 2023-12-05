@@ -601,7 +601,6 @@ class GameController {
             this.timerObject.addTimerPoints();
             this.gameAudioObject.timeReward();
 
-            // this.totalBallsKilled += this.ballsKilled;
             this.previousTotalBallsKilled = this.totalBallsKilled;
             this.previousScore = this.currentScore;
 
