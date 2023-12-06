@@ -36,43 +36,114 @@ class GameController {
             {   
                 level: 1,
                 ballSrc: this.ballImages[0],
-                ballsRequired: this._determineBallsRequired(3),
+                ballsRequired: this._determineBallsRequired(2),
                 balls: [
-                    {
-                        ballSize: ballSizes.ball3,
-                        id: 3,
-                        xPosition: 450,
-                        yPosition: 200,
-                        xVelocity: 150,
-                        yVelocity: 0,
-                    },
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 450, yPosition: 200, xVelocity: 125, yVelocity: 0},
                 ],
             },
-            {
+            {   
                 level: 2,
                 ballSrc: this.ballImages[1],
-                ballsRequired: 
-                    this._determineBallsRequired(3) 
-                    + this._determineBallsRequired(2),
+                ballsRequired: this._determineBallsRequired(3),
                 balls: [
-                    {
-                        ballSize: ballSizes.ball3,
-                        id: 3,
-                        xPosition: 200,
-                        yPosition: 200,
-                        xVelocity: 150,
-                        yVelocity: 0,
-                    },
-                    {
-                        ballSize: ballSizes.ball2,
-                        id: 2,
-                        xPosition: 800,
-                        yPosition: 200,
-                        xVelocity: -150,
-                        yVelocity: 0,
-                    },
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 450, yPosition: 200, xVelocity: -125, yVelocity: 0},
                 ],
-            }
+            },
+            {   
+                level: 3,
+                ballSrc: this.ballImages[2],
+                ballsRequired: this._determineBallsRequired(4),
+                balls: [
+                    {ballSize: ballSizes.ball4, id: 4, xPosition: 50, yPosition: 200, xVelocity: 125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 4,
+                ballSrc: this.ballImages[3],
+                ballsRequired: this._determineBallsRequired(3) * 2,
+                balls: [
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 200, yPosition: 300, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 750, yPosition: 300, xVelocity: -125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 5,
+                ballSrc: this.ballImages[4],
+                ballsRequired: this._determineBallsRequired(1)*8,
+                balls: [
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 0, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 100, yPosition: 580, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 200, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 300, yPosition: 580, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 980, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 880, yPosition: 580, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 780, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 680, yPosition: 580, xVelocity: 125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 6,
+                ballSrc: this.ballImages[5],
+                ballsRequired: this._determineBallsRequired(1)*9,
+                balls: [
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 0, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 30, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 60, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 150, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 180, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 210, yPosition: 485, xVelocity: 125, yVelocity: 0},
+
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 980, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 950, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 920, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 7,
+                ballSrc: this.ballImages[6],
+                ballsRequired: this._determineBallsRequired(4)
+                            + this._determineBallsRequired(3) * 2,
+                balls: [
+                    {ballSize: ballSizes.ball4, id: 4, xPosition: 455, yPosition: 200, xVelocity: 0, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 75, yPosition: 300, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 865, yPosition: 300, xVelocity: -125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 8,
+                ballSrc: this.ballImages[7],
+                ballsRequired: this._determineBallsRequired(5),
+                balls: [
+                    {ballSize: ballSizes.ball5, id: 5, xPosition: 600, yPosition: 100, xVelocity: -125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 9,
+                ballSrc: this.ballImages[8],
+                ballsRequired: this._determineBallsRequired(4)
+                            + this._determineBallsRequired(3) * 2
+                            + this._determineBallsRequired(2) * 2,
+                balls: [
+                    {ballSize: ballSizes.ball4, id: 4, xPosition: 455, yPosition: 200, xVelocity: -50, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 75, yPosition: 300, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 865, yPosition: 300, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 200, yPosition: 400, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 768, yPosition: 400, xVelocity: 125, yVelocity: 0},
+                ],
+            },
+            {   
+                level: 10,
+                ballSrc: this.ballImages[9],
+                ballsRequired: this._determineBallsRequired(4)
+                            + this._determineBallsRequired(3) * 4,
+                balls: [
+                    {ballSize: ballSizes.ball4, id: 4, xPosition: 455, yPosition: 200, xVelocity: 400, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 75, yPosition: 350, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 865, yPosition: 350, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 350, yPosition: 350, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball3, id: 3, xPosition: 590, yPosition: 350, xVelocity: -125, yVelocity: 0},
+                ],
+            },
         ];
 
         this._setUpGame();
@@ -522,8 +593,10 @@ class GameController {
             );
             
             const yVelocity = -550;  // Launch balls upwards
-            let xVelocity = -150;
-            if (i === 1) xVelocity = 150;  // Ensure the balls split in opposite directions
+            // let xVelocity = -150;
+            // if (i === 1) xVelocity = 150;  // Ensure the balls split in opposite directions
+            let xVelocity = -125;
+            if (i === 1) xVelocity = 125;  // Ensure the balls split in opposite directions
             
             // Create ball object
             const ballObject = new Ball(
@@ -591,7 +664,7 @@ class GameController {
     }
 
     _addTimerPoints() {
-        this.currentScore += 10;
+        this.currentScore += 5;
         this.elements.scoreText.innerText = this.currentScore;
     }
 
@@ -726,6 +799,7 @@ class GameController {
         } = this.levels[level];
 
         this.ballsRequired = ballsRequired; 
+        console.log(ballsRequired);
         this.activeBallObjects = this._initLevel(ballSrc, balls);
 
         // Display the countdown container and begin game countdown
