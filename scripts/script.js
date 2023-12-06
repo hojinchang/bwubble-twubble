@@ -84,18 +84,21 @@ class GameController {
             {   
                 level: 6,
                 ballSrc: this.ballImages[5],
-                ballsRequired: this._determineBallsRequired(1)*9,
+                ballsRequired: this._determineBallsRequired(1)*12,
                 balls: [
                     {ballSize: ballSizes.ball1, id: 1, xPosition: 0, yPosition: 485, xVelocity: 125, yVelocity: 0},
                     {ballSize: ballSizes.ball1, id: 1, xPosition: 30, yPosition: 485, xVelocity: 125, yVelocity: 0},
                     {ballSize: ballSizes.ball1, id: 1, xPosition: 60, yPosition: 485, xVelocity: 125, yVelocity: 0},
-                    {ballSize: ballSizes.ball1, id: 1, xPosition: 150, yPosition: 485, xVelocity: 125, yVelocity: 0},
-                    {ballSize: ballSizes.ball1, id: 1, xPosition: 180, yPosition: 485, xVelocity: 125, yVelocity: 0},
-                    {ballSize: ballSizes.ball1, id: 1, xPosition: 210, yPosition: 485, xVelocity: 125, yVelocity: 0},
-
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 200, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 230, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 260, yPosition: 485, xVelocity: 125, yVelocity: 0},
+                    
                     {ballSize: ballSizes.ball1, id: 1, xPosition: 980, yPosition: 485, xVelocity: -125, yVelocity: 0},
                     {ballSize: ballSizes.ball1, id: 1, xPosition: 950, yPosition: 485, xVelocity: -125, yVelocity: 0},
                     {ballSize: ballSizes.ball1, id: 1, xPosition: 920, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 800, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 770, yPosition: 485, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball1, id: 1, xPosition: 740, yPosition: 485, xVelocity: -125, yVelocity: 0},
                 ],
             },
             {   
