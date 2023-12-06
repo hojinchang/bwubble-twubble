@@ -48,21 +48,6 @@ class GameController {
                     },
                 ],
             },
-            // {   
-            //     level: 1,
-            //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(1),
-            //     balls: [
-            //         {
-            //             ballSize: ballSizes.ball1,
-            //             id: 1,
-            //             xPosition: 450,
-            //             yPosition: 200,
-            //             xVelocity: 150,
-            //             yVelocity: 0,
-            //         },
-            //     ],
-            // },
             {
                 level: 2,
                 ballSrc: this.ballImages[1],
@@ -88,22 +73,6 @@ class GameController {
                     },
                 ],
             }
-
-            // {   
-            //     level: 2,
-            //     ballSrc: this.ballImages[0],
-            //     ballsRequired: this._determineBallsRequired(1),
-            //     balls: [
-            //         {
-            //             ballSize: ballSizes.ball1,
-            //             id: 1,
-            //             xPosition: 450,
-            //             yPosition: 200,
-            //             xVelocity: 150,
-            //             yVelocity: 0,
-            //         },
-            //     ],
-            // },
         ];
 
         this._setUpGame();

@@ -441,9 +441,9 @@ thead {
 
 .modal .output-stats-container {
     display: grid;
-    justify-items: flex-end;
+    justify-items: center;
     align-items: center;
-    grid-template: repeat(2, 1fr) / 250px 150px;
+    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
     margin: 48px 0;
 }
 
