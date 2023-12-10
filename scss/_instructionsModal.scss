@@ -1,0 +1,85 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.instructions-modal {
+    @include modal-size;
+    grid-template: auto 1fr 1fr 1fr / 1fr 1fr 1.25fr;
+    justify-items: center;
+    align-items: center;
+    gap: calc($padding * 0.6);
+
+    h2 {
+        grid-column: 1 / 4;
+        grid-row: 1 / 2;
+    }
+
+    .instructions-container {
+        @include flex-column(stretch, center, $padding-half);
+    }
+
+    .game-instructions {
+        grid-column: 1 / 4;
+        grid-row: 2 / 3;
+
+        ul {
+            margin-bottom: calc($padding * 1.5);
+        }
+
+        li:not(:last-child) {
+            margin-bottom: calc($padding * 0.6);
+        }
+    }
+
+    .move-left-icon img,
+    .move-right-icon img {
+        width: auto;
+        height: 100px;
+    }
+
+    .move-left-icon {
+        grid-column: 1 / 2;
+        grid-row: 3 / 4;
+
+        img {
+            transform: scaleX(-1);
+        }
+    }
+    .move-right-icon {
+        grid-column: 2 / 3;
+        grid-row: 3 / 4;
+    }
+    .move-left-instructions {
+        grid-column: 1 / 2;
+        grid-row: 4 / 5;
+    }
+    .move-right-instructions {
+        grid-column: 2 / 3;
+        grid-row: 4 / 5;
+    }
+    .move-left-instructions img,
+    .move-right-instructions img {
+        width: auto;
+        height: 50px;
+    }
+
+    .shoot-icon {
+        grid-column: 3 / 4;
+        grid-row: 3 / 4;
+    }
+    .shoot-instructions {
+        grid-column: 3 / 4;
+        grid-row: 4 / 5;
+
+        img {
+            cursor: pointer;
+            width: auto;
+            height: 50px;
+        }
+    }
+
+    .laser-icon {
+        position: relative;
+        height: 80px;
+        width: 8px;
+    }
+}

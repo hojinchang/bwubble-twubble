@@ -18,7 +18,7 @@
     @if $top != null {
         top: $top;
     }
-    
+
     @if $bottom != null {
         bottom: $bottom;
     }
@@ -30,7 +30,6 @@
     @if $right != null {
         right: $right;
     }
-    
 }
 
 @mixin flex-row($justfy-content, $align-items, $gap: 0) {
@@ -54,4 +53,10 @@
     justify-content: $justfy-content;
     align-items: $align-items;
     gap: $gap;
+}
+
+@mixin modal-size {
+    display: none;
+    width: 625px;
+    height: 500px;
 }

@@ -1,0 +1,49 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.modal-backdrop {
+    display: none; 
+    @include position-absolute;
+}
+
+.intro-modal-backdrop {
+    z-index: 3;
+}
+
+.level-win-modal-backdrop {
+    z-index: 2;
+}
+
+.modal {
+    @include position-absolute($top: 50%, $left: 50%);
+    transform: translate(-50%, -50%);
+    border-radius: 16px;
+    background-color: $modal-background-colour;
+    z-index: 4;
+    padding: $padding $padding-double;
+    box-shadow: $laser-glow-shadow;
+
+    h2 {
+        text-align: center;
+    }
+
+    p {
+        color: $text-colour;
+    }
+
+    .modal-close-button {
+        cursor: pointer;
+        @include position-absolute($top: 14px, $right: 17px);
+
+        i {
+            font-size: 30px;
+            color: $text-colour;
+            transition: transform 0.2s ease-in-out;
+
+            &:hover {
+                color: $accent-colour;
+                transform: scale(1.2);
+            }
+        }
+    }
+}

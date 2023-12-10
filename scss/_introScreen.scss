@@ -4,7 +4,7 @@
 .intro-screen {
     @include fill-container;
     @include flex-column(center, center, $padding-double);
-    position: absolute;
+    @include position-absolute;
     z-index: 3;
 
     background-image: url(../assets/background/background-resized.jpg);

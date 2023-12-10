@@ -1,0 +1,10 @@
+@use 'variables' as *;
+
+.laser,
+.laser-icon {
+    position: absolute;
+    background-color: rgb(255, 255, 0);
+    box-shadow: $laser-glow-shadow;
+    border: 3px solid red;
+    border-radius: 10px;
+}
