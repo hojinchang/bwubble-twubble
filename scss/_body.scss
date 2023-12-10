@@ -1,0 +1,8 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+body {
+    @include flex-column(space-between, center, 80px);
+    user-select: none;
+    background-color: $background-colour;
+}

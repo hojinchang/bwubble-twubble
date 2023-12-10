@@ -1,0 +1,13 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+main {
+    $margin-top: 100px;
+
+    .game-container {
+        @include horizontal-margin-center;
+        position: relative;
+        height: $game-board-height;
+        width: $game-board-width;
+    }
+}

@@ -1,0 +1,15 @@
+@use 'variables' as *;
+
+a {
+    color: $text-colour;
+	text-decoration: none;
+    font-family: $font-family;
+}
+
+a:visited {
+    color: $text-colour;
+}
+
+a:hover {
+    color: $text-colour;
+}

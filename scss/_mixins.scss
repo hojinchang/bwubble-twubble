@@ -1,2 +1,36 @@
 @use 'variables' as *;
 
+@mixin fill-container {
+    width: 100%;
+    height: 100%;
+}
+
+@mixin horizontal-margin-center {
+    margin: {
+        left: auto;
+        right: auto;
+    }
+}
+
+@mixin flex-row($justfy-content, $align-items, $gap: 0) {
+    display: flex;
+    justify-content: $justfy-content;
+    align-items: $align-items;
+    gap: $gap;
+}
+
+@mixin flex-column($justfy-content, $align-items, $gap: 0) {
+    display: flex;
+    flex-direction: column;
+    justify-content: $justfy-content;
+    align-items: $align-items;
+    gap: $gap;
+}
+
+@mixin flex-row-wrap($justfy-content, $align-items, $gap: 0) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: $justfy-content;
+    align-items: $align-items;
+    gap: $gap;
+}

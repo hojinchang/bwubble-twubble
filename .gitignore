@@ -1,2 +1,4 @@
 *.ipynb
 .vscode
+style.css
+styles
