@@ -12,6 +12,27 @@
     }
 }
 
+@mixin position-absolute($top: null, $bottom: null, $left: null, $right: null) {
+    position: absolute;
+    
+    @if $top != null {
+        top: $top;
+    }
+    
+    @if $bottom != null {
+        bottom: $bottom;
+    }
+    
+    @if $left != null {
+        left: $left;
+    }
+    
+    @if $right != null {
+        right: $right;
+    }
+    
+}
+
 @mixin flex-row($justfy-content, $align-items, $gap: 0) {
     display: flex;
     justify-content: $justfy-content;

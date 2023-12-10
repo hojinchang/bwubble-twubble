@@ -1,0 +1,54 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.audio-mode-container {
+    @include flex-row(center, center, 50px);
+    @include position-absolute($top: 20px, $right: 60px);
+
+    h2 {
+        font-size: 28px;
+        font-weight: 500;
+    }
+
+    
+    .audio-selector {
+        position: relative;
+
+        h3 {
+            color: $text-colour;
+            font-weight: 400;
+        }
+        
+        .audio-mode {
+            display: none;
+            
+            &.active {
+                display: block;
+            }
+        }
+
+        .previous-audio-btn,
+        .next-audio-btn {
+            cursor: pointer;
+            font-size: 22px;
+            color: $text-colour;
+            transform: color 0.2s ease-in-out;
+
+            &:hover {
+                color: $accent-colour;
+            }
+        }
+
+        .previous-audio-btn {
+            @include position-absolute($top: 50%, $left: -30px);
+            transform: translateY(-50%);
+        }
+
+        .next-audio-btn {
+            @include position-absolute($top: 50%, $right: -30px);
+            transform: translateY(-50%);
+        }
+    }
+
+
+}

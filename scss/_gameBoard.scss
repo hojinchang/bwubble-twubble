@@ -1,0 +1,6 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.game-board {
+    @include fill-container;
+}
