@@ -1,0 +1,22 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+footer {
+    @include flex-row(center, center, 0);
+    width: 100%;
+    height: 40px;
+    background-color: $score-board-background-colour;
+
+    p {
+        color: $text-colour;
+    }
+
+    .footer-link {
+        color: $accent-colour;
+        transition: transform 0.5s ease-in-out;
+
+        &:hover {
+            color: $text-colour;
+        }
+    }
+}
