@@ -1,0 +1,50 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.game-win-modal,
+.game-lose-modal {
+    opacity: 0;
+    display: none;
+    width: 600px;
+    padding-bottom: calc($padding * 1.6);
+
+    h2 {
+        margin: 0;
+    }
+
+    .modal-text {
+        @include flex-column(stretch, stretch, calc($padding * 0.8));
+        margin: calc($padding * 1.2) 0;
+        font-size: 20px;
+    }
+
+    .output-stats-container {
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+        margin: calc($padding-double * 1.2) 0;
+
+        span {
+            color: $text-colour;
+            font-size: 18px;
+        }
+
+        .score-heading {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+        }
+        .output-score {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+        .kill-count-heading {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+        }
+        .output-kill-count {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+        }
+    }
+}
