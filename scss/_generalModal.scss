@@ -4,6 +4,8 @@
 .modal-backdrop {
     display: none; 
     @include position-absolute;
+    @include fill-container;
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 .intro-modal-backdrop {

@@ -7,7 +7,7 @@
     visibility: hidden;
     @include horizontal-margin-center;
     width: 1000px;
-    height: 150px;
+    height: 140px;
     padding: calc($padding * 0.8) calc($padding-double * 0.8);
     background-color: $score-board-background-colour;
     
@@ -24,6 +24,7 @@
 
         .lives-container {
             @include flex-row(flex-start, center, 0);
+            width: 200px;
 
             .heart-icon {
                 width: 40px;
@@ -42,7 +43,7 @@
         }
 
         .level-container {
-            @include flex-column(center, center, calc($padding * 0.25));
+            @include flex-column(center, flex-end, calc($padding * 0.25));
             width: 200px;
 
             .level {
@@ -50,16 +51,16 @@
                 font-size: $text-size;
             }
         }
+    }
 
-        .timer-container {
-            width: 100%;
-            height: 20px;
-            background-color: $timer-background-colour;
+    .timer-container {
+        width: 100%;
+        height: 20px;
+        background-color: $timer-background-colour;
 
-            .timer {
-                @include fill-container;
-                background-color: $timer-colour;
-            }
+        .timer {
+            @include fill-container;
+            background-color: $timer-colour;
         }
     }
 }   

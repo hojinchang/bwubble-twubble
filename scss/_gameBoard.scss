@@ -6,7 +6,7 @@
     opacity: 0;
     visibility: hidden;
 
-    background-image: url(../assets/background/background-resized.jpg);
+    background-image: url("../assets/background/background-resized.jpg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -67,6 +67,11 @@
             height: 95%;
         }
 
+        .character-icon {
+            display: block;
+            width: 60px;
+        }
+
         &.flip-character {
             transform: scaleX(-1);
         }
@@ -75,9 +80,9 @@
     .planet-container {
         @include position-absolute($left: 40px);
 
-        // .planet-icon {
-        //     width: 50px;
-        // }
+        .planet-icon {
+            width: 50px;
+        }
     }
 
 }

@@ -9,6 +9,7 @@
     transition: opacity 1s ease-in-out;
     z-index: 3;
     @include modal-btn-styles;
+    @include select-btn-styles;
 
     p {
         font-size: 20px;
@@ -22,6 +23,7 @@
 
         button {
             height: 70px;
+            font-size: 20px;
         }
     }
 }
