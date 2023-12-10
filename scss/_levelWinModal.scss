@@ -1,0 +1,27 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.level-win-modal {
+    opacity: 0;
+    display: none;
+    @include position-absolute;
+    @include level-win-modal-size;
+    transition: opacity 1s ease-in-out;
+    z-index: 3;
+    @include modal-btn-styles;
+
+    p {
+        font-size: 20px;
+        text-align: center;
+        margin-top: $padding-double;
+    }
+
+    .button-container {
+        @include flex-row(stretch, stretch, $padding-double);
+        @include position-absolute($bottom: 30px, $left: 40px, $right: 40px);
+
+        button {
+            height: 70px;
+        }
+    }
+}

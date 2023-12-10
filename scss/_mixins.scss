@@ -55,8 +55,20 @@
     gap: $gap;
 }
 
-@mixin modal-size {
-    display: none;
+@mixin intro-modal-size {
     width: 625px;
     height: 500px;
+}
+
+@mixin level-win-modal-size {
+    width: 500px;
+    height: 300px;
+}
+
+@mixin modal-btn-styles {
+    .return-menu-btn,
+    .next-level-btn {
+        flex: 1;
+        font-size: 20px;
+    }
 }
