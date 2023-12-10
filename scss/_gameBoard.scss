@@ -3,4 +3,81 @@
 
 .game-board {
     @include fill-container;
+    opacity: 0;
+    visibility: hidden;
+
+    background-image: url(../assets/background/background-resized.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+
+    transition: opacity 2s ease-in-out;
+
+    .countdown-container {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        @include position-relative($top: 30%, $left: 50%);
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 200px;
+        overflow: hidden;
+        z-index: 1;
+
+        .countdown-number {
+            @include position-absolute;
+            font-size: 50px;
+            color: $accent-colour;
+
+            transform: translateX(150px) scale(0);
+            transition: transform 0.75s ease-in-out;
+
+            &.activate {
+                transform: translateX(0) scale(5);
+            }
+            &.deactivate {
+                transform: translateX(-150px) scale(0);
+            }
+        }
+    }
+
+    .lose-reason-container {
+        visibility: hidden;
+        opacity: 0;
+        @include position-absolute($top: 30%, $left: 50%);
+        transform: translate(-50%, -50%);
+        width: 500px;
+        color: $accent-colour;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 50px;
+        z-index: 1;
+    }
+
+    .character-container {
+        @include position-absolute;
+        z-index: 1;
+
+        .character-hitbox {
+            @include position-absolute($bottom: 0, $left: 50%);
+            transform: translateX(-50%);
+            width: 30px;
+            height: 95%;
+        }
+
+        &.flip-character {
+            transform: scaleX(-1);
+        }
+    }
+
+    .planet-container {
+        @include position-absolute($left: 40px);
+
+        // .planet-icon {
+        //     width: 50px;
+        // }
+    }
+
 }
