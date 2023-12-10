@@ -1,0 +1,65 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.score-board {
+    @include flex-column(stretch, stretch, calc($padding * 0.75));
+    opacity: 0;
+    visibility: hidden;
+    @include horizontal-margin-center;
+    width: 1000px;
+    height: 150px;
+    padding: calc($padding * 0.8) calc($padding-double * 0.8);
+    background-color: $score-board-background-colour;
+    
+    transition: opacity 2s ease-in-out;
+
+    $text-size: 18px;
+    .game-stats {
+        @include flex-row(space-between, center, 0);
+        width: 100%;
+
+        h3 {
+            font-size: calc($text-size * 4/3);
+        }
+
+        .lives-container {
+            @include flex-row(flex-start, center, 0);
+
+            .heart-icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        .score-container {
+            @include flex-column(stretch, center, calc($padding * 0.25));
+            color: $text-colour;
+            margin: auto;
+
+            .score-text {
+                font-size: $text-size;
+            }
+        }
+
+        .level-container {
+            @include flex-column(center, center, calc($padding * 0.25));
+            width: 200px;
+
+            .level {
+                color: $text-colour;
+                font-size: $text-size;
+            }
+        }
+
+        .timer-container {
+            width: 100%;
+            height: 20px;
+            background-color: $timer-background-colour;
+
+            .timer {
+                @include fill-container;
+                background-color: $timer-colour;
+            }
+        }
+    }
+}   
