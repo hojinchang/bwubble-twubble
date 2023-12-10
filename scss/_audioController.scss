@@ -30,7 +30,7 @@
         .previous-audio-btn,
         .next-audio-btn {
             cursor: pointer;
-            font-size: 22px;
+            font-size: $audio-btn-size;
             color: $text-colour;
             transform: color 0.2s ease-in-out;
 
@@ -49,6 +49,4 @@
             transform: translateY(-50%);
         }
     }
-
-
 }
