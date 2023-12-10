@@ -9,5 +9,6 @@ main {
         position: relative;
         height: $game-board-height;
         width: $game-board-width;
+        overflow: hidden;
     }
 }
