@@ -140,13 +140,16 @@ class GameController {
                 level: 10,
                 ballSrc: this.ballImages[9],
                 ballsRequired: this._determineBallsRequired(4)
-                            + this._determineBallsRequired(3) * 4,
+                            + this._determineBallsRequired(3) * 2
+                            + this._determineBallsRequired(2) * 4,
                 balls: [
                     {ballSize: ballSizes.ball4, id: 4, xPosition: 455, yPosition: 200, xVelocity: 400, yVelocity: 0},
                     {ballSize: ballSizes.ball3, id: 3, xPosition: 75, yPosition: 350, xVelocity: 125, yVelocity: 0},
                     {ballSize: ballSizes.ball3, id: 3, xPosition: 865, yPosition: 350, xVelocity: -125, yVelocity: 0},
-                    {ballSize: ballSizes.ball3, id: 3, xPosition: 350, yPosition: 350, xVelocity: 125, yVelocity: 0},
-                    {ballSize: ballSizes.ball3, id: 3, xPosition: 590, yPosition: 350, xVelocity: -125, yVelocity: 0},
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 350, yPosition: 350, xVelocity: 375, yVelocity: -300},
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 618, yPosition: 350, xVelocity: -375, yVelocity: -300},
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 350, yPosition: 100, xVelocity: 275, yVelocity: -1000},
+                    {ballSize: ballSizes.ball2, id: 2, xPosition: 618, yPosition: 100, xVelocity: -275, yVelocity: -1000},
                 ],
             },
         ];
@@ -637,6 +640,8 @@ class GameController {
             ballsRequired,
             balls,
         } = this.levels[level];
+
+        console.log(ballsRequired)
 
         this.ballsRequired = ballsRequired; 
         this.activeBallObjects = this._initLevel(ballSrc, balls);
