@@ -2,7 +2,8 @@
 @use 'mixins' as *;
 
 main {
-    margin-top: calc($padding * 5);
+    // margin-top: calc($padding * 3);
+    margin: calc($padding * 3) 0;
 
     .game-container {
         @include horizontal-margin-center;

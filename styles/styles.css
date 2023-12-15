@@ -52,7 +52,7 @@ body {
 }
 
 main {
-  margin-top: 100px;
+  margin: 60px 0;
 }
 main .game-container {
   margin-left: auto;

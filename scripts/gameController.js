@@ -10,6 +10,7 @@ class GameController {
         this.gameUI = new GameUI();
         this.ballImages = this.gameUI.ballImages;
         this._setUpGame();
+        this._removeDefaultActions();
 
         this.gameAudioObject = new DankBeatz();
         this.audioModeIdx = 0;
@@ -157,6 +158,15 @@ class GameController {
         ];
 
         if (this.devmode) this._devmode();
+    }
+
+    // Remove arrow key scrolling
+    _removeDefaultActions() {
+        window.addEventListener("keydown", (e) => {
+            if(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
     }
 
     _setUpGame() {
