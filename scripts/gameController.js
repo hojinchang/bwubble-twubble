@@ -296,6 +296,7 @@ class GameController {
     _setUpRobotEventListeners() {
         // Keydown function, robot running and shooting
         this.keyDownHandler = (e) => {
+            e.preventDefault();
             let lastFrameTime = performance.now();
             if (e.key === "ArrowRight") {
                 this.robotObject.run("right", lastFrameTime);
@@ -326,24 +327,6 @@ class GameController {
         document.removeEventListener("keydown", this.keyDownHandler);
         document.removeEventListener("keyup", this.keyUpHandler);
         this.robotObject.stopRunning();
-    }
-
-    // Update and reset the game when level is lost
-    _levelLose(loseReason) {
-        // Different lose message depending on the lose condition
-        let loseMessage;
-        (loseReason === "collision")
-            ? loseMessage = "You got crushed by my planet!"
-            : loseMessage = "You're too slow, timer ran out!"
-
-        this.gameUI.elements.loseReasonContainer.classList.add("fade-in");
-        this.gameUI.elements.loseReasonContainer.innerText = loseMessage;
-
-        // Level updates
-        this.robotObject.lives--;
-        this.gameUI._updateLifeHearts(this.robotObject);
-        this.timerObject.stop();
-        this._checkGameState();
     }
 
     // Check ball collision
@@ -442,6 +425,50 @@ class GameController {
         }
     }
 
+    // Update and reset the game when level is lost
+    _levelLose(loseReason) {
+        // Different lose message depending on the lose condition
+        let loseMessage;
+        (loseReason === "collision")
+            ? loseMessage = "You got crushed by my planet!"
+            : loseMessage = "You're too slow, timer ran out!"
+
+        this.gameUI.elements.loseReasonContainer.classList.add("fade-in");
+        this.gameUI.elements.loseReasonContainer.innerText = loseMessage;
+
+        // Level updates
+        this.robotObject.lives--;
+        this.gameUI._updateLifeHearts(this.robotObject);
+        this.timerObject.stop();
+        this._checkGameState();
+    }
+
+    // Callback function which checks if level is won
+    _checkLevelWin(ballsKilled, ballsRequired, lives) {
+        // Level is won if all of the balls are destroyed and player has lives remaining
+        if (ballsKilled === ballsRequired && lives > 0) {
+            this.levelWin = true;
+            this._removeRobotEventListeners();
+
+            this.timerObject.stop();
+            this.timerObject.addTimerPoints();
+            this.gameAudioObject.timeReward();
+
+            this.previousTotalBallsKilled = this.totalBallsKilled;
+            this.previousScore = this.currentScore;
+
+            this.timerObject._onTimerAddPointsEnd = () => {
+                if (this.currentLevel === (this.levels.length - 1)) {   // Check if game win
+                    this.gameWin = true;
+                    this.gameUI._setOutputStats(this.currentScore, this.totalBallsKilled);
+                    this.gameUI._displayInGameModal(this.gameUI.elements.gameWinModal);   // Display game win modal
+                } else {   // Else, you won a lavel
+                    this.gameUI._displayInGameModal(this.gameUI.elements.levelWinModal);   // Display level win modal
+                }
+            };
+        }
+    }
+
     // Remove ball from the game
     _removeBallFromGame(ball) {
         // Remove ball from activeBallObjects array
@@ -511,37 +538,11 @@ class GameController {
         this._removeBallFromGame(ball);
     }
 
-
-    // Callback function which checks if level is won
-    _checkLevelWin(ballsKilled, ballsRequired, lives) {
-        // Level is won if all of the balls are destroyed and player has lives remaining
-        if (ballsKilled === ballsRequired && lives > 0) {
-            this.levelWin = true;
-            this._removeRobotEventListeners();
-
-            this.timerObject.stop();
-            this.timerObject.addTimerPoints();
-            this.gameAudioObject.timeReward();
-
-            this.previousTotalBallsKilled = this.totalBallsKilled;
-            this.previousScore = this.currentScore;
-
-            this.timerObject._onTimerAddPointsEnd = () => {
-                if (this.currentLevel === (this.levels.length - 1)) {   // Check if game win
-                    this.gameWin = true;
-                    this.gameUI._setOutputStats(this.currentScore, this.totalBallsKilled);
-                    this.gameUI._displayInGameModal(this.gameUI.elements.gameWinModal);   // Display game win modal
-                } else {   // Else, you won a lavel
-                    this.gameUI._displayInGameModal(this.gameUI.elements.levelWinModal);   // Display level win modal
-                }
-            };
-        }
-    }
-
     _addTimerPoints() {
         this.currentScore += 5;
         this.gameUI.elements.scoreText.innerText = this.currentScore;
     }
+
 
     // Activate ball movement and set collision detection callback functions
    _activateBall(ballObject) {
@@ -676,8 +677,6 @@ class GameController {
         this.robotObject = new Robot(this.gameUI.elements.character, this.gameUI.elements.characterIcon, this.gameUI.elements.gameBoard);
         this.playLevel(this.currentLevel);
     }
-
-    
 }
 
 // const game = new GameController(true);
