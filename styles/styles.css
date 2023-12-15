@@ -41,11 +41,12 @@ a:hover {
 }
 
 body {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  gap: 80px;
+  gap: 0;
   user-select: none;
   background-color: #282A35;
 }
@@ -105,6 +106,7 @@ main .game-container {
 
 .audio-mode-container {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 50px;
@@ -351,6 +353,7 @@ main .game-container {
 }
 .level-win-modal .button-container {
   display: flex;
+  flex-direction: row;
   justify-content: stretch;
   align-items: stretch;
   gap: 40px;
@@ -543,6 +546,7 @@ main .game-container {
 }
 .score-board .game-stats {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   gap: 0;
@@ -553,6 +557,7 @@ main .game-container {
 }
 .score-board .game-stats .lives-container {
   display: flex;
+  flex-direction: row;
   justify-content: flex-start;
   align-items: center;
   gap: 0;
@@ -614,6 +619,7 @@ main .game-container {
 
 footer {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 0;

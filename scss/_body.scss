@@ -2,7 +2,8 @@
 @use 'mixins' as *;
 
 body {
-    @include flex-column(space-between, center, 80px);
+    height: 100vh;
+    @include flex-column(space-between, center);
     user-select: none;
     background-color: $background-colour;
 }
