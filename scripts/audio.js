@@ -2,7 +2,7 @@
 
 class DankBeatz {
     constructor () {
-        this.audioMode = "mute";
+        this.audioMode = "chill";
         this.easterEggAudio = document.querySelector(".ima-firin-mah-lazer");
         this.chillBackgroundMusic = document.querySelector(".chill-background-music");
         this.hypeBackgroundMusic = document.querySelector(".hype-background-music");
